@@ -6,6 +6,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/main/presentation/screens/main_screen.dart';
+import '../../features/admin/presentation/screens/admin_main_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -33,6 +34,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/dashboard',
       builder: (context, state) => const MainScreen(),
+    ),
+    GoRoute(
+      path: '/admin',
+      builder: (context, state) => const AdminMainScreen(),
     ),
   ],
 );
