@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Transaksi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "on-background": "#131b2e",
+                        "on-tertiary-fixed": "#001a41",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#3e6cba",
+                        "inverse-surface": "#283044",
+                        "tertiary": "#2053a0",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-low": "#f2f3ff",
+                        "background": "#faf8ff",
+                        "surface-container": "#eaedff",
+                        "on-secondary-fixed": "#341100",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-primary-fixed": "#00174b",
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary": "#9d4300",
+                        "outline": "#737686",
+                        "tertiary-fixed": "#d8e2ff",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-primary-container": "#eeefff",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-tertiary-container": "#ecf0ff",
+                        "surface-bright": "#faf8ff",
+                        "surface-variant": "#dae2fd",
+                        "surface": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#5c2400",
+                        "secondary-fixed": "#ffdbca",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#004ac6",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#783200",
+                        "surface-tint": "#0053db",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#fd761a",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "on-error-container": "#93000a",
+                        "success": "#16a34a",
+                        "danger": "#dc2626"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "container-margin": "16px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-[80px] pt-[64px]">
+<!-- TopAppBar -->
+<header class="bg-white/90 backdrop-blur-md dark:bg-slate-950/90 font-inter text-sm font-semibold tracking-tight fixed top-0 left-0 w-full z-50 border-b border-slate-100 dark:border-slate-800 shadow-sm flex justify-between items-center px-4 h-16 max-w-7xl mx-auto pt-safe">
+<div class="flex-shrink-0 w-8">
+<!-- Leading avatar placeholder -->
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="person">person</span>
+</div>
+</div>
+<h1 class="text-h3 font-h3 text-on-surface">Transaksi</h1>
+<div class="flex-shrink-0 w-8 flex justify-end">
+<button class="text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors active:scale-95 duration-150 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</div>
+</header>
+<main class="max-w-md mx-auto w-full">
+<!-- Filter Bar -->
+<div class="w-full overflow-x-auto hide-scrollbar px-container-margin py-sm bg-surface-container-lowest sticky top-[64px] z-40 border-b border-surface-container shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+<div class="flex gap-sm w-max">
+<button class="px-md py-[6px] rounded-full bg-primary text-on-primary font-label-md text-label-md transition-colors whitespace-nowrap shadow-sm">
+                    Bulan Ini
+                </button>
+<button class="px-md py-[6px] rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-label-md text-label-md transition-colors hover:bg-surface-container whitespace-nowrap">
+                    Semua Tipe
+                </button>
+<button class="px-md py-[6px] rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-label-md text-label-md transition-colors hover:bg-surface-container whitespace-nowrap">
+                    Kategori
+                </button>
+<button class="px-md py-[6px] rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-label-md text-label-md transition-colors hover:bg-surface-container whitespace-nowrap">
+                    Dompet
+                </button>
+</div>
+</div>
+<!-- Summary Bar -->
+<div class="bg-surface-container-lowest mx-container-margin mt-md mb-lg rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center p-md">
+<div class="flex-1 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-outline mb-xs">Pemasukan</span>
+<span class="font-label-md text-label-md text-success flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                    Rp 8.000.000
+                </span>
+</div>
+<div class="w-px h-8 bg-outline-variant mx-4"></div>
+<div class="flex-1 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-outline mb-xs">Pengeluaran</span>
+<span class="font-label-md text-label-md text-danger flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                    Rp 3.412.000
+                </span>
+</div>
+</div>
+<!-- Transaction List -->
+<div class="px-container-margin space-y-lg">
+<!-- Date Group 1 -->
+<div>
+<div class="flex justify-between items-center mb-sm px-1">
+<h2 class="font-label-sm text-label-sm text-outline font-bold">Rabu, 22 April 2026</h2>
+<span class="font-label-sm text-label-sm text-outline">- Rp 150.000</span>
+</div>
+<div class="space-y-sm">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary" data-icon="restaurant">restaurant</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Makan Siang</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">BCA Utama</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-danger block">- Rp 50.000</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="directions_car">directions_car</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Bensin Mobil</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">Cash</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-danger block">- Rp 100.000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Date Group 2 -->
+<div>
+<div class="flex justify-between items-center mb-sm px-1">
+<h2 class="font-label-sm text-label-sm text-outline font-bold">Selasa, 21 April 2026</h2>
+<span class="font-label-sm text-label-sm text-outline">+ Rp 4.700.000</span>
+</div>
+<div class="space-y-sm">
+<!-- Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Gaji Bulanan</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">BCA Utama</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-success block">+ Rp 5.000.000</span>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-error" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Belanja Bulanan</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">Kartu Kredit</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-danger block">- Rp 300.000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Date Group 3 -->
+<div>
+<div class="flex justify-between items-center mb-sm px-1">
+<h2 class="font-label-sm text-label-sm text-outline font-bold">Senin, 20 April 2026</h2>
+<span class="font-label-sm text-label-sm text-outline">- Rp 75.000</span>
+</div>
+<div class="space-y-sm">
+<!-- Item 5 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="coffee">coffee</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Kopi Pagi</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">Gopay</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-danger block">- Rp 35.000</span>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="movie">movie</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-label-md text-on-surface truncate">Nonton Bioskop</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate mt-1">Ovo</p>
+</div>
+<div class="flex-shrink-0 text-right">
+<span class="font-label-md text-label-md text-danger block">- Rp 40.000</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white dark:bg-slate-950 font-inter text-[11px] font-medium fixed bottom-0 left-0 w-full z-50 pb-safe border-t border-slate-100 dark:border-slate-800 shadow-[0_-1px_3px_rgba(0,0,0,0.05)] md:hidden">
+<div class="flex justify-around items-center h-16 w-full px-2 max-w-md mx-auto">
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 gap-1 hover:text-blue-500 dark:hover:text-blue-300 tap-highlight-transparent active:opacity-70 transition-all flex-1 h-full">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 gap-1 hover:text-blue-500 dark:hover:text-blue-300 tap-highlight-transparent active:opacity-70 transition-all flex-1 h-full">
+<span class="material-symbols-outlined" data-icon="receipt_long" data-weight="fill" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span>Activity</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 gap-1 hover:text-blue-500 dark:hover:text-blue-300 tap-highlight-transparent active:opacity-70 transition-all flex-1 h-full">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span>Reports</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 gap-1 hover:text-blue-500 dark:hover:text-blue-300 tap-highlight-transparent active:opacity-70 transition-all flex-1 h-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</button>
+</div>
+</nav>
+</body></html>

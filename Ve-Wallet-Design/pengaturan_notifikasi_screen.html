@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Pengaturan Notifikasi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-tertiary-container": "#ecf0ff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004ac6",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-primary-container": "#eeefff",
+                        "surface": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface-variant": "#434655",
+                        "primary-fixed": "#dbe1ff",
+                        "on-background": "#131b2e",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dae2fd",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-tint": "#0053db",
+                        "secondary": "#9d4300",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eaedff",
+                        "primary-container": "#2563eb",
+                        "secondary-fixed-dim": "#ffb690",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#131b2e",
+                        "on-secondary-fixed-variant": "#783200",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fd761a",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#341100",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-fixed": "#00174b",
+                        "secondary-fixed": "#ffdbca",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#2053a0",
+                        "tertiary-container": "#3e6cba",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-bright": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "background": "#faf8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen flex flex-col text-on-surface antialiased">
+<!-- Top App Bar (Task-Focused / Contextual) -->
+<header class="flex items-center justify-between px-md py-4 bg-background sticky top-0 z-10 border-b border-surface-container-high">
+<button aria-label="Go back" class="w-10 h-10 flex items-center justify-start text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface flex-1 text-center pr-10">Notifikasi</h1>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-md py-lg pb-xl max-w-2xl mx-auto w-full">
+<!-- Master Toggle Card -->
+<section class="bg-surface-container-lowest rounded-xl p-md mb-lg shadow-[0_2px_8px_rgba(0,0,0,0.06)] border border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</div>
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Aktifkan Notifikasi</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Izinkan Ve-Wallet mengirim notifikasi</span>
+</div>
+</div>
+<!-- iOS Style Toggle (ON) -->
+<div class="relative inline-flex h-7 w-12 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-5 w-5 translate-x-[22px] transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</section>
+<!-- Section: Transaksi -->
+<section class="mb-lg">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm px-sm">Transaksi</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-container-high overflow-hidden">
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Transaksi dari Partner</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Transfer Berhasil</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Anggaran -->
+<section class="mb-lg">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm px-sm">Anggaran</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-container-high overflow-hidden">
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Budget Hampir Habis (&gt;80%)</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Budget Melewati Batas</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Target Tabungan -->
+<section class="mb-lg">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm px-sm">Target Tabungan</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-container-high overflow-hidden">
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Belum Alokasi Bulan Ini</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-surface-variant transition-colors shrink-0 border border-outline-variant">
+<span class="inline-block h-4 w-4 translate-x-1 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Goal Hampir Tercapai</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Ringkasan -->
+<section class="mb-lg">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm px-sm">Ringkasan</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-container-high overflow-hidden">
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Mingguan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Setiap Senin</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Bulanan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tanggal 1</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-surface-variant transition-colors shrink-0 border border-outline-variant">
+<span class="inline-block h-4 w-4 translate-x-1 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Sistem -->
+<section class="mb-lg">
+<h2 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm px-sm">Sistem</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-surface-container-high overflow-hidden">
+<!-- Row -->
+<div class="flex items-center justify-between p-md border-b border-surface-container-high last:border-b-0">
+<div class="flex flex-col gap-xs">
+<span class="font-label-md text-label-md text-on-surface">Update &amp; Pengumuman</span>
+</div>
+<div class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors shrink-0">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-surface-container-lowest shadow-sm transition-transform"></span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

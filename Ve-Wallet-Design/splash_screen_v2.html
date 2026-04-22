@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "primary-blue": "#2563EB",
+              "dark-blue": "#1A4F9C"
+            },
+            "fontFamily": {
+              "sans": ["Inter", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-[#1A4F9C] to-[#2563EB] min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden font-sans antialiased text-white">
+<!-- Central Brand Canvas -->
+<main class="flex flex-col items-center justify-center w-full max-w-sm px-6 text-center z-10">
+<!-- Logo Mark Container -->
+<div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.1)] mb-6">
+<!-- Utilizing Material Symbol for the minimalist wallet -->
+<span class="material-symbols-outlined text-[48px] text-[#2563EB]" data-icon="account_balance_wallet" data-weight="fill">account_balance_wallet</span>
+</div>
+<!-- App Name Anchor -->
+<h1 class="text-[32px] font-bold tracking-tight text-white mb-2">Ve-Wallet</h1>
+<!-- Tagline -->
+<p class="text-[14px] font-normal text-white/60">Kelola Keuangan Bersama</p>
+</main>
+<!-- Bottom Indicator Container -->
+<div class="absolute bottom-12 flex items-center justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-white opacity-100 animate-pulse"></div>
+<div class="w-2 h-2 rounded-full bg-white opacity-60 animate-pulse" style="animation-delay: 200ms;"></div>
+<div class="w-2 h-2 rounded-full bg-white opacity-30 animate-pulse" style="animation-delay: 400ms;"></div>
+</div>
+</body></html>

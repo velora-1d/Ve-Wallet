@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Tambah/Edit Dompet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#783200",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "on-background": "#131b2e",
+                        "primary-container": "#2563eb",
+                        "surface-container-low": "#f2f3ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#004ac6",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#5c2400",
+                        "surface-variant": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#3e6cba",
+                        "tertiary-fixed": "#d8e2ff",
+                        "secondary-container": "#fd761a",
+                        "inverse-surface": "#283044",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eaedff",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-on-surface": "#eef0ff",
+                        "background": "#faf8ff",
+                        "secondary": "#9d4300",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#ffdbca",
+                        "on-tertiary-container": "#ecf0ff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface": "#faf8ff",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary": "#2053a0",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-primary-container": "#eeefff",
+                        "outline": "#737686"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 font-body-md antialiased">
+<!-- TopAppBar -->
+<header class="bg-white dark:bg-slate-950 flex justify-between items-center w-full px-4 h-16 border-b border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none docked full-width top-0 sticky z-10">
+<button class="text-on-surface hover:bg-slate-50 dark:hover:bg-slate-900 rounded-full p-2 active:opacity-80 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-h3 font-h3 text-on-surface">Tambah Dompet</h1>
+<button class="text-primary font-label-md hover:bg-slate-50 dark:hover:bg-slate-900 rounded-md px-3 py-2 active:opacity-80 transition-opacity">
+            Simpan
+        </button>
+</header>
+<main class="max-w-[1200px] mx-auto px-md py-lg space-y-xl">
+<!-- Wallet Preview Card -->
+<section class="flex justify-center">
+<div class="w-full max-w-sm rounded-[16px] p-6 text-on-primary bg-gradient-to-br from-primary to-tertiary shadow-[0_12px_24px_rgba(0,0,0,0.1)] relative overflow-hidden">
+<div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+<div class="flex items-center justify-between mb-8 relative z-10">
+<div class="flex items-center space-x-3">
+<div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined text-3xl" data-icon="account_balance">account_balance</span>
+</div>
+<span class="font-label-md text-on-primary/90">BCA Tabungan</span>
+</div>
+</div>
+<div class="space-y-1 relative z-10">
+<p class="font-label-sm text-on-primary/70">Saldo Awal</p>
+<p class="font-h2 text-on-primary">Rp 5.000.000</p>
+</div>
+</div>
+</section>
+<!-- Form Section -->
+<section class="space-y-6 max-w-sm mx-auto w-full">
+<!-- Nama Dompet Input -->
+<div class="space-y-sm">
+<label class="block font-label-md text-on-surface" for="wallet-name">Nama Dompet</label>
+<input class="w-full h-12 rounded-lg border border-outline-variant bg-surface px-4 font-body-md text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors shadow-sm" id="wallet-name" placeholder="cth. BCA Tabungan" type="text"/>
+</div>
+<!-- Tipe Dompet Selection -->
+<div class="space-y-sm">
+<label class="block font-label-md text-on-surface">Tipe Dompet</label>
+<div class="grid grid-cols-3 gap-3">
+<!-- Option 1: Tunai -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="wallet_type" type="radio" value="tunai"/>
+<div class="flex flex-col items-center justify-center h-24 rounded-[16px] border border-outline-variant bg-surface hover:bg-surface-variant/50 peer-checked:border-primary peer-checked:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface peer-checked:text-primary" data-icon="payments">payments</span>
+<span class="font-label-sm text-on-surface peer-checked:text-primary">Tunai</span>
+</div>
+</label>
+<!-- Option 2: Bank (Selected) -->
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="wallet_type" type="radio" value="bank"/>
+<div class="flex flex-col items-center justify-center h-24 rounded-[16px] border border-primary bg-surface-container transition-all">
+<span class="material-symbols-outlined text-3xl mb-2 text-primary" data-icon="account_balance">account_balance</span>
+<span class="font-label-sm text-primary">Bank</span>
+</div>
+</label>
+<!-- Option 3: E-Wallet -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="wallet_type" type="radio" value="ewallet"/>
+<div class="flex flex-col items-center justify-center h-24 rounded-[16px] border border-outline-variant bg-surface hover:bg-surface-variant/50 peer-checked:border-primary peer-checked:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface peer-checked:text-primary" data-icon="smartphone">smartphone</span>
+<span class="font-label-sm text-on-surface peer-checked:text-primary">E-Wallet</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Saldo Awal Input -->
+<div class="space-y-sm">
+<label class="block font-label-md text-on-surface" for="initial-balance">Saldo Awal</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 font-body-md text-on-surface-variant">Rp</span>
+<input class="w-full h-12 rounded-lg border border-outline-variant bg-surface pl-12 pr-4 font-body-md text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors shadow-sm" id="initial-balance" placeholder="0" type="number"/>
+</div>
+</div>
+<!-- Pilih Icon -->
+<div class="space-y-sm">
+<label class="block font-label-md text-on-surface">Pilih Icon</label>
+<div class="grid grid-cols-4 gap-4">
+<!-- Icon 1 (Selected) -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center ring-2 ring-primary ring-offset-2 mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="account_balance">account_balance</span>
+</button>
+<!-- Icon 2 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="payments">payments</span>
+</button>
+<!-- Icon 3 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="credit_card">credit_card</span>
+</button>
+<!-- Icon 4 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="savings">savings</span>
+</button>
+<!-- Icon 5 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="smartphone">smartphone</span>
+</button>
+<!-- Icon 6 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="account_balance_wallet">account_balance_wallet</span>
+</button>
+<!-- Icon 7 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="monetization_on">monetization_on</span>
+</button>
+<!-- Icon 8 -->
+<button class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-surface-variant mx-auto focus:outline-none">
+<span class="material-symbols-outlined text-on-surface" data-icon="storefront">storefront</span>
+</button>
+</div>
+</div>
+<!-- Pilih Warna -->
+<div class="space-y-sm">
+<label class="block font-label-md text-on-surface">Pilih Warna</label>
+<div class="flex flex-wrap gap-3">
+<button aria-label="Blue" class="w-10 h-10 rounded-full bg-primary ring-2 ring-primary ring-offset-2 focus:outline-none"></button>
+<button aria-label="Red" class="w-10 h-10 rounded-full bg-[#E53935] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Green" class="w-10 h-10 rounded-full bg-[#43A047] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Yellow" class="w-10 h-10 rounded-full bg-[#FFB300] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Purple" class="w-10 h-10 rounded-full bg-[#8E24AA] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Cyan" class="w-10 h-10 rounded-full bg-[#00ACC1] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Orange" class="w-10 h-10 rounded-full bg-[#F4511E] hover:opacity-80 focus:outline-none"></button>
+<button aria-label="Indigo" class="w-10 h-10 rounded-full bg-[#3949AB] hover:opacity-80 focus:outline-none"></button>
+</div>
+</div>
+<!-- Save Button (Mobile fixed bottom usually, but placing here per flow) -->
+<div class="pt-6 pb-8">
+<button class="w-full h-14 rounded-xl bg-secondary-container text-on-secondary-container font-label-md flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all shadow-sm">
+                    Simpan
+                </button>
+</div>
+</section>
+</main>
+</body></html>

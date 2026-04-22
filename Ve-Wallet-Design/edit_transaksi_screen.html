@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Edit Transaksi - Ve-Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#fd761a",
+                    "surface-bright": "#faf8ff",
+                    "primary": "#004ac6",
+                    "on-primary-fixed": "#00174b",
+                    "on-background": "#131b2e",
+                    "surface-container-low": "#f2f3ff",
+                    "inverse-surface": "#283044",
+                    "on-tertiary-fixed-variant": "#044491",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "background": "#faf8ff",
+                    "surface-container-high": "#e2e7ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "outline": "#737686",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#ffb690",
+                    "surface-variant": "#dae2fd",
+                    "on-secondary-fixed-variant": "#783200",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#dae2fd",
+                    "on-secondary-fixed": "#341100",
+                    "surface": "#faf8ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "surface-tint": "#0053db",
+                    "primary-container": "#2563eb",
+                    "secondary": "#9d4300",
+                    "tertiary-container": "#3e6cba",
+                    "tertiary-fixed": "#d8e2ff",
+                    "tertiary": "#2053a0",
+                    "outline-variant": "#c3c6d7",
+                    "inverse-primary": "#b4c5ff",
+                    "on-secondary-container": "#5c2400",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d2d9f4",
+                    "secondary-fixed": "#ffdbca",
+                    "on-tertiary-fixed": "#001a41",
+                    "on-tertiary-container": "#ecf0ff",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "surface-container": "#eaedff",
+                    "on-surface-variant": "#434655",
+                    "on-surface": "#131b2e",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "container-margin": "16px",
+                    "lg": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "h1": ["Inter"],
+                    "h3": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col md:items-center">
+<!-- Mobile Container (Max width 480px on desktop) -->
+<div class="w-full max-w-[480px] bg-surface-container-lowest min-h-screen flex flex-col relative shadow-[0_0_40px_rgba(0,0,0,0.05)]">
+<!-- TopAppBar: Transactional, no Nav Shell -->
+<header class="fixed top-0 w-full max-w-[480px] z-50 flex items-center justify-between px-md h-16 bg-surface-container-lowest border-b border-surface-container">
+<button class="flex items-center justify-center p-sm -ml-sm text-on-surface hover:bg-surface-container rounded-full transition-colors active:opacity-70" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface absolute left-1/2 -translate-x-1/2 whitespace-nowrap">Edit Transaksi</h1>
+<button class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors active:opacity-70 px-sm -mr-sm py-xs" type="button">
+                Simpan
+            </button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col pt-[80px] pb-[100px] px-md gap-lg overflow-y-auto no-scrollbar">
+<!-- Transaction Type Tabs -->
+<div class="flex gap-sm w-full">
+<button class="flex-1 py-sm px-xs rounded-full bg-primary text-on-primary font-label-md text-label-md text-center shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-95 transition-transform" type="button">
+                    Keluar
+                </button>
+<button class="flex-1 py-sm px-xs rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-label-md text-label-md text-center active:scale-95 transition-transform hover:bg-surface-container-low" type="button">
+                    Masuk
+                </button>
+<button class="flex-1 py-sm px-xs rounded-full bg-surface-container-lowest text-on-surface-variant border border-outline-variant font-label-md text-label-md text-center active:scale-95 transition-transform hover:bg-surface-container-low" type="button">
+                    Transfer
+                </button>
+</div>
+<!-- Amount Display -->
+<div class="bg-surface-container-low rounded-[16px] p-lg flex flex-col items-center justify-center relative overflow-hidden group border border-surface-variant">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-active:opacity-100 transition-opacity"></div>
+<div class="flex items-baseline gap-sm relative z-10">
+<span class="font-h3 text-h3 text-outline">Rp</span>
+<span class="font-h1 text-[36px] font-bold text-on-surface tracking-tight">50.000</span>
+</div>
+</div>
+<!-- Custom Numpad -->
+<div class="grid grid-cols-3 gap-y-md gap-x-sm px-sm">
+<!-- Row 1 -->
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">1</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">2</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">3</button>
+<!-- Row 2 -->
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">4</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">5</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">6</button>
+<!-- Row 3 -->
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">7</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">8</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">9</button>
+<!-- Row 4 -->
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">000</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-h2 font-h2 text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm">0</button>
+<button class="h-16 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface flex items-center justify-center active:bg-surface-container hover:bg-surface-container-low transition-colors shadow-sm text-error">
+<span class="material-symbols-outlined" data-icon="backspace">backspace</span>
+</button>
+</div>
+<!-- Form Fields Section -->
+<div class="flex flex-col gap-sm bg-surface-container-lowest rounded-xl border border-surface-container p-sm shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+<!-- Category Field -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low active:bg-surface-container cursor-pointer transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed-dim/20 flex items-center justify-center text-secondary-container group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="restaurant" data-weight="fill">restaurant</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline mb-1">Kategori</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Makanan &amp; Minuman</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="h-px bg-surface-container mx-sm"></div>
+<!-- Wallet Field -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low active:bg-surface-container cursor-pointer transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed-dim/30 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" data-weight="fill">account_balance_wallet</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline mb-1">Dompet</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">BCA Utama</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="h-px bg-surface-container mx-sm"></div>
+<!-- Date Field -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low active:bg-surface-container cursor-pointer transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline mb-1">Tanggal</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Hari ini, 24 Okt 2023</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="h-px bg-surface-container mx-sm"></div>
+<!-- Note Field -->
+<div class="p-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-outline" for="catatan">Catatan</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[20px]" data-icon="edit_note">edit_note</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all" id="catatan" placeholder="Tambahkan catatan..." type="text" value="Makan siang Kopi Kenangan"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Button Fixed Area -->
+<div class="fixed bottom-0 w-full max-w-[480px] px-md pb-md pt-sm bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest to-transparent z-40">
+<button class="w-full bg-secondary-container hover:bg-secondary active:scale-[0.98] transition-all text-on-secondary font-label-md text-label-md py-4 rounded-xl shadow-[0_4px_12px_rgba(253,118,26,0.2)] flex justify-center items-center" type="button">
+                Simpan Perubahan
+            </button>
+</div>
+</div>
+</body></html>

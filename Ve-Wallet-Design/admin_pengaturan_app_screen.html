@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet Admin - Pengaturan App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#5c2400",
+                        "on-background": "#131b2e",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#dae2fd",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline": "#737686",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-error": "#ffffff",
+                        "on-surface": "#131b2e",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "primary-container": "#2563eb",
+                        "surface-dim": "#d2d9f4",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb690",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-fixed": "#ffdbca",
+                        "on-surface-variant": "#434655",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary": "#9d4300",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-container": "#3e6cba",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fd761a",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-container": "#eaedff",
+                        "background": "#faf8ff",
+                        "on-primary-container": "#eeefff",
+                        "surface": "#faf8ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary-container": "#ecf0ff",
+                        "primary": "#004ac6",
+                        "on-secondary-fixed-variant": "#783200",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary": "#2053a0",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#341100",
+                        "surface-tint": "#0053db",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "16px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md h-screen w-full overflow-hidden flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- Desktop Navigation Drawer -->
+<aside class="hidden md:flex flex-col fixed inset-y-0 left-0 z-40 bg-white border-r divide-y divide-slate-100 shadow-xl h-full w-72 rounded-r-lg">
+<div class="p-lg flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold font-h3">
+                A
+            </div>
+<div>
+<h2 class="font-label-md text-label-md font-bold text-blue-700">Ve-Wallet Admin</h2>
+<p class="font-label-sm text-label-sm text-slate-500">System Controller</p>
+</div>
+</div>
+<nav class="flex-1 py-md px-sm space-y-sm font-['Inter'] text-sm font-medium">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-slate-600 hover:bg-slate-50 hover:translate-x-1 transition-transform duration-200 cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-slate-600 hover:bg-slate-50 hover:translate-x-1 transition-transform duration-200 cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+                Statistics
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg bg-blue-50 text-blue-700 border-r-4 border-blue-600 hover:translate-x-1 transition-transform duration-200 cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+                App Settings
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-slate-600 hover:bg-slate-50 hover:translate-x-1 transition-transform duration-200 cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined">history</span>
+                Logs
+            </a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-72 h-full relative">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full bg-white docked full-width top-0 shadow-sm border-b border-slate-200 z-30 shrink-0">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-sm rounded-full hover:bg-slate-50 transition-colors active:opacity-80 text-blue-600">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-['Inter'] font-semibold text-lg tracking-tight text-blue-700 font-bold">Ve-Wallet Admin</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden flex items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-on-primary-container text-sm">person</span>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-md md:p-lg pb-24 md:pb-lg relative z-0">
+<div class="max-w-4xl mx-auto w-full space-y-lg">
+<!-- Page Header -->
+<div class="mb-xl">
+<h1 class="font-h1 text-h1 text-on-surface">Pengaturan App</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs max-w-2xl">Kelola konfigurasi inti aplikasi, versi, dan pengumuman untuk seluruh pengguna Ve-Wallet.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md items-start">
+<!-- Maintenance Mode Card (Full Width) -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] border-l-4 border-secondary-container p-lg flex flex-col sm:flex-row sm:items-center justify-between gap-md transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+<div class="flex items-start sm:items-center gap-md">
+<div class="w-12 h-12 shrink-0 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">build</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface">Maintenance Mode</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Tampilkan halaman maintenance ke semua user. Akses API akan ditutup sementara.</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0 sm:ml-auto">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-14 h-7 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-secondary-container shadow-inner"></div>
+</label>
+</div>
+<!-- Version Control Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-lg flex flex-col h-full">
+<div class="flex items-center gap-sm border-b border-outline-variant pb-sm mb-md">
+<span class="material-symbols-outlined text-primary">system_update</span>
+<h3 class="font-h3 text-h3 text-on-surface">Kontrol Versi</h3>
+</div>
+<div class="space-y-md flex-1">
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant block mb-sm">Versi Minimum Aplikasi</label>
+<div class="relative">
+<input class="w-full bg-surface text-on-surface font-body-md text-body-md py-sm px-md rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="2.4.1"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant material-symbols-outlined text-[20px]">edit</span>
+</div>
+</div>
+<div class="flex items-center justify-between bg-surface-container rounded-lg p-sm mt-auto">
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Paksa Update</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Wajibkan user update di store</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Categories Row (Glassmorphism inspired simple card) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-lg flex items-center justify-between cursor-pointer hover:bg-surface-container transition-colors group h-auto md:h-[180px]">
+<div class="flex flex-col gap-sm">
+<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">category</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mt-sm">Kelola Kategori Default</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs line-clamp-2">Atur daftar kategori transaksi bawaan untuk pengguna baru.</p>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface border border-outline-variant flex items-center justify-center text-outline group-hover:border-primary group-hover:text-primary transition-colors shrink-0">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- In-App Announcement Card (Full Width) -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-lg space-y-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-outline-variant pb-sm gap-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">campaign</span>
+<h3 class="font-h3 text-h3 text-on-surface">Pengumuman In-App</h3>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aktifkan Pengumuman</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg pt-sm">
+<!-- Input Area -->
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant block">Pesan Banner Dashboard</label>
+<textarea class="w-full bg-surface text-on-surface font-body-md text-body-md p-md rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all h-28 resize-none placeholder-outline" placeholder="Ketik pengumuman di sini...">Promo cashback 50% untuk pembayaran PDAM khusus hari ini! Syarat dan ketentuan berlaku.</textarea>
+<div class="flex justify-end">
+<button class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Simpan Teks</button>
+</div>
+</div>
+<!-- Live Preview Area -->
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface-variant block">Live Preview (Dashboard User)</label>
+<div class="w-full h-28 bg-primary-container rounded-xl p-md flex flex-col justify-center gap-sm shadow-sm border border-primary-fixed-dim relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-start gap-md relative z-10">
+<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">info</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-primary-container leading-relaxed">Promo cashback 50% untuk pembayaran PDAM khusus hari ini! Syarat dan ketentuan berlaku.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 pb-safe bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] font-['Inter'] text-[10px] font-medium">
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 touch-none active:scale-90 transition-all w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-xs">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 touch-none active:scale-90 transition-all w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-xs">bar_chart</span>
+            Stats
+        </a>
+<a class="flex flex-col items-center justify-center text-blue-600 scale-110 touch-none active:scale-90 transition-all w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-xs" style="font-variation-settings: 'FILL' 1;">tune</span>
+            Config
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 touch-none active:scale-90 transition-all w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-xs">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>

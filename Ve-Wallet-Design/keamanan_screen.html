@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Security Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-tint": "#0053db",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#fd761a",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#004ac6",
+                        "on-tertiary-container": "#ecf0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-secondary-fixed-variant": "#783200",
+                        "tertiary": "#2053a0",
+                        "on-background": "#131b2e",
+                        "tertiary-container": "#3e6cba",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "surface": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-surface": "#283044",
+                        "tertiary-fixed": "#d8e2ff",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "surface-variant": "#dae2fd",
+                        "outline": "#737686",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container": "#eaedff",
+                        "secondary-fixed": "#ffdbca",
+                        "background": "#faf8ff",
+                        "secondary": "#9d4300",
+                        "on-secondary-fixed": "#341100",
+                        "inverse-primary": "#b4c5ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "gutter": "16px"
+                    },
+                    fontFamily: {
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-20">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-white shadow-sm border-b border-surface-container">
+<button class="text-on-surface p-2 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface text-center flex-1 pr-10">Keamanan</h1>
+</header>
+<main class="max-w-[1200px] mx-auto p-md space-y-lg lg:grid lg:grid-cols-2 lg:gap-lg lg:space-y-0">
+<!-- Column 1: App Lock & Auto Lock -->
+<div class="space-y-lg">
+<!-- Section: Kunci Aplikasi -->
+<section>
+<h2 class="font-label-md text-label-md text-on-surface-variant mb-sm uppercase tracking-wider">Kunci Aplikasi</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+<!-- Biometric Toggle -->
+<div class="flex items-center justify-between p-md border-b border-surface-container">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Autentikasi Biometrik</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Gunakan sidik jari atau Face ID</p>
+</div>
+</div>
+<!-- Toggle Switch (Active) -->
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer">
+<div class="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 shadow-sm"></div>
+</div>
+</div>
+<!-- App PIN -->
+<div class="flex items-center justify-between p-md cursor-pointer hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">PIN Aplikasi</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Atur PIN 6 digit sebagai alternatif</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Section: Kunci Otomatis -->
+<section>
+<h2 class="font-label-md text-label-md text-on-surface-variant mb-sm uppercase tracking-wider">Kunci setelah tidak aktif</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+<label class="flex items-center justify-between p-md border-b border-surface-container cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md text-on-surface">1 menit</span>
+<div class="w-5 h-5 rounded-full border-2 border-outline"></div>
+</label>
+<label class="flex items-center justify-between p-md border-b border-surface-container cursor-pointer bg-primary/5">
+<span class="font-body-md text-body-md font-medium text-primary">5 menit</span>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+</label>
+<label class="flex items-center justify-between p-md border-b border-surface-container cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md text-on-surface">15 menit</span>
+<div class="w-5 h-5 rounded-full border-2 border-outline"></div>
+</label>
+<label class="flex items-center justify-between p-md border-b border-surface-container cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md text-on-surface">30 menit</span>
+<div class="w-5 h-5 rounded-full border-2 border-outline"></div>
+</label>
+<label class="flex items-center justify-between p-md cursor-pointer hover:bg-surface-container-low transition-colors">
+<span class="font-body-md text-body-md text-on-surface">Tidak pernah</span>
+<div class="w-5 h-5 rounded-full border-2 border-outline"></div>
+</label>
+</div>
+</section>
+</div>
+<!-- Column 2: Login History -->
+<div class="space-y-lg">
+<!-- Section: Riwayat Login -->
+<section>
+<h2 class="font-label-md text-label-md text-on-surface-variant mb-sm uppercase tracking-wider">Riwayat Login</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden p-md space-y-md">
+<!-- Entry 1 (Active) -->
+<div class="flex items-start gap-md border-b border-surface-container pb-md">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0 mt-1">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-sm">
+<p class="font-body-md text-body-md font-semibold text-on-surface">iPhone 14 · iOS</p>
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Aktif</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">22 Apr 2026, 08:34</p>
+<p class="font-label-sm text-label-sm text-outline mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Jakarta, ID
+                            </p>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="flex items-start gap-md border-b border-surface-container pb-md">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0 mt-1">
+<span class="material-symbols-outlined">computer</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold text-on-surface">MacBook Pro · Chrome</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">20 Apr 2026, 14:20</p>
+<p class="font-label-sm text-label-sm text-outline mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Jakarta, ID
+                            </p>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="flex items-start gap-md pb-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0 mt-1">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold text-on-surface">iPhone 12 · Safari</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">15 Apr 2026, 09:15</p>
+<p class="font-label-sm text-label-sm text-outline mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Bandung, ID
+                            </p>
+</div>
+</div>
+</div>
+<button class="w-full mt-md font-label-md text-label-md text-error border border-error rounded-lg py-3 hover:bg-error/5 transition-colors">
+                    Keluar dari Semua Perangkat
+                </button>
+</section>
+</div>
+</main>
+</body></html>

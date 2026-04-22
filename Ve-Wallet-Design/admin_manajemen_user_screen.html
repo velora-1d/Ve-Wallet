@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manajemen User - Ve-Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-tint": "#0053db",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#fd761a",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#004ac6",
+                        "on-tertiary-container": "#ecf0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-secondary-fixed-variant": "#783200",
+                        "tertiary": "#2053a0",
+                        "on-background": "#131b2e",
+                        "tertiary-container": "#3e6cba",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "surface": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-surface": "#283044",
+                        "tertiary-fixed": "#d8e2ff",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "surface-variant": "#dae2fd",
+                        "outline": "#737686",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container": "#eaedff",
+                        "secondary-fixed": "#ffdbca",
+                        "background": "#faf8ff",
+                        "secondary": "#9d4300",
+                        "on-secondary-fixed": "#341100",
+                        "inverse-primary": "#b4c5ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#F8FAFC] text-on-surface font-body-md min-h-screen pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-blue-700 dark:bg-blue-900 border-none shadow-md font-inter antialiased tracking-tight docked full-width top-0 text-white">
+<div class="flex items-center gap-4 w-full">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-blue-600 dark:hover:bg-blue-800 transition-colors duration-200 cursor-pointer text-white">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="flex-1 text-center font-bold text-lg text-white mr-10">Manajemen User</h1>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto w-full relative">
+<!-- Search & Filter Area -->
+<section class="bg-surface-container-lowest sticky top-16 z-40 px-md py-md border-b border-outline-variant/30 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+<!-- Search Bar -->
+<div class="relative w-full mb-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-shadow placeholder:text-outline/70" placeholder="Cari nama atau email..." type="text"/>
+</div>
+<!-- Filter Chips -->
+<div class="flex overflow-x-auto no-scrollbar gap-sm pb-1">
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-sm shadow-sm">Semua</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm border border-outline-variant/50 hover:bg-surface-container-high transition-colors">Aktif</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm border border-outline-variant/50 hover:bg-surface-container-high transition-colors">Suspended</button>
+</div>
+<!-- Summary Chips -->
+<div class="flex flex-wrap gap-2 mt-md">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mr-1.5"></span>
+                    312 Total
+                </span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-[#E6F4EA] text-[#1E8E3E] font-label-sm text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#1E8E3E] mr-1.5"></span>
+                    48 Aktif Hari Ini
+                </span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-1.5"></span>
+                    3 Suspended
+                </span>
+</div>
+</section>
+<!-- Pull to Refresh indicator (Visual only) -->
+<div class="flex justify-center items-center py-sm text-outline font-label-sm gap-2">
+<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
+            Memuat ulang...
+        </div>
+<!-- User List -->
+<section class="px-md pb-xl flex flex-col gap-sm">
+<!-- User Item 1 -->
+<div class="relative bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-md group overflow-hidden">
+<!-- Avatar -->
+<div class="w-12 h-12 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-h3 shrink-0">
+                    AW
+                </div>
+<!-- Info -->
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-[15px] text-on-surface truncate">Andi Wijaya</h3>
+<p class="font-body-sm text-[13px] text-on-surface-variant truncate">andi.wijaya@example.com</p>
+<p class="font-label-sm text-[10px] text-outline mt-0.5">Bergabung: 12 Jan 2023</p>
+</div>
+<!-- Status & Action -->
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-2 py-1 rounded-full bg-[#E6F4EA] text-[#1E8E3E] font-label-sm text-[10px] uppercase tracking-wider">Aktif</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Swipe Actions Overlay (Simulated) -->
+<div class="absolute right-0 top-0 bottom-0 bg-surface-container-lowest translate-x-full group-hover:translate-x-0 transition-transform duration-300 flex items-stretch shadow-[-4px_0_12px_rgba(0,0,0,0.05)] rounded-r-xl overflow-hidden">
+<button class="px-5 bg-secondary-container text-on-secondary-container flex flex-col items-center justify-center gap-1 font-label-sm transition-colors hover:bg-secondary">
+<span class="material-symbols-outlined text-[20px]">block</span>
+                        Suspend
+                    </button>
+<button class="px-5 bg-error text-on-error flex flex-col items-center justify-center gap-1 font-label-sm transition-colors hover:bg-on-error-container">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+                        Hapus
+                    </button>
+</div>
+</div>
+<!-- User Item 2 -->
+<div class="relative bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-md group overflow-hidden">
+<!-- Avatar (Photo) -->
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img alt="Budi Santoso Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a smiling young woman with dark hair in a well-lit studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuEwyJlbGMUrKrSXY0G0u_7gjHfbngHRc2-2HVQEJ0F9o-UNrr_zF8DQ7Yx5HZ6h8JAHkLnqTxu1kG6MPsWPjO83reS89fXmw_5YrRnmdxFPl_GCb9aN0aBTY0O2ku87FBUfOTxNJNV-n_C5UmgyIFs_HUY1pAbpTrGxbG_B8yN_H1YjbEIR_TyLQPKlLYKHYDEFl2voOTrXqSyIXeAUEwwZW3JEeMqhdnc0ZBzgO9Kdp_W84RE3iMbeaP5abBaXtsnAwBQN5XjeeB"/>
+</div>
+<!-- Info -->
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-[15px] text-on-surface truncate">Budi Santoso</h3>
+<p class="font-body-sm text-[13px] text-on-surface-variant truncate">b.santoso@company.co.id</p>
+<p class="font-label-sm text-[10px] text-outline mt-0.5">Bergabung: 05 Mar 2023</p>
+</div>
+<!-- Status & Action -->
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px] uppercase tracking-wider">Suspended</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- User Item 3 -->
+<div class="relative bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-md group overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed-dim text-on-secondary-container flex items-center justify-center font-h3 shrink-0">
+                    CP
+                </div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-[15px] text-on-surface truncate">Citra Putri</h3>
+<p class="font-body-sm text-[13px] text-on-surface-variant truncate">citra.p@startup.id</p>
+<p class="font-label-sm text-[10px] text-outline mt-0.5">Bergabung: 22 Nov 2023</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-2 py-1 rounded-full bg-[#E6F4EA] text-[#1E8E3E] font-label-sm text-[10px] uppercase tracking-wider">Aktif</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- User Item 4 -->
+<div class="relative bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-md group overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant flex items-center justify-center font-h3 shrink-0">
+                    DN
+                </div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-[15px] text-on-surface truncate">Dian Nugroho</h3>
+<p class="font-body-sm text-[13px] text-on-surface-variant truncate">dnugroho99@gmail.com</p>
+<p class="font-label-sm text-[10px] text-outline mt-0.5">Bergabung: 01 Des 2023</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-2 py-1 rounded-full bg-[#E6F4EA] text-[#1E8E3E] font-label-sm text-[10px] uppercase tracking-wider">Aktif</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- User Item 5 -->
+<div class="relative bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex items-center gap-md group overflow-hidden">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img alt="Eko Pratama Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a serious young man with glasses in an urban setting with blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaF5FVR0vRGSyQ51Q8GT-h8F9_Oz5cczKcrwHCoFGL8cMJTGaO4PvqsUso6KyOUjz1zwIOgKnEkTvj3vjkE301wqcpHbt5Ck2-op8XhQgayd4GxRWrjgHOndUrpmi5gVjxNHk3vNQI2vVlJnlAwXujbByJw1xuuDDK6szV-uJKTNDHbReA_J7IVCYhZFYjHHOi54IP9sbLYj5ctMR3R-7cNLgoKsMNNIYsnV0uw00N1WdWOvfWtBisvHog1essl63ikQi-1SvDBKYy"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-md text-[15px] text-on-surface truncate">Eko Pratama</h3>
+<p class="font-body-sm text-[13px] text-on-surface-variant truncate">eko.pratama@enterprise.com</p>
+<p class="font-label-sm text-[10px] text-outline mt-0.5">Bergabung: 15 Jan 2024</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px] uppercase tracking-wider">Suspended</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- Load More Pagination -->
+<div class="flex justify-center mt-md mb-lg">
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md border border-outline-variant/30 hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+                    Muat Lebih Banyak
+                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+</section>
+</main>
+<!-- NavigationDrawer (Hidden on Mobile, Visible on Desktop) -->
+<nav class="fixed left-0 top-0 h-full hidden lg:flex flex-col h-screen w-72 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-inter text-sm font-medium flat no shadows z-40 pt-16">
+<div class="p-6 border-b border-outline-variant/30 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                A
+            </div>
+<div>
+<div class="font-bold text-on-surface">System Administrator</div>
+<div class="text-xs text-outline">Finance Control Center</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-4 border-blue-600 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">group</span>
+                Users
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">badge</span>
+                Detail View
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">notifications_active</span>
+                Notifications
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+                Compose
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+                Statistics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out mt-auto" href="#">
+<span class="material-symbols-outlined">settings_applications</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- BottomNavBar (Visible on Mobile, Hidden on Desktop) -->
+<!-- Suppressed based on semantic shell mandate (Task-focused sub-page with 'Back' action) -->
+</body></html>

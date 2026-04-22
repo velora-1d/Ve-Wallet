@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#131b2e",
+                    "on-primary-fixed": "#00174b",
+                    "surface-container-highest": "#dae2fd",
+                    "secondary-fixed-dim": "#ffb690",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "surface-tint": "#0053db",
+                    "surface-container-lowest": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#fd761a",
+                    "on-tertiary-fixed": "#001a41",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f2f3ff",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d2d9f4",
+                    "primary": "#004ac6",
+                    "on-tertiary-container": "#ecf0ff",
+                    "surface-container-high": "#e2e7ff",
+                    "on-secondary-fixed-variant": "#783200",
+                    "tertiary": "#2053a0",
+                    "on-background": "#131b2e",
+                    "tertiary-container": "#3e6cba",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-tertiary-fixed-variant": "#044491",
+                    "surface": "#faf8ff",
+                    "on-error": "#ffffff",
+                    "primary-container": "#2563eb",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "inverse-surface": "#283044",
+                    "tertiary-fixed": "#d8e2ff",
+                    "on-secondary-container": "#5c2400",
+                    "on-primary-container": "#eeefff",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "surface-variant": "#dae2fd",
+                    "outline": "#737686",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#faf8ff",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container": "#eaedff",
+                    "secondary-fixed": "#ffdbca",
+                    "background": "#faf8ff",
+                    "secondary": "#9d4300",
+                    "on-secondary-fixed": "#341100",
+                    "inverse-primary": "#b4c5ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "container-margin": "16px",
+                    "sm": "8px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "h3": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "h2": [
+                            "Inter"
+                    ],
+                    "h1": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h3": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h2": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "h1": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative pb-20">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 sticky top-0 z-50 bg-blue-700 dark:bg-blue-900 text-white font-inter antialiased tracking-tight shadow-md border-none docked full-width top-0">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-white text-2xl" data-icon="menu">menu</span>
+</div>
+<div class="text-lg font-bold text-white">
+            FinSecure Admin
+        </div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-white text-2xl" data-icon="notifications">notifications</span>
+</div>
+</header>
+<!-- SideNav (Desktop) -->
+<nav class="fixed left-0 top-0 h-full hidden lg:flex flex-col bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-inter text-sm font-medium h-screen w-72 border-r border-slate-200 dark:border-slate-800 flat no shadows z-40 mt-16 pt-4">
+<div class="flex items-center px-4 py-6 mb-4">
+<img alt="Admin User" class="h-10 w-10 rounded-full bg-slate-200 object-cover" data-alt="portrait of a professional man in a business casual shirt smiling lightly against a soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWi4OW1zLAfF-rduSFBFkltmmS2dMdnxyGkMF7AT8oKug7XOav55Jj1fm6lFrTe7ySlftBPT0Efql52POzjPeatgrZ6sQog8CBg5tU_smGIjrdnBxhATKWwWPIKJC6e2rA4GzXzaejBBBERQHz29Ks3Ty-aBKKvR9qnjgMWhdOY1ntx48ZvhY-7ioNqZV131OM7LQUQG58ao98B6g3uN2R5yW9EzzKfm_z7rvgq5HccJTQZV1R9KrTeRwHn6jlt41CIIap7ysPcSLG"/>
+<div class="ml-3">
+<p class="font-h3 text-on-surface text-sm">System Administrator</p>
+<p class="font-label-sm text-outline text-xs">Finance Control Center</p>
+</div>
+</div>
+<div class="flex flex-col space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-4 border-blue-600 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Users
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+                Detail View
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+                Notifications
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+                Compose
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+                Statistics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings_applications">settings_applications</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-md py-lg lg:pl-[calc(288px+16px)]">
+<!-- Greeting Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] border-l-4 border-primary mb-lg relative overflow-hidden">
+<div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-fixed-dim/30 to-transparent pointer-events-none"></div>
+<h1 class="font-h2 text-on-surface mb-xs">Halo, Admin 👋</h1>
+<p class="font-body-sm text-on-surface-variant">Here is the overview of Ve-Wallet for today.</p>
+</div>
+<!-- Stats Grid (Bento Style) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-sm md:gap-md mb-lg">
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+</div>
+<div>
+<h2 class="font-h2 text-on-surface">312</h2>
+<p class="font-label-sm text-on-surface-variant">Total User</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-emerald-600" data-icon="how_to_reg">how_to_reg</span>
+</div>
+<div>
+<h2 class="font-h2 text-on-surface">48</h2>
+<p class="font-label-sm text-on-surface-variant">Aktif Hari Ini</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="swap_horiz">swap_horiz</span>
+</div>
+<div>
+<h2 class="font-h2 text-on-surface">256</h2>
+<p class="font-label-sm text-on-surface-variant">Transaksi Hari Ini</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-purple-600" data-icon="family_home">family_home</span>
+</div>
+<div>
+<h2 class="font-h2 text-on-surface">89</h2>
+<p class="font-label-sm text-on-surface-variant">Household</p>
+</div>
+</div>
+</div>
+<!-- Growth Chart Section (Mockup) -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] mb-lg">
+<h3 class="font-h3 text-on-surface mb-md">Pertumbuhan User</h3>
+<div class="h-48 w-full bg-surface-container-low rounded-lg relative overflow-hidden flex items-end px-4 pb-6 pt-4">
+<!-- Decorative pseudo-chart lines -->
+<div class="absolute bottom-6 left-4 right-4 h-full flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<polyline fill="none" points="0,90 10,85 20,70 30,75 40,50 50,60 60,30 70,40 80,20 90,10 100,15" stroke="#0053db" stroke-width="2"></polyline>
+<circle cx="60" cy="30" fill="#fd761a" r="3"></circle>
+<circle cx="90" cy="10" fill="#fd761a" r="3"></circle>
+</svg>
+</div>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-2 left-4 right-4 flex justify-between font-label-sm text-outline text-[10px]">
+<span>1 Nov</span>
+<span>8 Nov</span>
+<span>15 Nov</span>
+<span>22 Nov</span>
+<span>30 Nov</span>
+</div>
+</div>
+</div>
+<!-- Activity Log -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<h3 class="font-h3 text-on-surface mb-md">Log Aktivitas</h3>
+<div class="flex flex-col space-y-0">
+<div class="flex items-start py-sm border-b border-outline-variant last:border-0 min-h-[64px]">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center mr-md mt-1 shrink-0">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1">
+<p class="font-body-sm font-medium text-on-surface">User Registered</p>
+<p class="font-label-sm text-on-surface-variant">Budi Santoso joined Ve-Wallet</p>
+</div>
+<span class="font-label-sm text-outline ml-sm">10:42 AM</span>
+</div>
+<div class="flex items-start py-sm border-b border-outline-variant last:border-0 min-h-[64px]">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center mr-md mt-1 shrink-0">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+<div class="flex-1">
+<p class="font-body-sm font-medium text-on-surface">Notification Sent</p>
+<p class="font-label-sm text-on-surface-variant">System maintenance alert dispatched</p>
+</div>
+<span class="font-label-sm text-outline ml-sm">09:15 AM</span>
+</div>
+<div class="flex items-start py-sm border-b border-outline-variant last:border-0 min-h-[64px]">
+<div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center mr-md mt-1 shrink-0">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+</div>
+<div class="flex-1">
+<p class="font-body-sm font-medium text-on-surface">User Suspended</p>
+<p class="font-label-sm text-on-surface-variant">Account #88921 flagged for suspicious activity</p>
+</div>
+<span class="font-label-sm text-outline ml-sm">Yesterday</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-blue-600 dark:text-blue-400 font-inter text-[11px] font-semibold border-t border-slate-200 dark:border-slate-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] docked full-width">
+<a class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 rounded-xl px-3 py-1 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-3 py-1 hover:text-blue-500 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="verified_user">verified_user</span>
+<span>Security</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-3 py-1 hover:text-blue-500 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="manage_history">manage_history</span>
+<span>History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-3 py-1 hover:text-blue-500 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

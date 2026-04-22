@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Export Laporan</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#dae2fd",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "on-tertiary-fixed": "#001a41",
+                      "on-tertiary-container": "#ecf0ff",
+                      "on-secondary": "#ffffff",
+                      "primary": "#004ac6",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-primary-container": "#eeefff",
+                      "surface": "#faf8ff",
+                      "surface-container-high": "#e2e7ff",
+                      "on-surface-variant": "#434655",
+                      "primary-fixed": "#dbe1ff",
+                      "on-background": "#131b2e",
+                      "surface-dim": "#d2d9f4",
+                      "on-tertiary": "#ffffff",
+                      "surface-variant": "#dae2fd",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#c3c6d7",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-tint": "#0053db",
+                      "secondary": "#9d4300",
+                      "error": "#ba1a1a",
+                      "surface-container": "#eaedff",
+                      "primary-container": "#2563eb",
+                      "secondary-fixed-dim": "#ffb690",
+                      "tertiary-fixed-dim": "#acc7ff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-surface": "#131b2e",
+                      "on-secondary-fixed-variant": "#783200",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-container": "#fd761a",
+                      "on-tertiary-fixed-variant": "#044491",
+                      "outline": "#737686",
+                      "on-secondary-fixed": "#341100",
+                      "on-secondary-container": "#5c2400",
+                      "on-primary-fixed": "#00174b",
+                      "secondary-fixed": "#ffdbca",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#2053a0",
+                      "tertiary-container": "#3e6cba",
+                      "surface-container-low": "#f2f3ff",
+                      "tertiary-fixed": "#d8e2ff",
+                      "surface-bright": "#faf8ff",
+                      "error-container": "#ffdad6",
+                      "background": "#faf8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "md": "16px",
+                      "container-margin": "16px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "gutter": "16px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "h3": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "h2": ["Inter"],
+                      "h1": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen flex flex-col font-body-md text-on-background antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top App Bar (Task-Focused Variant) -->
+<header class="flex justify-between items-center w-full px-md h-16 bg-surface-container-lowest border-b border-surface-container sticky top-0 z-50">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full text-on-surface hover:bg-surface-container-high transition-colors active:opacity-80">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface absolute left-1/2 -translate-x-1/2">Export Laporan</h1>
+<div class="w-10"></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col px-md pb-xl pt-lg gap-lg max-w-3xl mx-auto w-full">
+<!-- Hero Illustration & Header -->
+<div class="flex flex-col items-center text-center mb-sm">
+<div class="h-[120px] w-[120px] mb-lg relative flex items-center justify-center">
+<div class="absolute inset-0 bg-primary-fixed-dim/20 rounded-full blur-xl"></div>
+<img class="h-full w-full object-cover rounded-2xl shadow-sm z-10" data-alt="Flat vector style illustration of a financial document with a downward download arrow, utilizing vibrant primary blue and secondary orange on a clean white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD70-3KFtSzsOCHbLTYlUbxxM29111MqF6bqB5VOSK9ZnIcF8FRGrMnP3UUq3_XJjjD7oDPeKM3pY7cLhobIjqJsKCk965nVHPatTX4j9YCFCtWHnUYNWKawjP2S-RMoVA2r_D2cDUOD-wg7cGSvML2M5pZwFJroVdcLJO0fDZImxuEuOseM-n3eEY-tLpj8mGdpkAn9Q6aW_Mnvz9YPzb5lqHEtXemNvQiCEo56-QuAFpbVRpFfDfrYoeaHUH7_0qh1cXVFoPGjlhB"/>
+</div>
+<h2 class="font-h2 text-h2 text-on-background mb-2">Ekspor Data Keuangan</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px]">Pilih periode dan format yang kamu inginkan</p>
+</div>
+<!-- Pilih Periode Card -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md text-on-background px-xs">Pilih Periode</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-md flex gap-md">
+<div class="flex-1 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-outline">Dari</span>
+<button class="w-full flex items-center gap-2 border border-outline-variant rounded-lg p-3 bg-surface hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-fixed transition-all text-left">
+<span class="material-symbols-outlined text-outline" style="font-size: 20px;">calendar_today</span>
+<span class="font-body-sm text-body-sm text-on-surface flex-1">01 Okt 2023</span>
+</button>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-outline">Sampai</span>
+<button class="w-full flex items-center gap-2 border border-outline-variant rounded-lg p-3 bg-surface hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-fixed transition-all text-left">
+<span class="material-symbols-outlined text-outline" style="font-size: 20px;">calendar_today</span>
+<span class="font-body-sm text-body-sm text-on-surface flex-1">31 Okt 2023</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Pilih Data Checkboxes -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md text-on-background px-xs">Pilih Data</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<label class="flex items-center justify-between p-md border-b border-surface-container hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Semua Transaksi</span>
+<div class="w-6 h-6 rounded bg-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary" style="font-size: 16px; font-weight: 700;">check</span>
+</div>
+</label>
+<label class="flex items-center justify-between p-md border-b border-surface-container hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Laporan Ringkasan</span>
+<div class="w-6 h-6 rounded border-2 border-outline-variant group-hover:border-primary/50 transition-colors"></div>
+</label>
+<label class="flex items-center justify-between p-md hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Detail per Kategori</span>
+<div class="w-6 h-6 rounded bg-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary" style="font-size: 16px; font-weight: 700;">check</span>
+</div>
+</label>
+</div>
+</section>
+<!-- Pilih Format Options -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md text-on-background px-xs">Pilih Format</h3>
+<div class="grid grid-cols-2 gap-md">
+<!-- CSV Card (Active) -->
+<button class="bg-primary-fixed/20 border-2 border-primary rounded-xl p-md flex flex-col items-center justify-center text-center gap-3 relative transition-all active:scale-95 shadow-sm">
+<div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-size: 14px; font-weight: 700;">check</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm mb-1">
+<span class="material-symbols-outlined text-primary" style="font-size: 28px;">table_view</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-primary">.csv</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Cocok untuk Excel</span>
+</div>
+</button>
+<!-- PDF Card (Inactive) -->
+<button class="bg-surface-container-lowest border-2 border-transparent shadow-[0_2px_8px_rgba(0,0,0,0.06)] rounded-xl p-md flex flex-col items-center justify-center text-center gap-3 transition-all hover:bg-surface-container-low active:scale-95">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-outline" style="font-size: 28px;">picture_as_pdf</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">.pdf</span>
+<span class="font-label-sm text-label-sm text-outline">Laporan siap cetak</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Spacer to push button down if needed on larger screens -->
+<div class="flex-1 min-h-[24px]"></div>
+<!-- Action Area -->
+<div class="flex flex-col gap-3 mt-auto">
+<button class="w-full bg-secondary-container hover:bg-secondary-container/90 active:bg-secondary text-on-secondary-container font-label-md text-label-md py-4 rounded-xl shadow-[0_4px_12px_rgba(253,118,26,0.2)] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 20px;">download</span>
+                Export Sekarang
+            </button>
+<p class="text-center font-label-sm text-label-sm text-outline px-lg">File akan otomatis tersimpan dan dapat dibagikan</p>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Buat Target Baru</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#fd761a",
+                        "secondary-fixed-dim": "#ffb690",
+                        "secondary-fixed": "#ffdbca",
+                        "secondary": "#9d4300",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#783200",
+                        "outline": "#737686",
+                        "surface-bright": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001a41",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "surface-container-high": "#e2e7ff",
+                        "tertiary": "#2053a0",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-fixed": "#00174b",
+                        "surface-dim": "#d2d9f4",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-tint": "#0053db",
+                        "primary": "#004ac6",
+                        "surface-container": "#eaedff",
+                        "on-background": "#131b2e",
+                        "background": "#faf8ff",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary-container": "#3e6cba",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#ecf0ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface": "#faf8ff",
+                        "on-secondary-fixed": "#341100",
+                        "on-primary-container": "#eeefff",
+                        "on-surface": "#131b2e",
+                        "surface-variant": "#dae2fd",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface-variant": "#434655",
+                        "inverse-surface": "#283044"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "container-margin": "16px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "h1": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-md h-16 sticky top-0 bg-surface-container-lowest z-50">
+<button aria-label="Back" class="p-sm -ml-sm text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface">Buat Target Baru</h1>
+<button class="font-label-md text-label-md text-secondary-container p-sm -mr-sm">Simpan</button>
+</header>
+<main class="px-md max-w-[600px] mx-auto mt-sm flex flex-col gap-lg">
+<!-- Live Preview Card -->
+<section aria-label="Live Preview">
+<div class="bg-gradient-to-br from-primary to-tertiary-container rounded-xl p-md text-on-primary shadow-[0_12px_24px_rgba(0,0,0,0.1)] flex flex-col gap-md">
+<div class="flex items-center gap-md">
+<div class="bg-surface-container-lowest/20 rounded-full flex items-center justify-center h-12 w-12 shrink-0">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="font-body-sm text-body-sm opacity-80 truncate">Dana Liburan Bali</p>
+<p class="font-h2 text-h2 font-bold tracking-tight truncate">Rp 15.000.000</p>
+</div>
+</div>
+<div class="flex justify-end items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] opacity-80">calendar_today</span>
+<span class="font-label-sm text-label-sm opacity-90">Des 2024</span>
+</div>
+</div>
+</section>
+<!-- Form Section -->
+<form class="flex flex-col gap-lg" onsubmit="event.preventDefault();">
+<!-- Nama Target -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="goal-name">Nama Target</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="goal-name" placeholder="cth. Dana Liburan Bali" type="text" value="Dana Liburan Bali"/>
+</div>
+<!-- Target Nominal -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="goal-amount">Target Nominal</label>
+<div class="relative">
+<span class="absolute left-md top-1/2 -translate-y-1/2 font-h3 text-h3 text-on-surface-variant">Rp</span>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant rounded-t-lg py-md pl-[52px] pr-md font-h3 text-h3 text-on-surface focus:border-primary focus:ring-0 outline-none transition-colors text-right font-semibold" id="goal-amount" type="text" value="15.000.000"/>
+</div>
+</div>
+<!-- Deadline Picker (iOS Style Mockup) -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Deadline</label>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl h-32 relative overflow-hidden flex">
+<!-- Overlays for fade effect -->
+<div class="absolute top-0 w-full h-10 bg-gradient-to-b from-surface-container-lowest to-transparent pointer-events-none z-10"></div>
+<div class="absolute bottom-0 w-full h-10 bg-gradient-to-t from-surface-container-lowest to-transparent pointer-events-none z-10"></div>
+<!-- Selection Indicator -->
+<div class="absolute top-1/2 left-md right-md h-10 -translate-y-1/2 bg-surface-container-low rounded-lg pointer-events-none -z-0"></div>
+<!-- Month Column -->
+<div class="flex-1 overflow-y-auto hide-scrollbar snap-y snap-mandatory relative z-10">
+<div class="h-10"></div> <!-- Padding top -->
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">Okt</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">Nov</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-h3 text-h3 text-primary font-semibold">Des</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">Jan</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">Feb</span></div>
+<div class="h-10"></div> <!-- Padding bottom -->
+</div>
+<!-- Year Column -->
+<div class="flex-1 overflow-y-auto hide-scrollbar snap-y snap-mandatory relative z-10">
+<div class="h-10"></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">2023</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-h3 text-h3 text-primary font-semibold">2024</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">2025</span></div>
+<div class="h-10 flex items-center justify-center snap-center"><span class="font-body-md text-body-md text-on-surface-variant opacity-40">2026</span></div>
+<div class="h-10"></div>
+</div>
+</div>
+</div>
+<!-- Pilih Icon -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Pilih Icon</label>
+<div class="grid grid-cols-4 gap-sm">
+<button class="bg-primary text-on-primary rounded-full aspect-square flex items-center justify-center shadow-sm border-2 border-primary-fixed" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">directions_car</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">home</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">smartphone</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">school</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">diamond</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant rounded-full aspect-square flex items-center justify-center border border-outline-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined">redeem</span>
+</button>
+</div>
+</div>
+<!-- Pilih Warna -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Pilih Warna</label>
+<div class="flex flex-wrap gap-sm">
+<button aria-label="Select Blue" class="w-10 h-10 rounded-full bg-primary border-2 border-primary-fixed shadow-sm relative" type="button">
+<span class="material-symbols-outlined text-on-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px]">check</span>
+</button>
+<button aria-label="Select Orange" class="w-10 h-10 rounded-full bg-secondary" type="button"></button>
+<button aria-label="Select Dark Blue" class="w-10 h-10 rounded-full bg-tertiary" type="button"></button>
+<button aria-label="Select Emerald" class="w-10 h-10 rounded-full bg-[#10b981]" type="button"></button>
+<button aria-label="Select Red" class="w-10 h-10 rounded-full bg-error" type="button"></button>
+<button aria-label="Select Purple" class="w-10 h-10 rounded-full bg-[#8b5cf6]" type="button"></button>
+<button aria-label="Select Pink" class="w-10 h-10 rounded-full bg-[#ec4899]" type="button"></button>
+<button aria-label="Select Sky Blue" class="w-10 h-10 rounded-full bg-[#0ea5e9]" type="button"></button>
+</div>
+</div>
+</form>
+<!-- Suggestion Box -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-start gap-md border border-primary-fixed">
+<span class="material-symbols-outlined text-primary mt-xs">lightbulb</span>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">Kamu perlu menabung <br/><span class="font-label-md text-label-md text-primary">Rp 2.500.000 / bulan</span> <br/>untuk mencapai target ini tepat waktu.</p>
+</div>
+</div>
+</main>
+<!-- Bottom Fixed Action Area -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container-lowest p-md border-t border-outline-variant/30 z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] pb-safe">
+<div class="max-w-[600px] mx-auto">
+<button class="w-full bg-secondary-container text-on-secondary rounded-xl py-md font-label-md text-label-md active:scale-[0.98] transition-transform shadow-sm">
+                Buat Target
+            </button>
+</div>
+</div>
+</body></html>

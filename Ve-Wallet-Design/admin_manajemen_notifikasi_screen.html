@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet Notifications</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#131b2e",
+                      "on-primary-fixed": "#00174b",
+                      "surface-container-highest": "#dae2fd",
+                      "secondary-fixed-dim": "#ffb690",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#434655",
+                      "primary-fixed": "#dbe1ff",
+                      "inverse-on-surface": "#eef0ff",
+                      "surface-tint": "#0053db",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#fd761a",
+                      "on-tertiary-fixed": "#001a41",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "error": "#ba1a1a",
+                      "surface-dim": "#d2d9f4",
+                      "primary": "#004ac6",
+                      "on-tertiary-container": "#ecf0ff",
+                      "surface-container-high": "#e2e7ff",
+                      "on-secondary-fixed-variant": "#783200",
+                      "tertiary": "#2053a0",
+                      "on-background": "#131b2e",
+                      "tertiary-container": "#3e6cba",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-tertiary-fixed-variant": "#044491",
+                      "surface": "#faf8ff",
+                      "on-error": "#ffffff",
+                      "primary-container": "#2563eb",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "inverse-surface": "#283044",
+                      "tertiary-fixed": "#d8e2ff",
+                      "on-secondary-container": "#5c2400",
+                      "on-primary-container": "#eeefff",
+                      "tertiary-fixed-dim": "#acc7ff",
+                      "surface-variant": "#dae2fd",
+                      "outline": "#737686",
+                      "on-primary": "#ffffff",
+                      "surface-bright": "#faf8ff",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container": "#eaedff",
+                      "secondary-fixed": "#ffdbca",
+                      "background": "#faf8ff",
+                      "secondary": "#9d4300",
+                      "on-secondary-fixed": "#341100",
+                      "inverse-primary": "#b4c5ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "container-margin": "16px",
+                      "sm": "8px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "h3": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "h2": ["Inter"],
+                      "h1": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md font-sans min-h-screen pb-20 relative">
+<!-- TopAppBar -->
+<header class="bg-blue-700 text-white font-inter antialiased tracking-tight docked full-width top-0 border-none shadow-md flex justify-between items-center w-full px-4 h-16 sticky z-50">
+<div class="flex items-center gap-4 transition-colors duration-200 cursor-pointer text-white">
+<span class="material-symbols-outlined text-2xl" data-icon="arrow_back">arrow_back</span>
+</div>
+<div class="text-lg font-bold text-white flex-1 text-center font-h3 text-h3">
+            Notifikasi
+        </div>
+<div class="flex items-center transition-colors duration-200 cursor-pointer text-white">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto w-full md:px-md">
+<!-- Tabs -->
+<div class="px-md py-sm mb-sm mt-md">
+<div class="flex p-1 bg-surface-container-high rounded-full w-full max-w-[300px] mx-auto">
+<button class="flex-1 py-2 px-4 rounded-full bg-primary text-on-primary font-label-md text-label-md text-center shadow-sm">
+                    Riwayat
+                </button>
+<button class="flex-1 py-2 px-4 rounded-full text-on-surface-variant font-label-md text-label-md text-center hover:bg-surface-container-highest transition-colors">
+                    Template
+                </button>
+</div>
+</div>
+<!-- History List -->
+<div class="px-md flex flex-col gap-sm pb-xl">
+<!-- Item 1: Sent -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform cursor-pointer border border-outline-variant/30">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-label-md text-label-md text-on-surface text-[15px] font-bold pr-sm truncate">Update Sistem Keamanan v2.1</h4>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-[#E6F4EA] text-[#137333] font-label-sm text-label-sm whitespace-nowrap gap-1">
+                        Terkirim <span class="text-[10px]">✅</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-1">
+                    Pembaruan sistem keamanan rutin telah berhasil diterapkan pada semua server...
+                </p>
+<div class="flex justify-between items-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+                        Semua User
+                    </span>
+<span class="font-label-sm text-label-sm text-outline">Hari ini, 10:30</span>
+</div>
+</div>
+<!-- Item 2: Scheduled -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform cursor-pointer border border-outline-variant/30">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-label-md text-label-md text-on-surface text-[15px] font-bold pr-sm truncate">Promo Cashback Akhir Bulan</h4>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-[#FEF7E0] text-[#B06000] font-label-sm text-label-sm whitespace-nowrap gap-1">
+                        Terjadwal <span class="text-[10px]">🕐</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-1">
+                    Dapatkan cashback hingga 50% untuk transaksi QRIS menggunakan Ve-Wallet di m...
+                </p>
+<div class="flex justify-between items-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+                        5.240 penerima
+                    </span>
+<span class="font-label-sm text-label-sm text-outline">Besok, 08:00</span>
+</div>
+</div>
+<!-- Item 3: Failed -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform cursor-pointer border border-outline-variant/30 border-l-4 border-l-error">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-label-md text-label-md text-on-surface text-[15px] font-bold pr-sm truncate">Pemberitahuan Maintenance Darurat</h4>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm whitespace-nowrap gap-1">
+                        Gagal <span class="text-[10px]">❌</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-1">
+                    Server mengalami gangguan sementara. Tim teknis sedang melakukan perbaikan...
+                </p>
+<div class="flex justify-between items-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+                        Semua User
+                    </span>
+<span class="font-label-sm text-label-sm text-outline">Kemarin, 23:15</span>
+</div>
+</div>
+<!-- Item 4: Sent -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_2px_8px_rgba(0,0,0,0.06)] active:scale-[0.98] transition-transform cursor-pointer border border-outline-variant/30">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-label-md text-label-md text-on-surface text-[15px] font-bold pr-sm truncate">Selamat Datang di Ve-Wallet Premium</h4>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-[#E6F4EA] text-[#137333] font-label-sm text-label-sm whitespace-nowrap gap-1">
+                        Terkirim <span class="text-[10px]">✅</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-1">
+                    Nikmati limit transaksi lebih tinggi dan prioritas customer service 24/7 de...
+                </p>
+<div class="flex justify-between items-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">
+                        12 penerima
+                    </span>
+<span class="font-label-sm text-label-sm text-outline">22 Okt, 14:00</span>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Compose -->
+<button class="fixed bottom-6 right-6 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-2xl shadow-[0_12px_24px_rgba(0,0,0,0.15)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-40 lg:hidden">
+<span class="material-symbols-outlined text-3xl font-bold" data-icon="add">add</span>
+</button>
+</body></html>

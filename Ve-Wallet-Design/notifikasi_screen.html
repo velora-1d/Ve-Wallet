@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Notifikasi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#fd761a",
+                    "surface-bright": "#faf8ff",
+                    "primary": "#004ac6",
+                    "on-primary-fixed": "#00174b",
+                    "on-background": "#131b2e",
+                    "surface-container-low": "#f2f3ff",
+                    "inverse-surface": "#283044",
+                    "on-tertiary-fixed-variant": "#044491",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "background": "#faf8ff",
+                    "surface-container-high": "#e2e7ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "outline": "#737686",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#ffb690",
+                    "surface-variant": "#dae2fd",
+                    "on-secondary-fixed-variant": "#783200",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#dae2fd",
+                    "on-secondary-fixed": "#341100",
+                    "surface": "#faf8ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "surface-tint": "#0053db",
+                    "primary-container": "#2563eb",
+                    "secondary": "#9d4300",
+                    "tertiary-container": "#3e6cba",
+                    "tertiary-fixed": "#d8e2ff",
+                    "tertiary": "#2053a0",
+                    "outline-variant": "#c3c6d7",
+                    "inverse-primary": "#b4c5ff",
+                    "on-secondary-container": "#5c2400",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d2d9f4",
+                    "secondary-fixed": "#ffdbca",
+                    "on-tertiary-fixed": "#001a41",
+                    "on-tertiary-container": "#ecf0ff",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#acc7ff",
+                    "surface-container": "#eaedff",
+                    "on-surface-variant": "#434655",
+                    "on-surface": "#131b2e",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "container-margin": "16px",
+                    "lg": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "h1": ["Inter"],
+                    "h3": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { background-color: #F8FAFC; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pb-24 md:pb-0">
+<!-- TopAppBar Navigation Shell (Desktop Priority / Hybrid Shell) -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-16 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 transition-colors duration-200">
+<button aria-label="Back" class="text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-full active:opacity-70">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-['Inter'] font-semibold text-lg tracking-tight text-on-background">Notifikasi</h1>
+<button class="text-primary font-label-md hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded active:opacity-70">
+            Tandai semua dibaca
+        </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-20 px-container-margin md:max-w-[1200px] md:mx-auto w-full flex flex-col gap-lg pb-xl">
+<!-- Tabs -->
+<div class="flex gap-sm">
+<button class="bg-primary text-on-primary font-label-md px-md py-sm rounded-full flex-1 md:flex-none">
+                Semua
+            </button>
+<button class="bg-transparent border border-outline text-on-surface-variant font-label-md px-md py-sm rounded-full flex-1 md:flex-none hover:bg-surface-variant transition-colors">
+                Belum Dibaca
+            </button>
+</div>
+<!-- Notification List -->
+<div class="flex flex-col gap-sm">
+<!-- Unread Transaction -->
+<div class="bg-surface-container-lowest rounded-[12px] p-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] relative border-l-4 border-l-primary flex gap-md items-start">
+<div class="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full"></div>
+<div class="bg-primary-fixed text-primary p-2 rounded-full flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sync_alt">sync_alt</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-on-background truncate">Transfer Berhasil</h3>
+<span class="font-label-sm text-outline flex-shrink-0 ml-2">Baru saja</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Kamu berhasil mengirim Rp 500.000 ke Budi Santoso. Saldo Anda telah dipotong.</p>
+</div>
+</div>
+<!-- Unread Budget Alert -->
+<div class="bg-surface-container-lowest rounded-[12px] p-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] relative border-l-4 border-l-primary flex gap-md items-start">
+<div class="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full"></div>
+<div class="bg-secondary-fixed text-secondary p-2 rounded-full flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-on-background truncate">Peringatan Anggaran</h3>
+<span class="font-label-sm text-outline flex-shrink-0 ml-2">2j lalu</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Pengeluaran kategori "Makanan" sudah mencapai 80% dari batas bulanan Anda.</p>
+</div>
+</div>
+<!-- Read Goal Achievement -->
+<div class="bg-surface-container-lowest rounded-[12px] p-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex gap-md items-start">
+<div class="bg-tertiary-fixed text-tertiary p-2 rounded-full flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-on-background truncate">Target Tercapai!</h3>
+<span class="font-label-sm text-outline flex-shrink-0 ml-2">Kemarin</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Selamat! Target tabungan "Liburan Bali" sudah terpenuhi 100%. Waktunya berkemas!</p>
+</div>
+</div>
+<!-- Read System Note -->
+<div class="bg-surface-container-lowest rounded-[12px] p-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex gap-md items-start">
+<div class="bg-surface-variant text-on-surface-variant p-2 rounded-full flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-on-background truncate">Pembaruan Sistem</h3>
+<span class="font-label-sm text-outline flex-shrink-0 ml-2">2 hari lalu</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Sistem akan melakukan pemeliharaan rutin pada tanggal 15 pukul 02:00 - 04:00 WIB. Layanan mungkin akan terganggu sementara.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Shell Priority) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe pt-2 h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 scale-95 active:scale-90 transition-transform duration-150 hover:text-blue-500 dark:hover:text-blue-300">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-['Inter'] text-[10px] font-medium">Dompet</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 scale-95 active:scale-90 transition-transform duration-150 hover:text-blue-500 dark:hover:text-blue-300">
+<span class="material-symbols-outlined mb-1" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Inter'] text-[10px] font-medium">History</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 scale-95 active:scale-90 transition-transform duration-150 hover:text-blue-500 dark:hover:text-blue-300">
+<span class="material-symbols-outlined mb-1" data-icon="leaderboard">leaderboard</span>
+<span class="font-['Inter'] text-[10px] font-medium">Stats</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 scale-95 active:scale-90 transition-transform duration-150 hover:text-blue-500 dark:hover:text-blue-300">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-[10px] font-medium">Settings</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet Profile Drawer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#fd761a",
+                        "secondary-fixed-dim": "#ffb690",
+                        "secondary-fixed": "#ffdbca",
+                        "secondary": "#9d4300",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#783200",
+                        "outline": "#737686",
+                        "surface-bright": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001a41",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "surface-container-high": "#e2e7ff",
+                        "tertiary": "#2053a0",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-fixed": "#00174b",
+                        "surface-dim": "#d2d9f4",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-tint": "#0053db",
+                        "primary": "#004ac6",
+                        "surface-container": "#eaedff",
+                        "on-background": "#131b2e",
+                        "background": "#faf8ff",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary-container": "#3e6cba",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#ecf0ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface": "#faf8ff",
+                        "on-secondary-fixed": "#341100",
+                        "on-primary-container": "#eeefff",
+                        "on-surface": "#131b2e",
+                        "surface-variant": "#dae2fd",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface-variant": "#434655",
+                        "inverse-surface": "#283044"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "container-margin": "16px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "h1": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-outline-variant h-screen w-full flex justify-start items-stretch font-body-sm text-body-sm">
+<!-- Overlay -->
+<div class="fixed inset-0 bg-inverse-surface/40 z-40 hidden md:block"></div>
+<!-- NavigationDrawer Component -->
+<aside class="fixed inset-y-0 left-0 z-[60] flex flex-col h-full w-[80%] max-w-[360px] rounded-r-lg shadow-2xl bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800 duration-300 ease-in-out transform translate-x-0">
+<!-- Header Section -->
+<div class="bg-gradient-to-br from-[#1A4F9C] to-primary-container p-lg flex flex-col justify-end min-h-[160px] relative rounded-tr-lg">
+<div class="absolute top-md left-md">
+<span class="font-h2 text-h2 text-on-primary tracking-tight font-black">Ve-Wallet</span>
+</div>
+<div class="flex items-center gap-md mt-xl">
+<div class="relative">
+<img alt="User profile photo" class="w-16 h-16 rounded-full border-2 border-on-primary object-cover" data-alt="Headshot of young professional man smiling confidently, softly lit studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqMdShtyJPcBEuvuqmRkadZkawhPmFXsrXzQyPvdptDCGScFZUs1NXXNoUUnuEkulkAAK4jojuVfu48UKntVf3hieI_6uuGLpGA8vsPJGzKq0-XFA62MwEzkC-MlBYbkjR_pC-8qn92dYgqz0lDu0Ytb2F2ZxW9xODV-d_S2xYKboC9ANIhfOjzBBkvZBD6RoVjsfPhLFqiTJvEjsH8p56T1GxhwCFy2ehixjff_NMsMmX-qJaoAvWgbMM4yN_cEdFY5Cy0wTAgrMs"/>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-primary font-bold">Alex Johnson</span>
+<span class="font-label-sm text-label-sm text-on-primary/70 mt-xs">alex.j@vewallet.com</span>
+<div class="flex items-center gap-1 mt-1 bg-on-primary/20 rounded-full px-2 py-0.5 w-fit">
+<span class="material-symbols-outlined text-[10px] text-on-primary" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-[10px] text-on-primary">Premium Member</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Shared Badge -->
+<div class="px-md py-sm bg-surface-bright border-b border-outline-variant/20">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-primary-fixed">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Shared dengan</span>
+<div class="flex items-center gap-1.5 bg-white rounded-full pr-2 pl-0.5 py-0.5 shadow-sm border border-outline-variant/30">
+<img alt="Partner Avatar" class="w-5 h-5 rounded-full object-cover" data-alt="Small circular portrait of woman smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgaKUledO8v8jh4zCOElMVXVDfyqRJX2OCZjGbz6XHbH14gDvChV11M23exVpbdJNrN43f2czXPfCcqB9oyX7Gg0-bBNei2-1Gc4wq003kYEnlUzD9bcDWBMhoG3gO-vdCwhh1qvpsR_IVC_uhtLHX29jXBgsvteZehyN_9pXPU5IlVt1k6Kc2SZkJ5GWRRzg5aa20KYD7kIvrG3tk6Gxko1Y5jluRbT4IF0u0oCTQaVyYRD0oNaEQ2x7xPgpJHViUZVL6J4I2aabM"/>
+<span class="font-label-md text-label-md text-on-surface">Sarah J.</span>
+</div>
+</div>
+</div>
+<!-- Menu Items List -->
+<div class="flex-1 overflow-y-auto py-sm custom-scrollbar">
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="edit">edit</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Edit Profil</span>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-tertiary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-[18px]" data-icon="group">group</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Shared Account</span>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="category">category</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Kustomisasi Kategori</span>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-emerald-700 text-[18px]" data-icon="palette">palette</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Mata Uang &amp; Tema</span>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-green-700 text-[18px]" data-icon="download">download</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Export Laporan</span>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<!-- Notifications (From JSON nav list mapped) -->
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 rounded-full bg-yellow-100 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-yellow-700 text-[18px]" data-icon="notifications">notifications</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface flex-1">Notifications</span>
+<div class="bg-error text-on-error font-label-sm text-[10px] rounded-full px-1.5 py-0.5">3</div>
+<span class="material-symbols-outlined text-outline text-[20px] group-hover:text-on-surface transition-colors">chevron_right</span>
+</a>
+<!-- Security (From JSON nav list mapped) -->
+<a class="flex items-center gap-md px-md py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold group transition-colors border-l-4 border-primary" href="#">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="shield">shield</span>
+</div>
+<span class="font-label-md text-label-md flex-1">Security</span>
+<span class="material-symbols-outlined text-primary text-[20px]">chevron_right</span>
+</a>
+<div class="h-px bg-outline-variant/30 my-2 mx-md"></div>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="policy">policy</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant flex-1">Privacy Policy</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 hover:bg-slate-100 dark:hover:bg-slate-800 group transition-colors" href="#">
+<div class="w-9 h-9 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="description">description</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant flex-1">Syarat Layanan</span>
+</a>
+<div class="h-px bg-outline-variant/30 my-2 mx-md"></div>
+<a class="flex items-center gap-md px-md py-3 hover:bg-error-container/50 group transition-colors" href="#">
+<div class="w-9 h-9 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="delete">delete</span>
+</div>
+<span class="font-label-md text-label-md text-error flex-1">Hapus Akun</span>
+</a>
+<!-- Logout (From JSON nav list mapped) -->
+<a class="flex items-center gap-md px-md py-3 hover:bg-error-container/50 group transition-colors" href="#">
+<div class="w-9 h-9 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="logout">logout</span>
+</div>
+<span class="font-label-md text-label-md text-error flex-1">Logout</span>
+</a>
+</div>
+<!-- Footer Version -->
+<div class="py-md flex justify-center items-center bg-surface-bright mt-auto">
+<span class="font-label-sm text-label-sm text-outline">Ve-Wallet v1.0.0</span>
+</div>
+</aside>
+<style>
+        /* Custom minimal scrollbar for drawer */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #c3c6d7;
+            border-radius: 10px;
+        }
+    </style>
+</body></html>

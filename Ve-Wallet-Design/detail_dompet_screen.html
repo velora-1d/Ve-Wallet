@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Wallet Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#783200",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "on-background": "#131b2e",
+                        "primary-container": "#2563eb",
+                        "surface-container-low": "#f2f3ff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d2d9f4",
+                        "primary": "#004ac6",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#5c2400",
+                        "surface-variant": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#3e6cba",
+                        "tertiary-fixed": "#d8e2ff",
+                        "secondary-container": "#fd761a",
+                        "inverse-surface": "#283044",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eaedff",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-on-surface": "#eef0ff",
+                        "background": "#faf8ff",
+                        "secondary": "#9d4300",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#ffdbca",
+                        "on-tertiary-container": "#ecf0ff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface": "#faf8ff",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary": "#2053a0",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "on-primary-container": "#eeefff",
+                        "outline": "#737686"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low min-h-screen text-on-surface antialiased flex justify-center">
+<div class="w-full max-w-[480px] bg-background relative min-h-screen shadow-2xl flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
+<button class="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 rounded-full active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface">BCA Utama</h1>
+<button class="w-10 h-10 flex items-center justify-center text-primary hover:bg-slate-50 rounded-full active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-container-margin py-md space-y-lg pb-32">
+<!-- Hero Card -->
+<section class="bg-gradient-to-br from-primary to-primary-container rounded-[20px] p-[20px] shadow-lg relative overflow-hidden">
+<!-- Decorative element -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-8 -mb-8 pointer-events-none"></div>
+<div class="flex items-center space-x-md relative z-10">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 text-on-primary">BCA Utama</h2>
+<p class="font-body-sm text-body-sm text-on-primary/70">Rekening Bank</p>
+</div>
+</div>
+<div class="mt-xl relative z-10">
+<p class="font-label-sm text-label-sm text-on-primary/80 mb-xs">Saldo Saat Ini</p>
+<p class="font-h1 text-h1 text-on-primary">Rp 8.500.000</p>
+</div>
+</section>
+<!-- Quick Stats -->
+<section class="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-md flex divide-x divide-outline-variant/30">
+<div class="flex-1 flex flex-col items-center justify-center px-sm text-center">
+<span class="material-symbols-outlined text-green-600 mb-xs text-[20px]">arrow_downward</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Pemasukan</p>
+<p class="font-label-md text-label-md text-green-700">Rp 12.M</p>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center px-sm text-center">
+<span class="material-symbols-outlined text-red-600 mb-xs text-[20px]">arrow_upward</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Pengeluaran</p>
+<p class="font-label-md text-label-md text-red-700">Rp 3.5M</p>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center px-sm text-center">
+<span class="material-symbols-outlined text-primary mb-xs text-[20px]">receipt_long</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Transaksi</p>
+<p class="font-label-md text-label-md text-primary">42</p>
+</div>
+</section>
+<!-- Transaction History Header & Filters -->
+<section>
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-h3 text-h3 text-on-surface">Riwayat Transaksi</h3>
+<button class="text-primary flex items-center gap-1 font-label-md text-label-md hover:underline">
+                        Lihat Semua
+                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-sm overflow-x-auto pb-xs scrollbar-hide">
+<button class="px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-md text-label-md whitespace-nowrap shadow-sm">Semua</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant border border-outline-variant rounded-full font-label-md text-label-md whitespace-nowrap shadow-sm hover:bg-surface-container-low transition-colors">Pemasukan</button>
+<button class="px-4 py-2 bg-white text-on-surface-variant border border-outline-variant rounded-full font-label-md text-label-md whitespace-nowrap shadow-sm hover:bg-surface-container-low transition-colors">Pengeluaran</button>
+</div>
+</section>
+<!-- Transaction List -->
+<section class="space-y-lg">
+<!-- Date Group -->
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-sm px-xs">Hari ini, 24 Okt</p>
+<div class="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-md border-b border-outline-variant/20 last:border-0 hover:bg-surface-container-low transition-colors cursor-pointer min-h-[64px]">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed-dim/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Makan Siang Kopi Kenangan</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Makanan &amp; Minuman • 12:30</p>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface">-Rp 85.000</p>
+</div>
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-md border-b border-outline-variant/20 last:border-0 hover:bg-surface-container-low transition-colors cursor-pointer min-h-[64px]">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Transfer dari Budi</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Transfer Masuk • 09:15</p>
+</div>
+</div>
+<p class="font-label-md text-label-md text-green-600">+Rp 500.000</p>
+</div>
+</div>
+</div>
+<!-- Date Group -->
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-sm px-xs">Kemarin, 23 Okt</p>
+<div class="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-md border-b border-outline-variant/20 last:border-0 hover:bg-surface-container-low transition-colors cursor-pointer min-h-[64px]">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Isi Bensin Pertamina</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Transportasi • 18:45</p>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface">-Rp 350.000</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Hidden on this transactional/detail screen per intent logic, but keeping the HTML structure commented out or suppressed to prioritize the canvas) -->
+<!-- Navigation suppressed based on relevance check for a detail screen with a Back button -->
+</div>
+</body></html>

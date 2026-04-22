@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Buat Akun Baru</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "secondary-fixed-dim": "#ffb690",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-bright": "#faf8ff",
+                        "on-background": "#131b2e",
+                        "on-tertiary-fixed": "#001a41",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e2e7ff",
+                        "primary-container": "#2563eb",
+                        "on-error-container": "#93000a",
+                        "primary": "#004ac6",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-surface": "#283044",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#5c2400",
+                        "outline-variant": "#c3c6d7",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#ffdbca",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-variant": "#dae2fd",
+                        "surface-container": "#eaedff",
+                        "surface-tint": "#0053db",
+                        "outline": "#737686",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary-container": "#ecf0ff",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#3e6cba",
+                        "secondary-container": "#fd761a",
+                        "on-surface": "#131b2e",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary": "#2053a0",
+                        "on-secondary-fixed": "#341100",
+                        "surface": "#faf8ff",
+                        "secondary": "#9d4300",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "background": "#faf8ff",
+                        "on-secondary-fixed-variant": "#783200"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h2": ["Inter"],
+                        "h3": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h3": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom utilities to ensure strict matching with requested design system while using Tailwind config */
+        .input-icon-color { color: var(--color-primary, #004ac6); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex justify-center antialiased">
+<!-- Main Container -->
+<main class="w-full max-w-md px-container-margin py-xl flex flex-col min-h-screen">
+<!-- Header -->
+<header class="mb-lg mt-sm flex flex-col items-center text-center">
+<div class="flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-h3 text-h3 text-primary tracking-tight font-black">Ve-Wallet</span>
+</div>
+<h1 class="font-h2 text-h2 text-on-background mb-xs">Buat Akun Baru</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Mulai kelola keuanganmu hari ini</p>
+</header>
+<!-- Form Section -->
+<form class="flex flex-col gap-md flex-grow">
+<!-- Nama Lengkap -->
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant rounded-xl h-[52px] px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-xl mr-3 select-none">person</span>
+<input class="bg-transparent border-none p-0 w-full font-body-md text-on-surface focus:ring-0 placeholder:text-outline" placeholder="Nama Lengkap" required="" type="text"/>
+</div>
+<!-- Email -->
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant rounded-xl h-[52px] px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-xl mr-3 select-none">mail</span>
+<input class="bg-transparent border-none p-0 w-full font-body-md text-on-surface focus:ring-0 placeholder:text-outline" placeholder="Email" required="" type="email"/>
+</div>
+<!-- Password Container -->
+<div class="flex flex-col gap-sm">
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant rounded-xl h-[52px] px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-xl mr-3 select-none">lock</span>
+<input class="bg-transparent border-none p-0 w-full font-body-md text-on-surface focus:ring-0 placeholder:text-outline" placeholder="Password" required="" type="password"/>
+</div>
+<!-- Password Strength Indicator -->
+<div class="flex items-center gap-2 px-1">
+<div class="flex-grow flex gap-1 h-1">
+<!-- Demonstrating 'Medium' strength as visual state -->
+<div class="flex-1 rounded-full bg-secondary-container"></div>
+<div class="flex-1 rounded-full bg-secondary-container"></div>
+<div class="flex-1 rounded-full bg-outline-variant opacity-50"></div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary-container">Sedang</span>
+</div>
+</div>
+<!-- Konfirmasi Password -->
+<div class="relative flex items-center bg-surface-container-low border border-outline-variant rounded-xl h-[52px] px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-xl mr-3 select-none">lock</span>
+<input class="bg-transparent border-none p-0 w-full font-body-md text-on-surface focus:ring-0 placeholder:text-outline" placeholder="Konfirmasi Password" required="" type="password"/>
+</div>
+<!-- Terms and Conditions Checkbox -->
+<label class="flex items-start gap-3 mt-sm mb-sm cursor-pointer group">
+<div class="relative flex items-center justify-center pt-1">
+<input class="peer appearance-none w-5 h-5 border border-outline rounded bg-surface-container-low checked:bg-primary checked:border-primary focus:ring-2 focus:ring-primary/20 transition-all" type="checkbox"/>
+<span class="material-symbols-outlined text-white text-[16px] absolute pointer-events-none opacity-0 peer-checked:opacity-100 font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex-1 select-none group-hover:text-on-surface transition-colors">
+                    Saya setuju dengan <a class="text-primary font-medium hover:underline" href="#">Syarat &amp; Ketentuan</a> serta <a class="text-primary font-medium hover:underline" href="#">Kebijakan Privasi</a> Ve-Wallet.
+                </span>
+</label>
+<!-- Register Button -->
+<!-- Using secondary-container (Orange) to meet specific design request while adhering to theme variables -->
+<button class="w-full h-[52px] bg-secondary-container hover:bg-secondary text-white font-label-md text-lg rounded-xl flex items-center justify-center transition-colors active:scale-[0.98]" type="submit">
+                Daftar
+            </button>
+</form>
+<!-- Divider -->
+<div class="flex items-center my-lg">
+<div class="flex-1 h-px bg-outline-variant opacity-50"></div>
+<span class="px-4 font-label-sm text-label-sm text-outline">atau</span>
+<div class="flex-1 h-px bg-outline-variant opacity-50"></div>
+</div>
+<!-- Social Login -->
+<button class="w-full h-[52px] bg-surface border border-outline-variant hover:bg-surface-container-low text-on-surface font-label-md rounded-xl flex items-center justify-center gap-3 transition-colors active:scale-[0.98]" type="button">
+<!-- Simple SVG for Google G to avoid external image dependencies and maintain clean style -->
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+            Daftar dengan Google
+        </button>
+<!-- Footer Link -->
+<div class="mt-auto pt-lg pb-md text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Sudah punya akun? 
+                <a class="text-primary font-semibold hover:underline" href="#">Masuk</a>
+</p>
+</div>
+</main>
+</body></html>

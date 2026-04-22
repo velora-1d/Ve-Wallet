@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ve-Wallet - Tambah Kategori</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-tertiary-container": "#ecf0ff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004ac6",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-primary-container": "#eeefff",
+                        "surface": "#faf8ff",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface-variant": "#434655",
+                        "primary-fixed": "#dbe1ff",
+                        "on-background": "#131b2e",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dae2fd",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-tint": "#0053db",
+                        "secondary": "#9d4300",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eaedff",
+                        "primary-container": "#2563eb",
+                        "secondary-fixed-dim": "#ffb690",
+                        "tertiary-fixed-dim": "#acc7ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#131b2e",
+                        "on-secondary-fixed-variant": "#783200",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fd761a",
+                        "on-tertiary-fixed-variant": "#044491",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#341100",
+                        "on-secondary-container": "#5c2400",
+                        "on-primary-fixed": "#00174b",
+                        "secondary-fixed": "#ffdbca",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#2053a0",
+                        "tertiary-container": "#3e6cba",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-bright": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "background": "#faf8ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "xl": "32px",
+                        "md": "16px",
+                        "container-margin": "16px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xs": "4px"
+                    },
+                    fontFamily: {
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-sm": ["14px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }],
+                        "label-md": ["14px", { lineHeight: "1", letterSpacing: "0.01em", fontWeight: "600" }],
+                        "h3": ["20px", { lineHeight: "1.4", letterSpacing: "0", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }],
+                        "label-sm": ["12px", { lineHeight: "1", letterSpacing: "0.02em", fontWeight: "500" }],
+                        "h2": ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "h1": ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface antialiased pb-24">
+<!-- TopAppBar (Adapted for sub-page) -->
+<header class="bg-surface-container-lowest sticky full-width top-0 z-40 border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-4 h-16">
+<button class="text-on-surface-variant hover:bg-surface-container p-2 rounded-full transition-colors active:opacity-80">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 text-on-surface text-center flex-1">Tambah Kategori</h1>
+<button class="text-secondary-container font-label-md text-label-md hover:opacity-80 transition-opacity px-2">Simpan</button>
+</header>
+<main class="max-w-[1200px] mx-auto">
+<!-- Live Preview Section -->
+<section class="py-lg flex flex-col items-center justify-center">
+<div class="w-20 h-20 rounded-full bg-primary-container flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.08)] mb-sm">
+<span class="material-symbols-outlined fill text-on-primary-container" style="font-size: 32px;">restaurant</span>
+</div>
+<h2 class="font-h2 text-h2 text-on-surface">Makanan</h2>
+</section>
+<div class="px-md space-y-lg">
+<!-- Nama Kategori Input -->
+<div class="relative">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs" for="category_name">Nama Kategori</label>
+<input class="w-full border border-outline rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface bg-surface-container-lowest transition-colors" id="category_name" maxlength="20" placeholder="Masukkan nama kategori" type="text" value="Makanan"/>
+<span class="absolute right-3 bottom-3 font-label-sm text-label-sm text-outline-variant">7/20</span>
+</div>
+<!-- Tipe Toggle Cards -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-sm">Tipe</label>
+<div class="flex gap-md">
+<!-- Selected: Pengeluaran -->
+<button class="flex-1 border-2 border-error bg-error-container rounded-xl p-md flex flex-col items-center justify-center transition-all">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center mb-sm shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+<span class="material-symbols-outlined text-error">arrow_downward</span>
+</div>
+<span class="font-label-md text-label-md text-on-error-container">Pengeluaran</span>
+</button>
+<!-- Unselected: Pemasukan -->
+<button class="flex-1 border border-outline-variant bg-surface-container-lowest rounded-xl p-md flex flex-col items-center justify-center transition-all opacity-70 hover:bg-surface-container">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-tertiary">arrow_upward</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Pemasukan</span>
+</button>
+</div>
+</div>
+<!-- Pilih Icon Grid -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-sm">Pilih Icon</label>
+<div class="grid grid-cols-5 gap-sm">
+<!-- Selected Icon -->
+<button class="aspect-square rounded-full bg-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-transform hover:scale-105">
+<span class="material-symbols-outlined fill text-on-primary">restaurant</span>
+</button>
+<!-- Unselected Icons -->
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">directions_car</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">flight</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">local_gas_station</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">home</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">medical_services</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">school</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">fitness_center</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">pets</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">movie</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">savings</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">credit_card</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">payments</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">receipt</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">local_cafe</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">local_bar</span>
+</button>
+<button class="aspect-square rounded-full bg-surface-container hover:bg-surface-container-highest flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">construction</span>
+</button>
+</div>
+</div>
+<!-- Pilih Warna Horizontal List -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-sm">Pilih Warna</label>
+<div class="flex overflow-x-auto gap-sm pb-2 snap-x hide-scrollbar">
+<!-- Selected Color -->
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center snap-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary" style="font-size: 20px;">check</span>
+</button>
+<!-- Unselected Colors mapped to theme tokens -->
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-secondary-container snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-error snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-tertiary snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-surface-tint snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-secondary snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-tertiary-container snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-outline snap-center"></button>
+<button class="flex-shrink-0 w-10 h-10 rounded-full bg-on-background snap-center"></button>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Button -->
+<div class="fixed bottom-0 left-0 right-0 p-md bg-surface-container-lowest/95 backdrop-blur-sm border-t border-outline-variant z-50">
+<button class="w-full bg-secondary-container hover:bg-secondary text-on-secondary-container rounded-xl py-3 font-label-md text-label-md text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-colors">
+            Simpan
+        </button>
+</div>
+<style>
+        /* Utility to hide scrollbar for horizontal list */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>
