@@ -5,6 +5,7 @@ import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/main/presentation/screens/main_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -31,10 +32,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/dashboard',
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(title: const Text('Dashboard')),
-        body: const Center(child: Text('Dashboard Screen Placeholder')),
-      ),
+      builder: (context, state) => const MainScreen(),
     ),
   ],
 );
