@@ -14,8 +14,9 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // Simulate initial loading or navigation logic
     Future.delayed(const Duration(seconds: 3), () {
-      // Navigate to onboarding or login
-      // For now, we'll just leave it here or navigate if router is ready
+      if (mounted) {
+        context.go('/onboarding');
+      }
     });
   }
 
