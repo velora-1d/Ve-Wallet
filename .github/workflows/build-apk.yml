@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,13 +26,9 @@ jobs:
           channel: "stable"
 
       - name: Create .env.production file
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          touch .env.production
-          echo "SUPABASE_URL=$SUPABASE_URL" >> .env.production
-          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env.production
+          echo "SUPABASE_URL=${{ format('{0}', secrets.SUPABASE_URL) }}" > .env.production
+          echo "SUPABASE_ANON_KEY=${{ format('{0}', secrets.SUPABASE_ANON_KEY) }}" >> .env.production
 
       - name: Get dependencies
         run: flutter pub get
