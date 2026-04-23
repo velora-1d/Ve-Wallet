@@ -25,7 +25,6 @@ class TransactionDetailScreen extends ConsumerWidget {
 
     final walletName = _walletName(wallets, transaction.walletId);
     final toWalletName = _walletName(wallets, transaction.toWalletId);
-    final isExpense = transaction.isExpense;
     final isTransfer = transaction.isTransfer;
 
     return Scaffold(
