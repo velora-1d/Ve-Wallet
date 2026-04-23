@@ -106,10 +106,10 @@ class WalletDetailScreen extends ConsumerWidget {
           transactionsAsync.when(
             data: (transactions) {
               final income = transactions
-                  .where((tx) => tx.type == TransactionType.income)
+                  .where((tx) => tx.isIncome)
                   .fold(0.0, (sum, tx) => sum + tx.amount);
               final expense = transactions
-                  .where((tx) => tx.type == TransactionType.expense)
+                  .where((tx) => tx.isExpense)
                   .fold(0.0, (sum, tx) => sum + tx.amount);
 
               return SliverToBoxAdapter(
@@ -272,7 +272,8 @@ class WalletDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildTransactionItem(BuildContext context, TransactionModel tx) {
-    final isExpense = tx.type == TransactionType.expense;
+    final isExpense = tx.isExpense;
+    final isTransfer = tx.isTransfer;
     final currencyFormat = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
@@ -305,8 +306,16 @@ class WalletDetailScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
-                isExpense ? Icons.shopping_bag : Icons.payments,
-                color: isExpense ? AppColors.error : AppColors.success,
+                isTransfer
+                    ? Icons.swap_horiz
+                    : isExpense
+                    ? Icons.shopping_bag
+                    : Icons.payments,
+                color: isTransfer
+                    ? AppColors.primary
+                    : isExpense
+                    ? AppColors.error
+                    : AppColors.success,
                 size: 20,
               ),
             ),
@@ -316,7 +325,7 @@ class WalletDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tx.categoryName,
+                    isTransfer ? 'Transfer' : tx.categoryName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -334,10 +343,16 @@ class WalletDetailScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              (isExpense ? '-' : '+') + currencyFormat.format(tx.amount),
+              isTransfer
+                  ? currencyFormat.format(tx.amount)
+                  : (isExpense ? '-' : '+') + currencyFormat.format(tx.amount),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: isExpense ? AppColors.error : AppColors.success,
+                color: isTransfer
+                    ? AppColors.primary
+                    : isExpense
+                    ? AppColors.error
+                    : AppColors.success,
                 fontSize: 14,
               ),
             ),

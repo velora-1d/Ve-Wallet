@@ -18,7 +18,7 @@ import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider
 
 enum TransactionPeriodFilter { today, week, month, all }
 
-enum TransactionTypeFilter { all, income, expense }
+enum TransactionTypeFilter { all, income, expense, transfer }
 
 class TransactionScreen extends ConsumerStatefulWidget {
   const TransactionScreen({super.key});
@@ -136,9 +136,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
               double totalIncome = 0;
               double totalExpense = 0;
               for (final tx in filteredTransactions) {
-                if (tx.type == TransactionType.income) {
+                if (tx.isIncome) {
                   totalIncome += tx.amount;
-                } else {
+                } else if (tx.isExpense) {
                   totalExpense += tx.amount;
                 }
               }
@@ -178,9 +178,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                         ).format(date);
                         double dayTotal = 0;
                         for (final tx in txs) {
-                          if (tx.type == TransactionType.income) {
+                          if (tx.isIncome) {
                             dayTotal += tx.amount;
-                          } else {
+                          } else if (tx.isExpense) {
                             dayTotal -= tx.amount;
                           }
                         }
@@ -193,19 +193,27 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                           date: formattedDate,
                           totalAmount: dayTotalStr,
                           items: txs.map((tx) {
-                            final isExpense =
-                                tx.type == TransactionType.expense;
+                            final isExpense = tx.isExpense;
+                            final isTransfer = tx.isTransfer;
                             final wallet = _findWallet(wallets, tx.walletId);
+                            final targetWallet = _findWallet(
+                              wallets,
+                              tx.toWalletId ?? '',
+                            );
                             final category = _findCategory(
                               categories,
                               tx.categoryId,
                             );
-                            final icon = category != null
+                            final icon = isTransfer
+                                ? Icons.swap_horiz
+                                : category != null
                                 ? CategoryUtils.getIcon(category.icon)
                                 : (isExpense
                                       ? Icons.receipt_long
                                       : Icons.payments);
-                            final iconColor = category != null
+                            final iconColor = isTransfer
+                                ? AppColors.primary
+                                : category != null
                                 ? Color(category.color)
                                 : (isExpense
                                       ? AppColors.error
@@ -219,10 +227,16 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                               title: tx.note.isNotEmpty
                                   ? tx.note
                                   : tx.categoryName,
-                              wallet: wallet?.name ?? 'Dompet tidak diketahui',
-                              amount:
-                                  '${isExpense ? '-' : '+'} ${currencyFormat.format(tx.amount)}',
+                              wallet: isTransfer
+                                  ? '${wallet?.name ?? 'Dompet tidak diketahui'} -> ${targetWallet?.name ?? 'Dompet tidak diketahui'}'
+                                  : wallet?.name ?? 'Dompet tidak diketahui',
+                              amount: isTransfer
+                                  ? currencyFormat.format(tx.amount)
+                                  : '${isExpense ? '-' : '+'} ${currencyFormat.format(tx.amount)}',
                               isExpense: isExpense,
+                              amountColor: isTransfer
+                                  ? AppColors.primary
+                                  : null,
                               onTap: () => context.push(
                                 '/transaction-detail',
                                 extra: tx,
@@ -271,6 +285,11 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
 
       if (_selectedType == TransactionTypeFilter.expense &&
           tx.type != TransactionType.expense) {
+        return false;
+      }
+
+      if (_selectedType == TransactionTypeFilter.transfer &&
+          tx.type != TransactionType.transfer) {
         return false;
       }
 
@@ -455,6 +474,8 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
         return 'Masuk';
       case TransactionTypeFilter.expense:
         return 'Keluar';
+      case TransactionTypeFilter.transfer:
+        return 'Transfer';
     }
   }
 

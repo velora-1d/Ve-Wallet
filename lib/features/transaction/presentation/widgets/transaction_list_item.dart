@@ -10,6 +10,7 @@ class TransactionListItem extends StatelessWidget {
   final String wallet;
   final String amount;
   final bool isExpense;
+  final Color? amountColor;
   final VoidCallback? onTap;
 
   const TransactionListItem({
@@ -21,6 +22,7 @@ class TransactionListItem extends StatelessWidget {
     required this.wallet,
     required this.amount,
     required this.isExpense,
+    this.amountColor,
     this.onTap,
   });
 
@@ -84,7 +86,9 @@ class TransactionListItem extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: isExpense ? AppColors.error : AppColors.success,
+                color:
+                    amountColor ??
+                    (isExpense ? AppColors.error : AppColors.success),
               ),
             ),
           ],

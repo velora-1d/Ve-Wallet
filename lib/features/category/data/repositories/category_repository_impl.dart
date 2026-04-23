@@ -4,6 +4,8 @@ import 'package:ve_wallet/features/category/domain/repositories/category_reposit
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 
 class CategoryRepositoryImpl implements CategoryRepository {
+  static const String _internalTransferCategoryName = '__ve_transfer__';
+
   final SupabaseClient _supabase;
   final String _tableName = 'categories';
 
@@ -21,7 +23,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     final response = await query.order('name');
-    return response.map((json) => CategoryModel.fromJson(json)).toList();
+    return response
+        .where((json) => json['name'] != _internalTransferCategoryName)
+        .map((json) => CategoryModel.fromJson(json))
+        .toList();
   }
 
   @override
@@ -35,7 +40,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
         .eq('user_id', user.id);
 
     return stream.map((data) {
-      var models = data.map((json) => CategoryModel.fromJson(json)).toList();
+      var models = data
+          .where((json) => json['name'] != _internalTransferCategoryName)
+          .map((json) => CategoryModel.fromJson(json))
+          .toList();
       if (type != null) {
         models = models.where((c) => c.type == type).toList();
       }

@@ -23,14 +23,10 @@ class TransactionDetailScreen extends ConsumerWidget {
     final dateFormat = DateFormat('d MMM yyyy, HH:mm', 'id_ID');
     final wallets = ref.watch(walletsStreamProvider).value ?? const [];
 
-    final isExpense = transaction.type == TransactionType.expense;
-    String? walletName;
-    for (final wallet in wallets) {
-      if (wallet.id == transaction.walletId) {
-        walletName = wallet.name;
-        break;
-      }
-    }
+    final walletName = _walletName(wallets, transaction.walletId);
+    final toWalletName = _walletName(wallets, transaction.toWalletId);
+    final isExpense = transaction.isExpense;
+    final isTransfer = transaction.isTransfer;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -60,7 +56,7 @@ class TransactionDetailScreen extends ConsumerWidget {
                 children: [
                   const SizedBox(height: 24),
                   // Header Section (Icon, Category, Amount)
-                  _buildHeader(isExpense, currencyFormat),
+                  _buildHeader(currencyFormat),
 
                   const SizedBox(height: 32),
 
@@ -79,12 +75,26 @@ class TransactionDetailScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildDetailRow(
-                          'Dompet',
-                          walletName ?? 'Dompet tidak diketahui',
-                          icon: Icons.account_balance,
-                          iconColor: AppColors.primary,
-                        ),
+                        if (isTransfer) ...[
+                          _buildDetailRow(
+                            'Dompet Asal',
+                            walletName ?? 'Dompet tidak diketahui',
+                            icon: Icons.arrow_outward,
+                            iconColor: AppColors.primary,
+                          ),
+                          _buildDetailRow(
+                            'Dompet Tujuan',
+                            toWalletName ?? 'Dompet tidak diketahui',
+                            icon: Icons.arrow_downward,
+                            iconColor: AppColors.primary,
+                          ),
+                        ] else
+                          _buildDetailRow(
+                            'Dompet',
+                            walletName ?? 'Dompet tidak diketahui',
+                            icon: Icons.account_balance,
+                            iconColor: AppColors.primary,
+                          ),
                         _buildDetailRow(
                           'Tanggal',
                           dateFormat.format(transaction.date),
@@ -115,29 +125,38 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(bool isExpense, NumberFormat currencyFormat) {
+  Widget _buildHeader(NumberFormat currencyFormat) {
+    final isExpense = transaction.isExpense;
+    final isTransfer = transaction.isTransfer;
+    final chipColor = isTransfer
+        ? const Color(0xFFDBEAFE)
+        : isExpense
+        ? const Color(0xFFFEE2E2)
+        : const Color(0xFFDCFCE7);
+    final accentColor = isTransfer
+        ? AppColors.primary
+        : isExpense
+        ? AppColors.error
+        : AppColors.success;
+
     return Column(
       children: [
-        // Category Icon Circle
         Container(
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color: isExpense
-                ? const Color(0xFFFEE2E2)
-                : const Color(0xFFDCFCE7),
+            color: chipColor,
             shape: BoxShape.circle,
           ),
           child: Icon(
-            _getCategoryIcon(transaction.categoryName),
-            color: isExpense ? AppColors.error : AppColors.success,
+            _getCategoryIcon(),
+            color: accentColor,
             size: 32,
           ),
         ),
         const SizedBox(height: 16),
-        // Category Name
         Text(
-          transaction.categoryName,
+          isTransfer ? 'Transfer' : transaction.categoryName,
           style: GoogleFonts.inter(
             fontSize: 22,
             fontWeight: FontWeight.w700,
@@ -145,32 +164,34 @@ class TransactionDetailScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 8),
-        // Transaction Type Chip
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: isExpense
-                ? const Color(0xFFFEE2E2)
-                : const Color(0xFFDCFCE7),
+            color: chipColor,
             borderRadius: BorderRadius.circular(100),
           ),
           child: Text(
-            isExpense ? 'Pengeluaran' : 'Pemasukan',
+            isTransfer
+                ? 'Transfer'
+                : isExpense
+                ? 'Pengeluaran'
+                : 'Pemasukan',
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isExpense ? AppColors.error : AppColors.success,
+              color: accentColor,
             ),
           ),
         ),
         const SizedBox(height: 16),
-        // Amount
         Text(
-          '${isExpense ? '-' : '+'} ${currencyFormat.format(transaction.amount)}',
+          isTransfer
+              ? currencyFormat.format(transaction.amount)
+              : '${isExpense ? '-' : '+'} ${currencyFormat.format(transaction.amount)}',
           style: GoogleFonts.inter(
             fontSize: 32,
             fontWeight: FontWeight.w800,
-            color: isExpense ? AppColors.error : AppColors.success,
+            color: accentColor,
             letterSpacing: -0.5,
           ),
         ),
@@ -341,8 +362,12 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
   }
 
-  IconData _getCategoryIcon(String categoryName) {
-    final name = categoryName.toLowerCase();
+  IconData _getCategoryIcon() {
+    if (transaction.isTransfer) {
+      return Icons.swap_horiz;
+    }
+
+    final name = transaction.categoryName.toLowerCase();
     if (name.contains('makan') || name.contains('minum')) {
       return Icons.restaurant;
     }
@@ -353,6 +378,16 @@ class TransactionDetailScreen extends ConsumerWidget {
     if (name.contains('kesehatan')) return Icons.medical_services;
     if (name.contains('pendidikan')) return Icons.school;
     return Icons.category;
+  }
+
+  String? _walletName(List<dynamic> wallets, String? walletId) {
+    if (walletId == null) return null;
+    for (final wallet in wallets) {
+      if (wallet.id == walletId) {
+        return wallet.name as String;
+      }
+    }
+    return null;
   }
 
   void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {

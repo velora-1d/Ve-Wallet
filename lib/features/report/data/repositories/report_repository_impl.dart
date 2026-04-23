@@ -49,6 +49,10 @@ class ReportRepositoryImpl implements ReportRepository {
     }
 
     for (var tx in transactions) {
+      if (tx.isTransfer) {
+        continue;
+      }
+
       final dateKey = DateTime(tx.date.year, tx.date.month, tx.date.day);
       final keyStr = dateKey.toIso8601String();
       
@@ -58,7 +62,7 @@ class ReportRepositoryImpl implements ReportRepository {
 
       final currentFlow = flowByDate[keyStr]!;
 
-      if (tx.type == TransactionType.income) {
+      if (tx.isIncome) {
         totalIncome += tx.amount;
         incomeByCat[tx.categoryId] = (incomeByCat[tx.categoryId] ?? 0) + tx.amount;
         flowByDate[keyStr] = DailyFlow(

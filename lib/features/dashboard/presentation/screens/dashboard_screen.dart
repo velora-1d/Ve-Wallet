@@ -46,9 +46,9 @@ class DashboardScreen extends ConsumerWidget {
 
       for (var tx in transactions) {
         if (tx.date.month == currentMonth && tx.date.year == currentYear) {
-          if (tx.type == TransactionType.income) {
+          if (tx.isIncome) {
             totalIncome += tx.amount;
-          } else {
+          } else if (tx.isExpense) {
             totalExpense += tx.amount;
           }
         }
@@ -730,17 +730,20 @@ class DashboardScreen extends ConsumerWidget {
               ),
               itemBuilder: (context, index) {
                 final tx = transactions[index];
-                final isIncome = tx.type == TransactionType.income;
+                final isIncome = tx.isIncome;
+                final isTransfer = tx.isTransfer;
 
-                // Determine icon based on category name roughly
-                IconData iconData = _getTransactionIcon(
-                  tx.categoryName,
-                  isIncome,
-                );
-                Color iconColor = isIncome
+                IconData iconData = isTransfer
+                    ? Icons.swap_horiz
+                    : _getTransactionIcon(tx.categoryName, isIncome);
+                Color iconColor = isTransfer
+                    ? AppColors.primary
+                    : isIncome
                     ? AppColors.onPrimaryFixedVariant
                     : AppColors.secondary;
-                Color bgColor = isIncome
+                Color bgColor = isTransfer
+                    ? AppColors.primaryFixed
+                    : isIncome
                     ? AppColors.primaryFixedDim
                     : AppColors.secondaryFixed;
 
@@ -750,9 +753,14 @@ class DashboardScreen extends ConsumerWidget {
                   bgColor: bgColor,
                   title: tx.note.isNotEmpty ? tx.note : tx.categoryName,
                   subtitle: _formatTransactionDate(tx.date),
-                  amount:
-                      '${isIncome ? '+' : '-'} ${CurrencyFormatter.format(tx.amount)}',
-                  amountColor: isIncome ? AppColors.primary : AppColors.error,
+                  amount: isTransfer
+                      ? CurrencyFormatter.format(tx.amount)
+                      : '${isIncome ? '+' : '-'} ${CurrencyFormatter.format(tx.amount)}',
+                  amountColor: isTransfer
+                      ? AppColors.primary
+                      : isIncome
+                      ? AppColors.primary
+                      : AppColors.error,
                   onTap: () => context.push('/transaction-detail', extra: tx),
                 );
               },

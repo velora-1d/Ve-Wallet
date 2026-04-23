@@ -24,6 +24,7 @@ class CategoryUtils {
     'wifi': Icons.wifi,
     'phone_android': Icons.phone_android,
     'receipt_long': Icons.receipt_long,
+    'swap_horiz': Icons.swap_horiz,
     'more_horiz': Icons.more_horiz,
   };
 

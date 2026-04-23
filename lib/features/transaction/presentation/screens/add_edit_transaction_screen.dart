@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/providers/category_provider.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
+import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
 
 class AddEditTransactionScreen extends ConsumerStatefulWidget {
@@ -36,11 +38,12 @@ class _AddEditTransactionScreenState
   TransactionType _selectedType = TransactionType.expense;
   DateTime _selectedDate = DateTime.now();
   String _amountString = '0';
-
   String? _selectedWalletId;
+  String? _selectedToWalletId;
   String? _selectedCategoryId;
-
   bool _isLoading = false;
+
+  bool get _isTransfer => _selectedType == TransactionType.transfer;
 
   @override
   void initState() {
@@ -51,6 +54,12 @@ class _AddEditTransactionScreenState
         _loadTransactionData();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTransactionData() async {
@@ -68,14 +77,14 @@ class _AddEditTransactionScreenState
         _noteController.text = tx.note;
         _selectedDate = tx.date;
         _selectedWalletId = tx.walletId;
-        _selectedCategoryId = tx.categoryId;
+        _selectedToWalletId = tx.toWalletId;
+        _selectedCategoryId = tx.isTransfer ? null : tx.categoryId;
       });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memuat data transaksi: $e')),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data transaksi: $e')),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -83,41 +92,45 @@ class _AddEditTransactionScreenState
     }
   }
 
-  @override
-  void dispose() {
-    _noteController.dispose();
-    super.dispose();
-  }
-
-  void _handleNumpadPress(String val) {
+  void _handleNumpadPress(String value) {
     setState(() {
-      if (val == 'backspace') {
+      if (value == 'backspace') {
         if (_amountString.length > 1) {
           _amountString = _amountString.substring(0, _amountString.length - 1);
         } else {
           _amountString = '0';
         }
-      } else if (val == ',') {
-        // IDR usually doesn't use decimals, but we'll add logic if it's not already there
-        if (!_amountString.contains(',')) {
-          _amountString += ',';
-        }
-      } else {
-        if (_amountString == '0') {
-          _amountString = val;
-        } else if (_amountString.replaceAll(',', '').length < 12) {
-          _amountString += val;
-        }
+        return;
+      }
+
+      if (value == ',') {
+        return;
+      }
+
+      if (_amountString == '0') {
+        _amountString = value;
+      } else if (_amountString.length < 12) {
+        _amountString += value;
       }
     });
   }
 
-  void _handlePresetPress(String val) {
+  void _handlePresetPress(String value) {
     setState(() {
-      final cleanAmount = _amountString.replaceAll(',', '');
-      final currentAmount = int.tryParse(cleanAmount) ?? 0;
-      final presetVal = int.parse(val.replaceAll('rb', '000'));
-      _amountString = (currentAmount + presetVal).toString();
+      final currentAmount = int.tryParse(_amountString) ?? 0;
+      final presetValue = int.parse(value.replaceAll('rb', '000'));
+      _amountString = (currentAmount + presetValue).toString();
+    });
+  }
+
+  void _setTransactionType(TransactionType type) {
+    setState(() {
+      _selectedType = type;
+      if (_isTransfer) {
+        _selectedCategoryId = null;
+      } else {
+        _selectedToWalletId = null;
+      }
     });
   }
 
@@ -149,9 +162,32 @@ class _AddEditTransactionScreenState
       );
       return;
     }
-    if (_selectedWalletId == null || _selectedCategoryId == null) {
+
+    if (_selectedWalletId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih Dompet dan Kategori')),
+        const SnackBar(content: Text('Pilih dompet asal')),
+      );
+      return;
+    }
+
+    if (_isTransfer) {
+      if (_selectedToWalletId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pilih dompet tujuan')),
+        );
+        return;
+      }
+      if (_selectedWalletId == _selectedToWalletId) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dompet asal dan tujuan tidak boleh sama'),
+          ),
+        );
+        return;
+      }
+    } else if (_selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih kategori')),
       );
       return;
     }
@@ -161,23 +197,31 @@ class _AddEditTransactionScreenState
       final user = ref.read(currentUserProvider);
       if (user == null) throw Exception('User not logged in');
 
-      final categories = await ref
-          .read(categoryRepositoryProvider)
-          .getCategories(type: _selectedType);
-      final selectedCat = categories.firstWhere(
-        (c) => c.id == _selectedCategoryId,
-      );
+      String categoryId = '';
+      String categoryName = 'Transfer';
+
+      if (!_isTransfer) {
+        final categories = await ref
+            .read(categoryRepositoryProvider)
+            .getCategories(type: _selectedType);
+        final selectedCategory = categories.firstWhere(
+          (category) => category.id == _selectedCategoryId,
+        );
+        categoryId = selectedCategory.id;
+        categoryName = selectedCategory.name;
+      }
 
       final transaction = TransactionModel(
         id: widget.isEdit ? widget.transactionId! : '',
         userId: user.id,
         walletId: _selectedWalletId!,
-        categoryId: _selectedCategoryId!,
-        categoryName: selectedCat.name,
+        categoryId: categoryId,
+        categoryName: categoryName,
         type: _selectedType,
         amount: amount,
-        note: _noteController.text,
+        note: _noteController.text.trim(),
         date: _selectedDate,
+        toWalletId: _isTransfer ? _selectedToWalletId : null,
       );
 
       if (widget.isEdit) {
@@ -185,35 +229,34 @@ class _AddEditTransactionScreenState
             .read(transactionRepositoryProvider)
             .updateTransaction(transaction);
       } else {
-        await ref
-            .read(transactionRepositoryProvider)
-            .addTransaction(transaction);
+        await ref.read(transactionRepositoryProvider).addTransaction(transaction);
       }
 
-      if (mounted) context.pop();
-    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+        context.pop();
       }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan: $e')),
+      );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final walletsAsync = ref.watch(walletsStreamProvider);
-    final categoriesAsync = ref.watch(categoriesStreamProvider(_selectedType));
-
-    // Custom formatter for IDR style (dot for thousand separator)
+    final categoriesAsync = _isTransfer
+        ? const AsyncValue<List<CategoryModel>>.data(<CategoryModel>[])
+        : ref.watch(categoriesStreamProvider(_selectedType));
     final formatter = NumberFormat.decimalPattern('id_ID');
 
     return Scaffold(
-      backgroundColor: Colors.black.withValues(
-        alpha: 0.4,
-      ), // Simulated overlay background
+      backgroundColor: Colors.black.withValues(alpha: 0.4),
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
@@ -225,7 +268,6 @@ class _AddEditTransactionScreenState
           ),
           child: Column(
             children: [
-              // Drag Handle
               Center(
                 child: Container(
                   width: 48,
@@ -237,46 +279,28 @@ class _AddEditTransactionScreenState
                   ),
                 ),
               ),
-
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
-                      // Type Tabs
                       _buildTypeTabs(),
-
                       const SizedBox(height: 16),
-
-                      // Amount Display
                       _buildAmountDisplay(formatter),
-
                       const SizedBox(height: 16),
-
-                      // Quick Presets
                       _buildQuickPresets(),
-
                       const SizedBox(height: 24),
-
-                      // Custom Numpad
                       _buildNumpad(),
-
                       const SizedBox(height: 32),
-
-                      // Category Selection (Horizontal)
-                      _buildCategoryPicker(categoriesAsync),
-
+                      if (_isTransfer)
+                        _buildTransferInfo()
+                      else
+                        _buildCategoryPicker(categoriesAsync),
                       const SizedBox(height: 32),
-
-                      // Wallet & Date
                       _buildWalletAndDatePicker(walletsAsync),
-
                       const SizedBox(height: 16),
-
-                      // Note & Photo
                       _buildNoteAndPhotoSection(),
-
-                      const SizedBox(height: 120), // Padding for sticky button
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
@@ -298,54 +322,42 @@ class _AddEditTransactionScreenState
           const SizedBox(width: 8),
           _buildTypeTabItem('Masuk', TransactionType.income),
           const SizedBox(width: 8),
-          _buildTypeTabItem('Transfer', null, isTransfer: true),
+          _buildTypeTabItem('Transfer', TransactionType.transfer),
         ],
       ),
     );
   }
 
-  Widget _buildTypeTabItem(
-    String label,
-    TransactionType? type, {
-    bool isTransfer = false,
-  }) {
-    final isSelected = isTransfer
-        ? false
-        : _selectedType == type; // Transfer logic not yet fully implemented
+  Widget _buildTypeTabItem(String label, TransactionType type) {
+    final isSelected = _selectedType == type;
 
-    Color bgColor = const Color(0xFFEAEDFF);
+    Color background = const Color(0xFFEAEDFF);
     Color textColor = const Color(0xFF434655);
 
     if (isSelected) {
-      if (type == TransactionType.expense) {
-        bgColor = const Color(0xFFFFDAD6);
-        textColor = const Color(0xFFBA1A1A);
-      } else if (type == TransactionType.income) {
-        bgColor = const Color(0xFFDCFCE7);
-        textColor = const Color(0xFF15803D);
+      switch (type) {
+        case TransactionType.expense:
+          background = const Color(0xFFFFDAD6);
+          textColor = const Color(0xFFBA1A1A);
+          break;
+        case TransactionType.income:
+          background = const Color(0xFFDCFCE7);
+          textColor = const Color(0xFF15803D);
+          break;
+        case TransactionType.transfer:
+          background = const Color(0xFFDBEAFE);
+          textColor = const Color(0xFF1D4ED8);
+          break;
       }
     }
 
     return Expanded(
       child: GestureDetector(
-        onTap: isTransfer
-            ? () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur Transfer akan segera hadir!'),
-                  ),
-                );
-              }
-            : () {
-                setState(() {
-                  _selectedType = type!;
-                  _selectedCategoryId = null;
-                });
-              },
+        onTap: () => _setTransactionType(type),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: bgColor,
+            color: background,
             borderRadius: BorderRadius.circular(100),
           ),
           child: Text(
@@ -363,17 +375,8 @@ class _AddEditTransactionScreenState
   }
 
   Widget _buildAmountDisplay(NumberFormat formatter) {
-    // Parsing amount for display
-    String displayAmount = _amountString;
-    if (!displayAmount.contains(',')) {
-      final value = int.tryParse(displayAmount) ?? 0;
-      displayAmount = formatter.format(value);
-    } else {
-      // Handle decimals manually to keep formatter's style
-      final parts = displayAmount.split(',');
-      final whole = int.tryParse(parts[0]) ?? 0;
-      displayAmount = '${formatter.format(whole)},${parts[1]}';
-    }
+    final value = int.tryParse(_amountString) ?? 0;
+    final displayAmount = formatter.format(value);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -386,7 +389,7 @@ class _AddEditTransactionScreenState
       child: Column(
         children: [
           Text(
-            'Nominal Transaksi',
+            _isTransfer ? 'Nominal Transfer' : 'Nominal Transaksi',
             style: GoogleFonts.inter(
               fontSize: 14,
               color: const Color(0xFF004AC6),
@@ -429,12 +432,12 @@ class _AddEditTransactionScreenState
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: ['10rb', '20rb', '50rb', '100rb'].map((val) {
+        children: ['10rb', '20rb', '50rb', '100rb'].map((value) {
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: OutlinedButton(
-                onPressed: () => _handlePresetPress(val),
+                onPressed: () => _handlePresetPress(value),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   side: const BorderSide(color: Color(0xFFFD761A)),
@@ -443,7 +446,7 @@ class _AddEditTransactionScreenState
                   ),
                 ),
                 child: Text(
-                  val,
+                  value,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -481,19 +484,19 @@ class _AddEditTransactionScreenState
   Widget _buildNumpadRow(List<String> values) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: values.map((val) {
-        if (val == 'backspace') {
-          return _buildNumpadButton(val, icon: Icons.backspace_outlined);
+      children: values.map((value) {
+        if (value == 'backspace') {
+          return _buildNumpadButton(value, icon: Icons.backspace_outlined);
         }
-        return _buildNumpadButton(val);
+        return _buildNumpadButton(value);
       }).toList(),
     );
   }
 
-  Widget _buildNumpadButton(String val, {IconData? icon}) {
-    final isSpecial = val == ',' || val == 'backspace';
+  Widget _buildNumpadButton(String value, {IconData? icon}) {
+    final isSpecial = value == ',' || value == 'backspace';
     return GestureDetector(
-      onTap: () => _handleNumpadPress(val),
+      onTap: () => _handleNumpadPress(value),
       child: Container(
         width: 64,
         height: 64,
@@ -505,7 +508,7 @@ class _AddEditTransactionScreenState
           child: icon != null
               ? Icon(icon, size: 24, color: const Color(0xFF0F172A))
               : Text(
-                  val,
+                  value,
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -517,7 +520,37 @@ class _AddEditTransactionScreenState
     );
   }
 
-  Widget _buildCategoryPicker(AsyncValue categoriesAsync) {
+  Widget _buildTransferInfo() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFDBEAFE),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.swap_horiz, color: Color(0xFF1D4ED8)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Transfer memindahkan saldo dari dompet asal ke dompet tujuan tanpa masuk ke kategori pengeluaran.',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF1E3A8A),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryPicker(AsyncValue<List<CategoryModel>> categoriesAsync) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -542,10 +575,11 @@ class _AddEditTransactionScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
-                  final cat = categories[index];
-                  final isSelected = _selectedCategoryId == cat.id;
+                  final category = categories[index];
+                  final isSelected = _selectedCategoryId == category.id;
                   return GestureDetector(
-                    onTap: () => setState(() => _selectedCategoryId = cat.id),
+                    onTap: () =>
+                        setState(() => _selectedCategoryId = category.id),
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16),
                       child: Column(
@@ -553,9 +587,7 @@ class _AddEditTransactionScreenState
                           Container(
                             width: 44,
                             height: 44,
-                            padding: isSelected
-                                ? const EdgeInsets.all(2)
-                                : null,
+                            padding: isSelected ? const EdgeInsets.all(2) : null,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: isSelected
@@ -567,19 +599,21 @@ class _AddEditTransactionScreenState
                             ),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Color(cat.color).withValues(alpha: 0.15),
+                                color: Color(
+                                  category.color,
+                                ).withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                CategoryUtils.getIcon(cat.icon),
-                                color: Color(cat.color),
+                                CategoryUtils.getIcon(category.icon),
+                                color: Color(category.color),
                                 size: 22,
                               ),
                             ),
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            cat.name,
+                            category.name,
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: isSelected
@@ -599,129 +633,173 @@ class _AddEditTransactionScreenState
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Padding(
+          error: (error, _) => Padding(
             padding: const EdgeInsets.all(16),
-            child: Text('Error: $err'),
+            child: Text('Error: $error'),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildWalletAndDatePicker(AsyncValue walletsAsync) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          // Wallet Picker
-          Expanded(
-            child: walletsAsync.when(
-              data: (wallets) {
-                final selectedWallet = wallets.cast<dynamic>().firstWhere(
-                  (w) => w.id == _selectedWalletId,
-                  orElse: () => null,
-                );
-                return GestureDetector(
-                  onTap: () => _showWalletSelector(context, wallets),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAEDFF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.account_balance_wallet_outlined,
-                          size: 20,
-                          color: Color(0xFF737686),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Dompet',
-                                style: GoogleFonts.inter(
-                                  fontSize: 10,
-                                  color: const Color(0xFF737686),
-                                ),
-                              ),
-                              Text(
-                                selectedWallet?.name ?? 'Pilih Dompet',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF131B2E),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+  Widget _buildWalletAndDatePicker(AsyncValue<List<WalletModel>> walletsAsync) {
+    return walletsAsync.when(
+      data: (wallets) {
+        final sourceWallet = _findWallet(wallets, _selectedWalletId);
+        final targetWallet = _findWallet(wallets, _selectedToWalletId);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              if (_isTransfer) ...[
+                _buildWalletField(
+                  label: 'Dompet Asal',
+                  wallet: sourceWallet,
+                  icon: Icons.arrow_outward,
+                  onTap: () => _showWalletSelector(
+                    context,
+                    wallets,
+                    isTarget: false,
                   ),
-                );
-              },
-              loading: () => Container(),
-              error: (error, stack) => Container(),
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Date Picker
-          Expanded(
-            child: GestureDetector(
-              onTap: () => _selectDate(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAEDFF),
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                _buildWalletField(
+                  label: 'Dompet Tujuan',
+                  wallet: targetWallet,
+                  icon: Icons.arrow_downward,
+                  onTap: () => _showWalletSelector(
+                    context,
+                    wallets.where((wallet) => wallet.id != _selectedWalletId).toList(),
+                    isTarget: true,
+                  ),
                 ),
-                child: Row(
+                const SizedBox(height: 12),
+              ] else
+                Row(
                   children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 20,
-                      color: Color(0xFF737686),
-                    ),
-                    const SizedBox(width: 8),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tanggal',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: const Color(0xFF737686),
-                            ),
-                          ),
-                          Text(
-                            DateFormat('dd MMM yyyy').format(_selectedDate),
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF131B2E),
-                            ),
-                          ),
-                        ],
+                      child: _buildWalletField(
+                        label: 'Dompet',
+                        wallet: sourceWallet,
+                        icon: Icons.account_balance_wallet_outlined,
+                        onTap: () => _showWalletSelector(
+                          context,
+                          wallets,
+                          isTarget: false,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildDateField()),
                   ],
                 ),
+              if (_isTransfer) _buildDateField(),
+            ],
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildWalletField({
+    required String label,
+    required WalletModel? wallet,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEAEDFF),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: const Color(0xFF737686)),
+            const SizedBox(width: 8),
+            if (wallet != null) ...[
+              Icon(
+                WalletIconUtils.getIcon(wallet.icon),
+                color: Color(wallet.color),
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      color: const Color(0xFF737686),
+                    ),
+                  ),
+                  Text(
+                    wallet?.name ?? 'Pilih Dompet',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF131B2E),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateField() {
+    return GestureDetector(
+      onTap: () => _selectDate(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEAEDFF),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 20,
+              color: Color(0xFF737686),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tanggal',
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      color: const Color(0xFF737686),
+                    ),
+                  ),
+                  Text(
+                    DateFormat('dd MMM yyyy').format(_selectedDate),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF131B2E),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -745,7 +823,9 @@ class _AddEditTransactionScreenState
                   color: const Color(0xFF131B2E),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Tambah catatan...',
+                  hintText: _isTransfer
+                      ? 'Catatan transfer...'
+                      : 'Tambah catatan...',
                   hintStyle: GoogleFonts.inter(
                     fontSize: 14,
                     color: const Color(0xFF737686),
@@ -760,9 +840,7 @@ class _AddEditTransactionScreenState
           GestureDetector(
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Fitur Kamera akan segera hadir!'),
-                ),
+                const SnackBar(content: Text('Fitur kamera belum tersedia')),
               );
             },
             child: Container(
@@ -826,7 +904,11 @@ class _AddEditTransactionScreenState
                   const Icon(Icons.check_circle_outline, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    widget.isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi',
+                    widget.isEdit
+                        ? (_isTransfer
+                              ? 'Simpan Transfer'
+                              : 'Simpan Perubahan')
+                        : (_isTransfer ? 'Simpan Transfer' : 'Simpan Transaksi'),
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -838,7 +920,20 @@ class _AddEditTransactionScreenState
     );
   }
 
-  void _showWalletSelector(BuildContext context, List<dynamic> wallets) {
+  WalletModel? _findWallet(List<WalletModel> wallets, String? walletId) {
+    if (walletId == null) return null;
+    try {
+      return wallets.firstWhere((wallet) => wallet.id == walletId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _showWalletSelector(
+    BuildContext context,
+    List<WalletModel> wallets, {
+    required bool isTarget,
+  }) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -851,7 +946,7 @@ class _AddEditTransactionScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pilih Dompet',
+              isTarget ? 'Pilih Dompet Tujuan' : 'Pilih Dompet',
               style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -859,20 +954,32 @@ class _AddEditTransactionScreenState
             ),
             const SizedBox(height: 16),
             ...wallets.map(
-              (w) => ListTile(
+              (wallet) => ListTile(
                 leading: Icon(
-                  WalletIconUtils.getIcon(w.icon),
-                  color: Color(w.color),
+                  WalletIconUtils.getIcon(wallet.icon),
+                  color: Color(wallet.color),
                 ),
                 title: Text(
-                  w.name,
+                  wallet.name,
                   style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                 ),
-                trailing: _selectedWalletId == w.id
-                    ? const Icon(Icons.check_circle, color: AppColors.primary)
-                    : null,
+                trailing:
+                    (isTarget
+                            ? _selectedToWalletId == wallet.id
+                            : _selectedWalletId == wallet.id)
+                        ? const Icon(Icons.check_circle, color: AppColors.primary)
+                        : null,
                 onTap: () {
-                  setState(() => _selectedWalletId = w.id);
+                  setState(() {
+                    if (isTarget) {
+                      _selectedToWalletId = wallet.id;
+                    } else {
+                      _selectedWalletId = wallet.id;
+                      if (_selectedToWalletId == wallet.id) {
+                        _selectedToWalletId = null;
+                      }
+                    }
+                  });
                   Navigator.pop(context);
                 },
               ),
