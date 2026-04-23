@@ -38,6 +38,7 @@ jobs:
 
       - name: Build APK Release
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false"
           flutter build apk --release --split-per-abi --verbose
 
