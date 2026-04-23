@@ -14,6 +14,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -24,11 +27,14 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
+          cache: true
 
       - name: Create .env.production file
         run: |
-          echo "SUPABASE_URL=${{ format('{0}', secrets.SUPABASE_URL) }}" > .env.production
-          echo "SUPABASE_ANON_KEY=${{ format('{0}', secrets.SUPABASE_ANON_KEY) }}" >> .env.production
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.production
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.production
+          # Tambahkan variabel lain jika ada
+          echo "APP_ENV=production" >> .env.production
 
       - name: Get dependencies
         run: flutter pub get
@@ -38,7 +44,6 @@ jobs:
 
       - name: Build APK Release
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false"
           flutter build apk --release --split-per-abi --verbose
 
