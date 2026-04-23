@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: ["main"]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,7 +18,9 @@ jobs:
           fetch-depth: 0
 
       - name: Git Safe Directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        run: |
+          git config --global --add safe.directory '*'
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -33,19 +38,18 @@ jobs:
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.production
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.production
-          # Tambahkan variabel lain jika ada
           echo "APP_ENV=production" >> .env.production
 
       - name: Get dependencies
         run: flutter pub get
 
       - name: Build APK Debug
-        run: flutter build apk --debug --verbose
+        run: flutter build apk --debug --build-name=1.0.0 --build-number=1 --verbose
 
       - name: Build APK Release
         run: |
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false"
-          flutter build apk --release --split-per-abi --verbose
+          flutter build apk --release --split-per-abi --build-name=1.0.0 --build-number=1 --verbose
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
