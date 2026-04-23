@@ -7,6 +7,22 @@ class AuthRepositoryImpl implements AuthRepository {
 
   AuthRepositoryImpl(this._supabase);
 
+  Future<UserModel> _populateUserModel(User user) async {
+    final profile = await _supabase
+        .from('profiles')
+        .select()
+        .eq('id', user.id)
+        .maybeSingle();
+
+    return UserModel(
+      id: user.id,
+      email: user.email ?? '',
+      fullName: profile?['full_name'] ?? user.userMetadata?['full_name'],
+      avatarUrl: profile?['avatar_url'] ?? user.userMetadata?['avatar_url'],
+      role: profile?['role'] ?? 'user',
+    );
+  }
+
   @override
   Future<UserModel?> signIn({required String email, required String password}) async {
     final response = await _supabase.auth.signInWithPassword(
@@ -14,11 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
       password: password,
     );
     if (response.user != null) {
-      return UserModel(
-        id: response.user!.id,
-        email: response.user!.email ?? '',
-        fullName: response.user!.userMetadata?['full_name'],
-      );
+      return await _populateUserModel(response.user!);
     }
     return null;
   }
@@ -35,11 +47,9 @@ class AuthRepositoryImpl implements AuthRepository {
       data: {'full_name': fullName},
     );
     if (response.user != null) {
-      return UserModel(
-        id: response.user!.id,
-        email: response.user!.email ?? '',
-        fullName: fullName,
-      );
+      // Trigger in Supabase will create the profile, but we might need a small delay or retry
+      // to ensure it exists before fetching. For now, we fetch immediately.
+      return await _populateUserModel(response.user!);
     }
     return null;
   }
@@ -53,25 +63,17 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<UserModel?> getCurrentUser() async {
     final user = _supabase.auth.currentUser;
     if (user != null) {
-      return UserModel(
-        id: user.id,
-        email: user.email ?? '',
-        fullName: user.userMetadata?['full_name'],
-      );
+      return await _populateUserModel(user);
     }
     return null;
   }
 
   @override
   Stream<UserModel?> authStateChanges() {
-    return _supabase.auth.onAuthStateChange.map((data) {
+    return _supabase.auth.onAuthStateChange.asyncMap((data) async {
       final user = data.session?.user;
       if (user != null) {
-        return UserModel(
-          id: user.id,
-          email: user.email ?? '',
-          fullName: user.userMetadata?['full_name'],
-        );
+        return await _populateUserModel(user);
       }
       return null;
     });

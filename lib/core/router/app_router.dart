@@ -44,7 +44,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (user == null) {
         if (!isAuthPath && state.uri.path != '/forgot-password') return '/login';
       } else {
-        if (isAuthPath) return '/dashboard';
+        // Redirect to appropriate dashboard if on auth path
+        if (isAuthPath) {
+          return user.role == 'admin' ? '/admin' : '/dashboard';
+        }
+        
+        // Protect admin route
+        if (state.uri.path.startsWith('/admin') && user.role != 'admin') {
+          return '/dashboard';
+        }
       }
 
       return null;

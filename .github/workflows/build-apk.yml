@@ -30,10 +30,12 @@ jobs:
         run: flutter pub get
 
       - name: Build APK Debug
-        run: flutter build apk --debug
+        run: flutter build apk --debug --verbose
 
       - name: Build APK Release
-        run: flutter build apk --release --split-per-abi
+        run: |
+          export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false"
+          flutter build apk --release --split-per-abi --verbose
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
