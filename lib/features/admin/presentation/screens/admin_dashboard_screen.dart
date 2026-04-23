@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -17,7 +17,7 @@ class AdminDashboardScreen extends StatelessWidget {
           onPressed: () {},
         ),
         title: const Text(
-          'FinSecure Admin',
+          'Ve-Wallet Admin',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -62,7 +62,7 @@ class AdminDashboardScreen extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -70,10 +70,10 @@ class AdminDashboardScreen extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Halo, Admin 👋',
                 style: TextStyle(
                   fontSize: 24,
@@ -81,9 +81,9 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: AppColors.onSurface,
                 ),
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Here is the overview of Ve-Wallet for today.',
+              SizedBox(height: 4),
+              Text(
+                'Berikut ringkasan Ve-Wallet untuk hari ini.',
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.onSurfaceVariant,
@@ -100,7 +100,7 @@ class AdminDashboardScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primaryFixedDim.withOpacity(0.3),
+                    AppColors.primaryFixedDim.withValues(alpha: 0.3),
                     Colors.transparent,
                   ],
                   begin: Alignment.centerRight,
@@ -132,8 +132,8 @@ class AdminDashboardScreen extends StatelessWidget {
         ),
         _buildStatCard(
           icon: Icons.how_to_reg,
-          iconColor: Colors.emerald[600]!,
-          bgColor: Colors.emerald[50]!,
+          iconColor: const Color(0xFF10B981),
+          bgColor: const Color(0xFFECFDF5),
           value: '48',
           label: 'Aktif Hari Ini',
         ),
@@ -145,7 +145,7 @@ class AdminDashboardScreen extends StatelessWidget {
           label: 'Transaksi Hari Ini',
         ),
         _buildStatCard(
-          icon: Icons.family_home,
+          icon: Icons.home,
           iconColor: Colors.purple[600]!,
           bgColor: Colors.purple[50]!,
           value: '89',
@@ -169,7 +169,7 @@ class AdminDashboardScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -233,7 +233,7 @@ class AdminDashboardScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -298,7 +298,7 @@ class AdminDashboardScreen extends StatelessWidget {
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                   ),
                 ),
               ],
@@ -328,7 +328,7 @@ class AdminDashboardScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

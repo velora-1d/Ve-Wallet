@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,17 +45,18 @@ class _SplashScreenState extends State<SplashScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 24,
                         offset: const Offset(0, 12),
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.account_balance_wallet,
-                      size: 48,
-                      color: AppColors.primaryContainer,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/logos/logo.png',
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -71,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Text(
                   'Kelola Keuangan Bersama',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -100,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> {
       width: 8,
       height: 8,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(opacity),
+        color: Colors.white.withValues(alpha: opacity),
         shape: BoxShape.circle,
       ),
     );

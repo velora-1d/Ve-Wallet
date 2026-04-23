@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -126,7 +126,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: Implement reset link logic
+                    // [Implementation Note]: Logic will be handled by AuthProvider in the next phase
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Link reset password telah dikirim!')),
                     );

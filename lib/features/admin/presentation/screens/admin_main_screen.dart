@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
-import 'admin_dashboard_screen.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/admin/presentation/screens/admin_dashboard_screen.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});
@@ -36,7 +36,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -46,7 +46,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white.withOpacity(0.95),
+          backgroundColor: Colors.white.withValues(alpha: 0.95),
           selectedItemColor: AppColors.primary,
           unselectedItemColor: const Color(0xFF64748B),
           selectedLabelStyle: const TextStyle(

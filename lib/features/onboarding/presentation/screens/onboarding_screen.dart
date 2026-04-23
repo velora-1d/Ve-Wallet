@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../onboarding/domain/onboarding_model.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/onboarding/domain/onboarding_model.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -94,17 +94,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Illustration
-                      Container(
-                        width: double.infinity,
+                      AspectRatio(
                         aspectRatio: 1,
-                        decoration: BoxDecoration(
-                          color: index == 1 ? const Color(0xFFFFEDD5) : AppColors.surfaceVariant,
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.network(
-                          page.imageUrl,
-                          fit: BoxFit.cover,
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: index == 1 ? const Color(0xFFFFEDD5) : AppColors.surfaceVariant,
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.network(
+                            page.imageUrl,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -122,7 +124,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         page.description,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onSurface.withOpacity(0.7),
+                          color: AppColors.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -149,7 +151,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         color: _currentPage == index
                             ? AppColors.primaryContainer
-                            : AppColors.outline.withOpacity(0.3),
+                            : AppColors.outline.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),

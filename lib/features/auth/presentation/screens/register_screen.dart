@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -17,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreedToTerms = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -25,6 +28,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _register() async {
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua field harus diisi')),
+      );
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password tidak cocok')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      final user = await repository.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: _nameController.text.trim(),
+      );
+
+      if (user != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registrasi berhasil! Silakan cek email untuk verifikasi.')),
+        );
+        context.go('/login');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal daftar: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -42,23 +90,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.account_balance_wallet,
-                    color: AppColors.primary,
-                    size: 32,
+                  Image.asset(
+                    'assets/logos/logo.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Ve-Wallet',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: -0.5,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               // Heading
               Text(
                 'Buat Akun Baru',
@@ -149,16 +198,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _agreedToTerms ? () {} : null,
+                  onPressed: (_agreedToTerms && !_isLoading) ? _register : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondaryContainer,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text('Daftar'),
+                  child: _isLoading 
+                    ? const SizedBox(
+                        height: 20, 
+                        width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text('Daftar'),
                 ),
               ),
               const SizedBox(height: 24),
@@ -346,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Container(
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.outlineVariant.withOpacity(0.5),
+              color: AppColors.outlineVariant.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

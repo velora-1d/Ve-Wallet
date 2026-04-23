@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
@@ -12,8 +12,6 @@ class AppTheme {
         onPrimary: Colors.white,
         secondary: AppColors.secondary,
         onSecondary: Colors.white,
-        background: AppColors.background,
-        onBackground: AppColors.onBackground,
         surface: AppColors.surface,
         onSurface: AppColors.onSurface,
         error: AppColors.error,

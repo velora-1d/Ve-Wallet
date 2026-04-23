@@ -1,24 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password harus diisi')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      final user = await repository.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (user != null && mounted) {
+        context.go('/dashboard');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal masuk: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -40,10 +75,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.account_balance_wallet,
-                  color: Colors.white,
-                  size: 32,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/logos/logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -58,48 +95,72 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
               Text(
                 'Masuk ke akun kamu',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.outline,
                 ),
               ),
               const SizedBox(height: 40),
               // Form
-              _buildEmailField(),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.outlineVariant),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
-              _buildPasswordField(),
-              const SizedBox(height: 12),
-              // Forgot Password
+              TextField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.outlineVariant),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => context.push('/forgot-password'),
-                  child: Text(
-                    'Lupa Password?',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.primaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: const Text('Lupa Password?'),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement login logic
-                    context.go('/dashboard');
-                  },
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryContainer,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Masuk'),
+                  child: _isLoading 
+                    ? const SizedBox(
+                        height: 20, 
+                        width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text('Masuk'),
                 ),
               ),
               const SizedBox(height: 24),
@@ -163,62 +224,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmailField() {
-    return TextField(
-      controller: _emailController,
-      decoration: InputDecoration(
-        hintText: 'Email',
-        prefixIcon: const Icon(Icons.mail_outline, color: AppColors.primaryContainer),
-        filled: true,
-        fillColor: const Color(0xFFF8FAFC),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primaryContainer),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return TextField(
-      controller: _passwordController,
-      obscureText: !_isPasswordVisible,
-      decoration: InputDecoration(
-        hintText: 'Password',
-        prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primaryContainer),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: AppColors.outline,
-          ),
-          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFF8FAFC),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primaryContainer),
         ),
       ),
     );

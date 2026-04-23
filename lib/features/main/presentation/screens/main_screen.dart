@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:ve_wallet/features/wallet/presentation/screens/wallet_screen.dart';
+import 'package:ve_wallet/features/transaction/presentation/screens/transaction_screen.dart';
+import 'package:ve_wallet/features/transaction/presentation/widgets/add_transaction_bottom_sheet.dart';
+
+import 'package:ve_wallet/features/report/presentation/screens/report_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,15 +19,24 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const DashboardScreen(),
-    const Scaffold(body: Center(child: Text('Activity Screen'))),
-    const Scaffold(body: Center(child: Text('Reports Screen'))),
-    const Scaffold(body: Center(child: Text('Settings Screen'))),
+    const TransactionScreen(),
+    const ReportScreen(),
+    const WalletScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _showAddTransaction() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AddTransactionBottomSheet(),
+    );
   }
 
   @override
@@ -32,51 +46,71 @@ class _MainScreenState extends State<MainScreen> {
         index: _selectedIndex,
         children: _screens,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddTransaction,
+        backgroundColor: AppColors.primaryContainer,
+        shape: const CircleBorder(),
+        elevation: 4,
+        child: const Icon(Icons.add, color: Colors.white, size: 32),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
-              offset: const Offset(0, -1),
+              offset: const Offset(0, -2),
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primaryContainer,
-          unselectedItemColor: const Color(0xFF94A3B8),
-          selectedLabelStyle: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
+        child: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _buildNavItem(0, Icons.dashboard_outlined, Icons.dashboard, 'Home'),
+                  _buildNavItem(1, Icons.receipt_long_outlined, Icons.receipt_long, 'Activity'),
+                ],
+              ),
+              const SizedBox(width: 40), // Space for FAB
+              Row(
+                children: [
+                  _buildNavItem(2, Icons.bar_chart_outlined, Icons.bar_chart, 'Report'),
+                  _buildNavItem(3, Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Dompet'),
+                ],
+              ),
+            ],
           ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-          ),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard),
-              label: 'Home',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, IconData activeIcon, String label) {
+    final isSelected = _selectedIndex == index;
+    return InkWell(
+      onTap: () => _onItemTapped(index),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? activeIcon : icon,
+              color: isSelected ? AppColors.primaryContainer : AppColors.outline,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined),
-              activeIcon: Icon(Icons.receipt_long),
-              label: 'Activity',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.insights_outlined),
-              activeIcon: Icon(Icons.insights),
-              label: 'Reports',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
-              label: 'Settings',
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? AppColors.primaryContainer : AppColors.outline,
+              ),
             ),
           ],
         ),

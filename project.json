@@ -1,0 +1,44 @@
+{
+  "name": "ve-wallet",
+  "description": "Aplikasi money tracker dengan shared account",
+  "version": "1.0.0",
+  "lastUpdated": "2026-04-23",
+
+  "stack": {
+    "frontend": "flutter",
+    "backend": "supabase",
+    "database": "postgresql-supabase",
+    "stateManagement": "riverpod",
+    "routing": "gorouter",
+    "charts": "fl_chart",
+    "auth": "supabase-auth",
+    "realtime": "supabase-realtime",
+    "mobile": "flutter"
+  },
+
+  "mode": "mobile",
+  "platform": ["mobile"],
+  "multiTenant": true,
+  "tenantStrategy": "household-id-isolation",
+
+  "scale": "small",
+  "team": "solo",
+
+  "hosting": {
+    "development": "local",
+    "staging": null,
+    "production": "app-store-play-store"
+  },
+
+  "infraBudget": "free-tier",
+
+  "activeRules": [
+    "flutter-expert",
+    "mobile-developer",
+    "postgresql",
+    "multi-tenant",
+    "ui-ux-pro-max"
+  ],
+
+  "notes": "UI harus selalu mengacu pada folder Ve-Wallet-Design"
+}
