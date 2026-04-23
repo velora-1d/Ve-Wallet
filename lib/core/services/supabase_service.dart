@@ -4,18 +4,11 @@ import 'package:flutter/foundation.dart';
 
 class SupabaseService {
   static Future<void> init() async {
-    // Load .env.production in release mode, otherwise load .env
-    final fileName = kReleaseMode ? ".env.production" : ".env";
-    
     try {
-      await dotenv.load(fileName: fileName);
+      await dotenv.load(fileName: ".env.production");
     } catch (e) {
-      // Fallback to .env if specific file not found
-      if (fileName != ".env") {
-        await dotenv.load(fileName: ".env");
-      } else {
-        rethrow;
-      }
+      debugPrint("Gagal memuat .env.production: $e");
+      rethrow;
     }
     
     await Supabase.initialize(

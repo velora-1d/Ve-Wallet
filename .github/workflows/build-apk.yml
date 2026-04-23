@@ -2,9 +2,9 @@ name: build-apk
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -18,23 +18,22 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: "zulu"
+          java-version: "17"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: "stable"
 
-      - name: Create .env file
+      - name: Create .env.production file
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          touch .env
-          echo "SUPABASE_URL=$SUPABASE_URL" >> .env
-          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-          cp .env .env.production
+          touch .env.production
+          echo "SUPABASE_URL=$SUPABASE_URL" >> .env.production
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env.production
 
       - name: Get dependencies
         run: flutter pub get
