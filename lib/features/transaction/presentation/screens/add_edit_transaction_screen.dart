@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/category_utils.dart';
+import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/category/presentation/providers/category_provider.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
@@ -21,19 +23,21 @@ class AddEditTransactionScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddEditTransactionScreen> createState() => _AddEditTransactionScreenState();
+  ConsumerState<AddEditTransactionScreen> createState() =>
+      _AddEditTransactionScreenState();
 }
 
-class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScreen> {
+class _AddEditTransactionScreenState
+    extends ConsumerState<AddEditTransactionScreen> {
   final _noteController = TextEditingController();
-  
+
   TransactionType _selectedType = TransactionType.expense;
   DateTime _selectedDate = DateTime.now();
   String _amountString = '0';
-  
+
   String? _selectedWalletId;
   String? _selectedCategoryId;
-  
+
   bool _isLoading = false;
 
   @override
@@ -51,8 +55,10 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
 
     setState(() => _isLoading = true);
     try {
-      final tx = await ref.read(transactionRepositoryProvider).getTransactionById(widget.transactionId!);
-      
+      final tx = await ref
+          .read(transactionRepositoryProvider)
+          .getTransactionById(widget.transactionId!);
+
       setState(() {
         _selectedType = tx.type;
         _amountString = tx.amount.toStringAsFixed(0);
@@ -135,11 +141,15 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
   Future<void> _saveTransaction() async {
     final amount = double.tryParse(_amountString) ?? 0;
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nominal harus lebih dari 0')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nominal harus lebih dari 0')),
+      );
       return;
     }
     if (_selectedWalletId == null || _selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pilih Dompet dan Kategori')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih Dompet dan Kategori')),
+      );
       return;
     }
 
@@ -148,8 +158,12 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
       final user = ref.read(currentUserProvider);
       if (user == null) throw Exception('User not logged in');
 
-      final categories = await ref.read(categoryRepositoryProvider).getCategories(type: _selectedType);
-      final selectedCat = categories.firstWhere((c) => c.id == _selectedCategoryId);
+      final categories = await ref
+          .read(categoryRepositoryProvider)
+          .getCategories(type: _selectedType);
+      final selectedCat = categories.firstWhere(
+        (c) => c.id == _selectedCategoryId,
+      );
 
       final transaction = TransactionModel(
         id: widget.isEdit ? widget.transactionId! : '',
@@ -164,14 +178,22 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
       );
 
       if (widget.isEdit) {
-        await ref.read(transactionRepositoryProvider).updateTransaction(transaction);
+        await ref
+            .read(transactionRepositoryProvider)
+            .updateTransaction(transaction);
       } else {
-        await ref.read(transactionRepositoryProvider).addTransaction(transaction);
+        await ref
+            .read(transactionRepositoryProvider)
+            .addTransaction(transaction);
       }
-      
+
       if (mounted) context.pop();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -181,12 +203,14 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
   Widget build(BuildContext context) {
     final walletsAsync = ref.watch(walletsStreamProvider);
     final categoriesAsync = ref.watch(categoriesStreamProvider(_selectedType));
-    
+
     // Custom formatter for IDR style (dot for thousand separator)
     final formatter = NumberFormat.decimalPattern('id_ID');
 
     return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.4), // Simulated overlay background
+      backgroundColor: Colors.black.withValues(
+        alpha: 0.4,
+      ), // Simulated overlay background
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
@@ -210,7 +234,7 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                   ),
                 ),
               ),
-              
+
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -218,37 +242,37 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                     children: [
                       // Type Tabs
                       _buildTypeTabs(),
-                      
+
                       const SizedBox(height: 16),
-                      
+
                       // Amount Display
                       _buildAmountDisplay(formatter),
-                      
+
                       const SizedBox(height: 16),
-                      
+
                       // Quick Presets
                       _buildQuickPresets(),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Custom Numpad
                       _buildNumpad(),
-                      
+
                       const SizedBox(height: 32),
-                      
+
                       // Category Selection (Horizontal)
                       _buildCategoryPicker(categoriesAsync),
-                      
+
                       const SizedBox(height: 32),
-                      
+
                       // Wallet & Date
                       _buildWalletAndDatePicker(walletsAsync),
-                      
+
                       const SizedBox(height: 16),
-                      
+
                       // Note & Photo
                       _buildNoteAndPhotoSection(),
-                      
+
                       const SizedBox(height: 120), // Padding for sticky button
                     ],
                   ),
@@ -277,12 +301,18 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
     );
   }
 
-  Widget _buildTypeTabItem(String label, TransactionType? type, {bool isTransfer = false}) {
-    final isSelected = isTransfer ? false : _selectedType == type; // Transfer logic not yet fully implemented
-    
+  Widget _buildTypeTabItem(
+    String label,
+    TransactionType? type, {
+    bool isTransfer = false,
+  }) {
+    final isSelected = isTransfer
+        ? false
+        : _selectedType == type; // Transfer logic not yet fully implemented
+
     Color bgColor = const Color(0xFFEAEDFF);
     Color textColor = const Color(0xFF434655);
-    
+
     if (isSelected) {
       if (type == TransactionType.expense) {
         bgColor = const Color(0xFFFFDAD6);
@@ -292,19 +322,23 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
         textColor = const Color(0xFF15803D);
       }
     }
-    
+
     return Expanded(
       child: GestureDetector(
-        onTap: isTransfer ? () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Fitur Transfer akan segera hadir!')),
-          );
-        } : () {
-          setState(() {
-            _selectedType = type!;
-            _selectedCategoryId = null;
-          });
-        },
+        onTap: isTransfer
+            ? () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fitur Transfer akan segera hadir!'),
+                  ),
+                );
+              }
+            : () {
+                setState(() {
+                  _selectedType = type!;
+                  _selectedCategoryId = null;
+                });
+              },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
@@ -401,7 +435,9 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   side: const BorderSide(color: Color(0xFFFD761A)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
                 ),
                 child: Text(
                   val,
@@ -463,16 +499,16 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
           shape: BoxShape.circle,
         ),
         child: Center(
-          child: icon != null 
-            ? Icon(icon, size: 24, color: const Color(0xFF0F172A))
-            : Text(
-                val,
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF0F172A),
+          child: icon != null
+              ? Icon(icon, size: 24, color: const Color(0xFF0F172A))
+              : Text(
+                  val,
+                  style: GoogleFonts.inter(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF0F172A),
+                  ),
                 ),
-              ),
         ),
       ),
     );
@@ -514,12 +550,17 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                           Container(
                             width: 44,
                             height: 44,
-                            padding: isSelected ? const EdgeInsets.all(2) : null,
+                            padding: isSelected
+                                ? const EdgeInsets.all(2)
+                                : null,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: isSelected 
-                                ? Border.all(color: const Color(0xFF004AC6), width: 2)
-                                : null,
+                              border: isSelected
+                                  ? Border.all(
+                                      color: const Color(0xFF004AC6),
+                                      width: 2,
+                                    )
+                                  : null,
                             ),
                             child: Container(
                               decoration: BoxDecoration(
@@ -527,7 +568,7 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                IconData(int.parse(cat.icon), fontFamily: 'MaterialIcons'),
+                                CategoryUtils.getIcon(cat.icon),
                                 color: Color(cat.color),
                                 size: 22,
                               ),
@@ -538,8 +579,12 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                             cat.name,
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isSelected ? const Color(0xFF131B2E) : const Color(0xFF64748B),
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? const Color(0xFF131B2E)
+                                  : const Color(0xFF64748B),
                             ),
                           ),
                         ],
@@ -551,7 +596,10 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Padding(padding: const EdgeInsets.all(16), child: Text('Error: $err')),
+          error: (err, _) => Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text('Error: $err'),
+          ),
         ),
       ],
     );
@@ -566,27 +614,47 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
           Expanded(
             child: walletsAsync.when(
               data: (wallets) {
-                final selectedWallet = wallets.cast<dynamic>().firstWhere((w) => w.id == _selectedWalletId, orElse: () => null);
+                final selectedWallet = wallets.cast<dynamic>().firstWhere(
+                  (w) => w.id == _selectedWalletId,
+                  orElse: () => null,
+                );
                 return GestureDetector(
                   onTap: () => _showWalletSelector(context, wallets),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEAEDFF),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.account_balance_wallet_outlined, size: 20, color: Color(0xFF737686)),
+                        const Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 20,
+                          color: Color(0xFF737686),
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Dompet', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF737686))),
+                              Text(
+                                'Dompet',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: const Color(0xFF737686),
+                                ),
+                              ),
                               Text(
                                 selectedWallet?.name ?? 'Pilih Dompet',
-                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF131B2E)),
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF131B2E),
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],
@@ -607,23 +675,40 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
             child: GestureDetector(
               onTap: () => _selectDate(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAEDFF),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined, size: 20, color: Color(0xFF737686)),
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 20,
+                      color: Color(0xFF737686),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Tanggal', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF737686))),
+                          Text(
+                            'Tanggal',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: const Color(0xFF737686),
+                            ),
+                          ),
                           Text(
                             DateFormat('dd MMM yyyy').format(_selectedDate),
-                            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF131B2E)),
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF131B2E),
+                            ),
                           ),
                         ],
                       ),
@@ -652,10 +737,16 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
               ),
               child: TextField(
                 controller: _noteController,
-                style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF131B2E)),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: const Color(0xFF131B2E),
+                ),
                 decoration: InputDecoration(
                   hintText: 'Tambah catatan...',
-                  hintStyle: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF737686)),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: const Color(0xFF737686),
+                  ),
                   border: InputBorder.none,
                   icon: const Icon(Icons.edit_note, color: Color(0xFF737686)),
                 ),
@@ -666,7 +757,9 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
           GestureDetector(
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Fitur Kamera akan segera hadir!')),
+                const SnackBar(
+                  content: Text('Fitur Kamera akan segera hadir!'),
+                ),
               );
             },
             child: Container(
@@ -676,7 +769,10 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
                 color: const Color(0xFFEAEDFF),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.photo_camera_outlined, color: Color(0xFF004AC6)),
+              child: const Icon(
+                Icons.photo_camera_outlined,
+                color: Color(0xFF004AC6),
+              ),
             ),
           ),
         ],
@@ -686,10 +782,19 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
 
   Widget _buildStickyFooter() {
     return Container(
-      padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        16,
+        24,
+        16 + MediaQuery.paddingOf(context).bottom,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: const Color(0xFFC3C6D7).withValues(alpha: 0.3))),
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFFC3C6D7).withValues(alpha: 0.3),
+          ),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -704,23 +809,28 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
           backgroundColor: const Color(0xFF004AC6),
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 54),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           elevation: 4,
           shadowColor: const Color(0xFF004AC6).withValues(alpha: 0.3),
         ),
-        child: _isLoading 
-          ? const CircularProgressIndicator(color: Colors.white)
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.check_circle_outline, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  widget.isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi',
-                  style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.check_circle_outline, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -728,24 +838,42 @@ class _AddEditTransactionScreenState extends ConsumerState<AddEditTransactionScr
   void _showWalletSelector(BuildContext context, List<dynamic> wallets) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Dompet', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Pilih Dompet',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
-            ...wallets.map((w) => ListTile(
-              leading: Icon(IconData(int.parse(w.icon), fontFamily: 'MaterialIcons'), color: Color(w.color)),
-              title: Text(w.name, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-              trailing: _selectedWalletId == w.id ? const Icon(Icons.check_circle, color: AppColors.primary) : null,
-              onTap: () {
-                setState(() => _selectedWalletId = w.id);
-                Navigator.pop(context);
-              },
-            )),
+            ...wallets.map(
+              (w) => ListTile(
+                leading: Icon(
+                  WalletIconUtils.getIcon(w.icon),
+                  color: Color(w.color),
+                ),
+                title: Text(
+                  w.name,
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                ),
+                trailing: _selectedWalletId == w.id
+                    ? const Icon(Icons.check_circle, color: AppColors.primary)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedWalletId = w.id);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
           ],
         ),
       ),

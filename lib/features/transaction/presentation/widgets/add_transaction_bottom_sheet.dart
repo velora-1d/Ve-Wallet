@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
@@ -12,10 +13,12 @@ class AddTransactionBottomSheet extends ConsumerStatefulWidget {
   const AddTransactionBottomSheet({super.key});
 
   @override
-  ConsumerState<AddTransactionBottomSheet> createState() => _AddTransactionBottomSheetState();
+  ConsumerState<AddTransactionBottomSheet> createState() =>
+      _AddTransactionBottomSheetState();
 }
 
-class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottomSheet> {
+class _AddTransactionBottomSheetState
+    extends ConsumerState<AddTransactionBottomSheet> {
   String _amount = '0';
   int _activeTab = 0; // 0: Keluar (Expense), 1: Masuk (Income), 2: Transfer
   String _selectedCategory = 'Makanan';
@@ -23,14 +26,43 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
   final TextEditingController _noteController = TextEditingController();
   bool _isLoading = false;
 
-  final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0);
+  final currencyFormat = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: '',
+    decimalDigits: 0,
+  );
 
   final List<Map<String, dynamic>> _categories = [
-    {'name': 'Makanan', 'icon': Icons.restaurant, 'bgColor': AppColors.secondaryFixed, 'iconColor': AppColors.secondary},
-    {'name': 'Transport', 'icon': Icons.directions_car, 'bgColor': AppColors.tertiaryFixed, 'iconColor': AppColors.tertiary},
-    {'name': 'Belanja', 'icon': Icons.shopping_bag, 'bgColor': AppColors.surfaceVariant, 'iconColor': AppColors.primary},
-    {'name': 'Rumah', 'icon': Icons.home, 'bgColor': const Color(0xFFE0E7FF), 'iconColor': const Color(0xFF4338CA)},
-    {'name': 'Listrik', 'icon': Icons.bolt, 'bgColor': const Color(0xFFFEF08A), 'iconColor': const Color(0xFF854D0E)},
+    {
+      'name': 'Makanan',
+      'icon': Icons.restaurant,
+      'bgColor': AppColors.secondaryFixed,
+      'iconColor': AppColors.secondary,
+    },
+    {
+      'name': 'Transport',
+      'icon': Icons.directions_car,
+      'bgColor': AppColors.tertiaryFixed,
+      'iconColor': AppColors.tertiary,
+    },
+    {
+      'name': 'Belanja',
+      'icon': Icons.shopping_bag,
+      'bgColor': AppColors.surfaceVariant,
+      'iconColor': AppColors.primary,
+    },
+    {
+      'name': 'Rumah',
+      'icon': Icons.home,
+      'bgColor': const Color(0xFFE0E7FF),
+      'iconColor': const Color(0xFF4338CA),
+    },
+    {
+      'name': 'Listrik',
+      'icon': Icons.bolt,
+      'bgColor': const Color(0xFFFEF08A),
+      'iconColor': const Color(0xFF854D0E),
+    },
   ];
 
   @override
@@ -73,18 +105,24 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
   Future<void> _saveTransaction() async {
     final amountParsed = double.tryParse(_amount) ?? 0.0;
     if (amountParsed <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nominal harus lebih dari 0')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nominal harus lebih dari 0')),
+      );
       return;
     }
 
     if (_selectedWallet == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pilih dompet terlebih dahulu')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih dompet terlebih dahulu')),
+      );
       return;
     }
 
     final user = ref.read(currentUserProvider);
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Anda belum login')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Anda belum login')));
       return;
     }
 
@@ -110,8 +148,8 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
       await repo.addTransaction(transaction);
 
       // Update wallet balance
-      final newBalance = isExpense 
-          ? _selectedWallet!.balance - amountParsed 
+      final newBalance = isExpense
+          ? _selectedWallet!.balance - amountParsed
           : _selectedWallet!.balance + amountParsed;
 
       final updatedWallet = _selectedWallet!.copyWith(balance: newBalance);
@@ -122,7 +160,9 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
       }
     } finally {
       if (mounted) {
@@ -134,7 +174,9 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
   void _selectWallet(List<WalletModel> wallets) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) {
         return SafeArea(
           child: Column(
@@ -142,29 +184,41 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
             children: [
               const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Text('Pilih Dompet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Pilih Dompet',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              ...wallets.map((w) => ListTile(
-                leading: Icon(IconData(int.tryParse(w.icon) ?? Icons.account_balance_wallet.codePoint, fontFamily: 'MaterialIcons'), color: Color(w.color)),
-                title: Text(w.name),
-                trailing: Text('Rp ${currencyFormat.format(w.balance)}'),
-                onTap: () {
-                  setState(() => _selectedWallet = w);
-                  Navigator.pop(context);
-                },
-              )),
-              if (wallets.isEmpty) const Padding(padding: EdgeInsets.all(16.0), child: Text('Belum ada dompet')),
+              ...wallets.map(
+                (w) => ListTile(
+                  leading: Icon(
+                    WalletIconUtils.getIcon(w.icon),
+                    color: Color(w.color),
+                  ),
+                  title: Text(w.name),
+                  trailing: Text('Rp ${currencyFormat.format(w.balance)}'),
+                  onTap: () {
+                    setState(() => _selectedWallet = w);
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              if (wallets.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('Belum ada dompet'),
+                ),
             ],
           ),
         );
-      }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final walletsAsync = ref.watch(walletsStreamProvider);
-    
+
     // Auto select first wallet if none selected and wallets are available
     walletsAsync.whenData((wallets) {
       if (_selectedWallet == null && wallets.isNotEmpty) {
@@ -201,7 +255,7 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
               ),
             ),
           ),
-          
+
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -211,15 +265,25 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                   // Tabs
                   Row(
                     children: [
-                      _buildTab(0, 'Keluar', AppColors.errorContainer, AppColors.error),
+                      _buildTab(
+                        0,
+                        'Keluar',
+                        AppColors.errorContainer,
+                        AppColors.error,
+                      ),
                       const SizedBox(width: 8),
-                      _buildTab(1, 'Masuk', AppColors.surfaceContainer, AppColors.success),
+                      _buildTab(
+                        1,
+                        'Masuk',
+                        AppColors.surfaceContainer,
+                        AppColors.success,
+                      ),
                       // Transfer tab can be handled later or disabled for now
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Amount Display
                   Container(
                     width: double.infinity,
@@ -233,7 +297,10 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                       children: [
                         const Text(
                           'Nominal Transaksi',
-                          style: TextStyle(color: AppColors.primary, fontSize: 14),
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -263,9 +330,9 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Quick Presets
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -276,9 +343,9 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                       _buildPreset('100000'),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Numpad
                   Center(
                     child: SizedBox(
@@ -290,17 +357,23 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
                         children: [
-                          ...List.generate(9, (index) => _buildNumBtn((index + 1).toString())),
+                          ...List.generate(
+                            9,
+                            (index) => _buildNumBtn((index + 1).toString()),
+                          ),
                           _buildNumBtn('000'),
                           _buildNumBtn('0'),
-                          _buildActionBtn(Icons.backspace_outlined, _onBackspace),
+                          _buildActionBtn(
+                            Icons.backspace_outlined,
+                            _onBackspace,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Categories
                   const Text(
                     'Kategori',
@@ -315,34 +388,51 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                     height: 70,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: _categories.map((c) => _buildCategoryItem(c['name'], c['icon'], c['bgColor'], c['iconColor'])).toList(),
+                      children: _categories
+                          .map(
+                            (c) => _buildCategoryItem(
+                              c['name'],
+                              c['icon'],
+                              c['bgColor'],
+                              c['iconColor'],
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Details
                   Row(
                     children: [
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            walletsAsync.whenData((wallets) => _selectWallet(wallets));
+                            walletsAsync.whenData(
+                              (wallets) => _selectWallet(wallets),
+                            );
                           },
                           child: _buildDetailTile(
-                            Icons.account_balance_wallet_outlined, 
-                            'Dompet', 
-                            _selectedWallet?.name ?? 'Pilih Dompet'
+                            Icons.account_balance_wallet_outlined,
+                            'Dompet',
+                            _selectedWallet?.name ?? 'Pilih Dompet',
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(child: _buildDetailTile(Icons.calendar_today_outlined, 'Tanggal', 'Hari ini')),
+                      Expanded(
+                        child: _buildDetailTile(
+                          Icons.calendar_today_outlined,
+                          'Tanggal',
+                          'Hari ini',
+                        ),
+                      ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   Row(
                     children: [
                       Expanded(
@@ -355,9 +445,15 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                           child: TextField(
                             controller: _noteController,
                             decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_note, color: AppColors.outline),
+                              icon: Icon(
+                                Icons.edit_note,
+                                color: AppColors.outline,
+                              ),
                               hintText: 'Tambah catatan...',
-                              hintStyle: TextStyle(fontSize: 14, color: AppColors.outlineVariant),
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.outlineVariant,
+                              ),
                               border: InputBorder.none,
                             ),
                           ),
@@ -365,30 +461,49 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 100), // Space for button
                 ],
               ),
             ),
           ),
-          
+
           // Fixed Save Button
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.3))),
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                ),
+              ),
             ),
             child: ElevatedButton.icon(
               onPressed: _isLoading ? null : _saveTransaction,
-              icon: _isLoading 
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Icon(Icons.check_circle, color: Colors.white),
-              label: Text(_isLoading ? 'Menyimpan...' : 'Simpan Transaksi', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.check_circle, color: Colors.white),
+              label: Text(
+                _isLoading ? 'Menyimpan...' : 'Simpan Transaksi',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 minimumSize: const Size(double.infinity, 54),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 4,
                 shadowColor: AppColors.primary.withValues(alpha: 0.4),
               ),
@@ -435,7 +550,11 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
         ),
         child: Text(
           value.replaceFirst('000', 'rb'),
-          style: const TextStyle(color: AppColors.secondaryContainer, fontSize: 12, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            color: AppColors.secondaryContainer,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );
@@ -445,11 +564,18 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
     return GestureDetector(
       onTap: () => _onNumberPressed(value),
       child: Container(
-        decoration: const BoxDecoration(color: Color(0xFFF1F5F9), shape: BoxShape.circle),
+        decoration: const BoxDecoration(
+          color: Color(0xFFF1F5F9),
+          shape: BoxShape.circle,
+        ),
         child: Center(
           child: Text(
             value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
           ),
         ),
       ),
@@ -461,12 +587,19 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
       onTap: onTap,
       child: Container(
         color: Colors.transparent,
-        child: Center(child: Icon(icon, size: 28, color: const Color(0xFF0F172A))),
+        child: Center(
+          child: Icon(icon, size: 28, color: const Color(0xFF0F172A)),
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryItem(String label, IconData icon, Color bgColor, Color iconColor) {
+  Widget _buildCategoryItem(
+    String label,
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+  ) {
     final isSelected = _selectedCategory == label;
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
@@ -480,12 +613,17 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
               decoration: BoxDecoration(
                 color: bgColor,
                 shape: BoxShape.circle,
-                border: isSelected ? Border.all(color: AppColors.primary, width: 2) : null,
+                border: isSelected
+                    ? Border.all(color: AppColors.primary, width: 2)
+                    : null,
               ),
               child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -507,8 +645,22 @@ class _AddTransactionBottomSheetState extends ConsumerState<AddTransactionBottom
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: AppColors.outline, fontSize: 10)),
-                Text(value, style: const TextStyle(color: AppColors.onSurface, fontSize: 13, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppColors.outline,
+                    fontSize: 10,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: AppColors.onSurface,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),

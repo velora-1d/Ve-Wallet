@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CategoryUtils {
+  static const String defaultIconName = 'more_horiz';
+
   static const Map<String, IconData> categoryIcons = {
     'restaurant': Icons.restaurant,
     'shopping_cart': Icons.shopping_cart,
@@ -48,13 +50,33 @@ class CategoryUtils {
     Color(0xFF000000), // Black
   ];
 
+  static String resolveIconName(String storedIcon) {
+    if (categoryIcons.containsKey(storedIcon)) {
+      return storedIcon;
+    }
+
+    final legacyCodePoint = int.tryParse(storedIcon);
+    if (legacyCodePoint != null) {
+      for (final entry in categoryIcons.entries) {
+        if (entry.value.codePoint == legacyCodePoint) {
+          return entry.key;
+        }
+      }
+    }
+
+    return defaultIconName;
+  }
+
   static IconData getIcon(String iconName) {
-    return categoryIcons[iconName] ?? Icons.more_horiz;
+    return categoryIcons[resolveIconName(iconName)] ?? Icons.more_horiz;
   }
 
   static String getIconName(IconData icon) {
     return categoryIcons.entries
-        .firstWhere((entry) => entry.value == icon, orElse: () => categoryIcons.entries.last)
+        .firstWhere(
+          (entry) => entry.value == icon,
+          orElse: () => categoryIcons.entries.last,
+        )
         .key;
   }
 }

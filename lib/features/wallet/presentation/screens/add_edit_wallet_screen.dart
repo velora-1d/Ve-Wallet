@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
@@ -11,23 +12,24 @@ class AddEditWalletScreen extends ConsumerStatefulWidget {
   final WalletModel? initialWallet;
 
   const AddEditWalletScreen({
-    super.key, 
+    super.key,
     this.isEdit = false,
     this.initialWallet,
   });
 
   @override
-  ConsumerState<AddEditWalletScreen> createState() => _AddEditWalletScreenState();
+  ConsumerState<AddEditWalletScreen> createState() =>
+      _AddEditWalletScreenState();
 }
 
 class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _balanceController = TextEditingController();
-  
+
   String _selectedType = 'Bank';
   Color _selectedColor = AppColors.primary;
-  IconData _selectedIcon = Icons.account_balance_wallet;
+  String _selectedIconKey = WalletIconUtils.defaultIconKey;
 
   bool _isLoading = false;
 
@@ -49,16 +51,9 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
     Colors.amber,
   ];
 
-  final List<IconData> _availableIcons = [
-    Icons.account_balance_wallet,
-    Icons.account_balance,
-    Icons.money,
-    Icons.credit_card,
-    Icons.savings,
-    Icons.payments,
-    Icons.trending_up,
-    Icons.wallet,
-  ];
+  final List<String> _availableIcons = WalletIconUtils.walletIcons.keys.toList(
+    growable: false,
+  );
 
   @override
   void initState() {
@@ -73,8 +68,8 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
     _nameController.text = wallet.name;
     _balanceController.text = wallet.balance.toStringAsFixed(0);
     _selectedColor = Color(wallet.color);
-    _selectedIcon = IconData(int.parse(wallet.icon), fontFamily: 'MaterialIcons');
-    // Note: Type detection is based on initial name or some mapping, 
+    _selectedIconKey = WalletIconUtils.resolveIconKey(wallet.icon);
+    // Note: Type detection is based on initial name or some mapping,
     // for now we'll just keep the default or maybe add 'type' to model later
   }
 
@@ -94,7 +89,11 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
 
         final walletRepo = ref.read(walletRepositoryProvider);
 
-        final balance = double.tryParse(_balanceController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        final balance =
+            double.tryParse(
+              _balanceController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+            ) ??
+            0.0;
 
         final wallet = WalletModel(
           id: widget.isEdit ? (widget.initialWallet?.id ?? '') : '',
@@ -102,8 +101,10 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
           name: _nameController.text,
           balance: balance,
           color: _selectedColor.toARGB32(),
-          icon: _selectedIcon.codePoint.toString(),
-          createdAt: widget.isEdit ? widget.initialWallet?.createdAt : DateTime.now(),
+          icon: _selectedIconKey,
+          createdAt: widget.isEdit
+              ? widget.initialWallet?.createdAt
+              : DateTime.now(),
         );
 
         if (widget.isEdit) {
@@ -111,15 +112,15 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         } else {
           await walletRepo.addWallet(wallet);
         }
-        
+
         if (mounted) {
           context.pop();
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Gagal menyimpan dompet: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Gagal menyimpan dompet: $e')));
         }
       } finally {
         if (mounted) {
@@ -142,22 +143,34 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         ),
         title: Text(
           widget.isEdit ? 'Edit Dompet' : 'Tambah Dompet Baru',
-          style: const TextStyle(color: AppColors.onSurface, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: AppColors.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
-          _isLoading 
-            ? const Center(child: Padding(padding: EdgeInsets.only(right: 16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
-            : TextButton(
-                onPressed: _saveWallet,
-                child: const Text(
-                  'Simpan',
-                  style: TextStyle(
-                    color: AppColors.primaryContainer,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+          _isLoading
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                )
+              : TextButton(
+                  onPressed: _saveWallet,
+                  child: const Text(
+                    'Simpan',
+                    style: TextStyle(
+                      color: AppColors.primaryContainer,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-              ),
           const SizedBox(width: 8),
         ],
       ),
@@ -185,9 +198,13 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                 ),
-                validator: (value) => value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Nama tidak boleh kosong' : null,
                 onChanged: (val) => setState(() {}),
               ),
               const SizedBox(height: 24),
@@ -207,9 +224,13 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                 ),
-                validator: (value) => value!.isEmpty ? 'Saldo tidak boleh kosong' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Saldo tidak boleh kosong' : null,
                 onChanged: (val) => setState(() {}),
               ),
               const SizedBox(height: 24),
@@ -229,13 +250,19 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primaryContainer : Colors.white,
+                            color: isSelected
+                                ? AppColors.primaryContainer
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: isSelected ? null : Border.all(color: AppColors.outlineVariant),
+                            border: isSelected
+                                ? null
+                                : Border.all(color: AppColors.outlineVariant),
                           ),
                           child: Icon(
                             type['icon'],
-                            color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -243,8 +270,12 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                           type['name'],
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? AppColors.primaryContainer : AppColors.onSurfaceVariant,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? AppColors.primaryContainer
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -262,7 +293,8 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _availableColors.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     final color = _availableColors[index];
                     final isSelected = _selectedColor == color;
@@ -274,9 +306,13 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
-                          border: isSelected ? Border.all(color: AppColors.onSurface, width: 2) : null,
+                          border: isSelected
+                              ? Border.all(color: AppColors.onSurface, width: 2)
+                              : null,
                         ),
-                        child: isSelected ? const Icon(Icons.check, color: Colors.white) : null,
+                        child: isSelected
+                            ? const Icon(Icons.check, color: Colors.white)
+                            : null,
                       ),
                     );
                   },
@@ -290,21 +326,28 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
               Wrap(
                 spacing: 16,
                 runSpacing: 16,
-                children: _availableIcons.map((icon) {
-                  final isSelected = _selectedIcon == icon;
+                children: _availableIcons.map((iconKey) {
+                  final icon = WalletIconUtils.getIcon(iconKey);
+                  final isSelected = _selectedIconKey == iconKey;
                   return GestureDetector(
-                    onTap: () => setState(() => _selectedIcon = icon),
+                    onTap: () => setState(() => _selectedIconKey = iconKey),
                     child: Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: isSelected ? _selectedColor.withValues(alpha: 0.1) : Colors.white,
+                        color: isSelected
+                            ? _selectedColor.withValues(alpha: 0.1)
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: isSelected ? Border.all(color: _selectedColor, width: 2) : Border.all(color: AppColors.outlineVariant),
+                        border: isSelected
+                            ? Border.all(color: _selectedColor, width: 2)
+                            : Border.all(color: AppColors.outlineVariant),
                       ),
                       child: Icon(
                         icon,
-                        color: isSelected ? _selectedColor : AppColors.onSurfaceVariant,
+                        color: isSelected
+                            ? _selectedColor
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   );
@@ -337,10 +380,7 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            _selectedColor,
-            _selectedColor.withValues(alpha: 0.8),
-          ],
+          colors: [_selectedColor, _selectedColor.withValues(alpha: 0.8)],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -363,7 +403,11 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(_selectedIcon, color: Colors.white, size: 28),
+                child: Icon(
+                  WalletIconUtils.getIcon(_selectedIconKey),
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
               Text(
                 _selectedType,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
 import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
@@ -11,14 +12,15 @@ import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider
 class WalletDetailScreen extends ConsumerWidget {
   final WalletModel wallet;
 
-  const WalletDetailScreen({
-    super.key,
-    required this.wallet,
-  });
+  const WalletDetailScreen({super.key, required this.wallet});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
     final transactionsAsync = ref.watch(transactionsStreamProvider(wallet.id));
 
     return Scaffold(
@@ -38,10 +40,10 @@ class WalletDetailScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.white),
-                onPressed: () => context.push('/add-wallet', extra: {
-                  'isEdit': true,
-                  'wallet': wallet,
-                }),
+                onPressed: () => context.push(
+                  '/add-wallet',
+                  extra: {'isEdit': true, 'wallet': wallet},
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.delete_outline, color: Colors.white),
@@ -71,7 +73,7 @@ class WalletDetailScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        IconData(int.parse(wallet.icon), fontFamily: 'MaterialIcons'),
+                        WalletIconUtils.getIcon(wallet.icon),
                         color: Colors.white,
                         size: 32,
                       ),
@@ -135,8 +137,10 @@ class WalletDetailScreen extends ConsumerWidget {
                 ),
               );
             },
-            loading: () => const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            error: (err, _) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+            loading: () =>
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            error: (err, _) =>
+                const SliverToBoxAdapter(child: SizedBox.shrink()),
           ),
 
           // Recent Transactions Header
@@ -177,30 +181,25 @@ class WalletDetailScreen extends ConsumerWidget {
                 );
               }
               return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final tx = transactions[index];
-                    return _buildTransactionItem(context, tx);
-                  },
-                  childCount: transactions.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final tx = transactions[index];
+                  return _buildTransactionItem(context, tx);
+                }, childCount: transactions.length),
               );
             },
             loading: () => const SliverToBoxAdapter(
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (err, _) => SliverToBoxAdapter(
-              child: Center(child: Text('Error: $err')),
-            ),
+            error: (err, _) =>
+                SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
           ),
-          
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 40),
-          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/add-transaction', extra: {'walletId': wallet.id}),
+        onPressed: () =>
+            context.push('/add-transaction', extra: {'walletId': wallet.id}),
         backgroundColor: Color(wallet.color),
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -214,7 +213,11 @@ class WalletDetailScreen extends ConsumerWidget {
     required IconData icon,
     required Color iconColor,
   }) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
 
     return Expanded(
       child: Container(
@@ -270,9 +273,13 @@ class WalletDetailScreen extends ConsumerWidget {
 
   Widget _buildTransactionItem(BuildContext context, TransactionModel tx) {
     final isExpense = tx.type == TransactionType.expense;
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
     final dateFormat = DateFormat('dd MMM yyyy • HH:mm', 'id_ID');
-    
+
     return InkWell(
       onTap: () => context.push('/transaction-detail', extra: tx),
       child: Container(
@@ -345,7 +352,9 @@ class WalletDetailScreen extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Hapus Dompet?'),
-        content: const Text('Seluruh riwayat transaksi di dompet ini juga akan terhapus.'),
+        content: const Text(
+          'Seluruh riwayat transaksi di dompet ini juga akan terhapus.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -355,7 +364,9 @@ class WalletDetailScreen extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(dialogContext);
               try {
-                await ref.read(walletRepositoryProvider).deleteWallet(wallet.id);
+                await ref
+                    .read(walletRepositoryProvider)
+                    .deleteWallet(wallet.id);
                 if (context.mounted) {
                   context.pop();
                 }
@@ -375,4 +386,3 @@ class WalletDetailScreen extends ConsumerWidget {
     );
   }
 }
-
