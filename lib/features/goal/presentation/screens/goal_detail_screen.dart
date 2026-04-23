@@ -15,6 +15,7 @@ class GoalDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goalAsync = ref.watch(goalDetailProvider(goalId));
     final allocationsAsync = ref.watch(goalAllocationsStreamProvider(goalId));
+    final wallets = ref.watch(walletsStreamProvider).value ?? const [];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -49,7 +50,7 @@ class GoalDetailScreen extends ConsumerWidget {
                   if (allocations.isEmpty) {
                     return _buildEmptyAllocations();
                   }
-                  return _buildAllocationsList(allocations, ref);
+                  return _buildAllocationsList(allocations, ref, wallets);
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Text('Error: $err'),
@@ -92,10 +93,17 @@ class GoalDetailScreen extends ConsumerWidget {
               color: Color(int.parse(goal.color)).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(_getIconData(goal.icon), color: Color(int.parse(goal.color)), size: 40),
+            child: Icon(
+              _getIconData(goal.icon),
+              color: Color(int.parse(goal.color)),
+              size: 40,
+            ),
           ),
           const SizedBox(height: 16),
-          Text(goal.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+          Text(
+            goal.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
           const SizedBox(height: 8),
           Text(
             'Target: ${CurrencyFormatter.format(goal.targetAmount)}',
@@ -108,14 +116,17 @@ class GoalDetailScreen extends ConsumerWidget {
               Text(
                 CurrencyFormatter.format(goal.currentAmount),
                 style: TextStyle(
-                  fontWeight: FontWeight.bold, 
-                  fontSize: 20, 
-                  color: Color(int.parse(goal.color))
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Color(int.parse(goal.color)),
                 ),
               ),
               Text(
                 '${(progress * 100).toInt()}%',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ],
           ),
@@ -126,7 +137,9 @@ class GoalDetailScreen extends ConsumerWidget {
               value: progress > 1.0 ? 1.0 : progress,
               minHeight: 14,
               backgroundColor: AppColors.surfaceContainer,
-              valueColor: AlwaysStoppedAnimation<Color>(Color(int.parse(goal.color))),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color(int.parse(goal.color)),
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -134,11 +147,18 @@ class GoalDetailScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.access_time, size: 16, color: AppColors.outline),
+                const Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: AppColors.outline,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   'Deadline: ${goal.deadline!.day}/${goal.deadline!.month}/${goal.deadline!.year}',
-                  style: const TextStyle(color: AppColors.outline, fontSize: 14),
+                  style: const TextStyle(
+                    color: AppColors.outline,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -159,13 +179,20 @@ class GoalDetailScreen extends ConsumerWidget {
         children: [
           Icon(Icons.history, size: 48, color: AppColors.outline),
           SizedBox(height: 16),
-          Text('Belum ada riwayat alokasi dana', style: TextStyle(color: AppColors.outline)),
+          Text(
+            'Belum ada riwayat alokasi dana',
+            style: TextStyle(color: AppColors.outline),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildAllocationsList(List<GoalAllocationModel> allocations, WidgetRef ref) {
+  Widget _buildAllocationsList(
+    List<GoalAllocationModel> allocations,
+    WidgetRef ref,
+    List<dynamic> wallets,
+  ) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -173,6 +200,13 @@ class GoalDetailScreen extends ConsumerWidget {
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final alloc = allocations[index];
+        String walletName = alloc.walletName ?? 'Dompet';
+        for (final wallet in wallets) {
+          if (wallet.id == alloc.walletId) {
+            walletName = wallet.name;
+            break;
+          }
+        }
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -196,11 +230,17 @@ class GoalDetailScreen extends ConsumerWidget {
                   children: [
                     Text(
                       CurrencyFormatter.format(alloc.amount),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     Text(
-                      'Dari: ${alloc.walletName ?? "Dompet"}',
-                      style: const TextStyle(color: AppColors.outline, fontSize: 12),
+                      'Dari: $walletName',
+                      style: const TextStyle(
+                        color: AppColors.outline,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -210,7 +250,11 @@ class GoalDetailScreen extends ConsumerWidget {
                 style: const TextStyle(color: AppColors.outline, fontSize: 12),
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: Colors.red,
+                ),
                 onPressed: () => _confirmDeleteAllocation(context, ref, alloc),
               ),
             ],
@@ -229,17 +273,26 @@ class GoalDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmDeleteAllocation(BuildContext context, WidgetRef ref, GoalAllocationModel alloc) {
+  void _confirmDeleteAllocation(
+    BuildContext context,
+    WidgetRef ref,
+    GoalAllocationModel alloc,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Alokasi?'),
         content: const Text('Saldo target akan dikurangi sesuai jumlah ini.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
           TextButton(
             onPressed: () async {
-              await ref.read(goalControllerProvider.notifier).deleteAllocation(alloc);
+              await ref
+                  .read(goalControllerProvider.notifier)
+                  .deleteAllocation(alloc);
               if (context.mounted) Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -251,12 +304,18 @@ class GoalDetailScreen extends ConsumerWidget {
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'flight': return Icons.flight;
-      case 'laptop': return Icons.laptop;
-      case 'home': return Icons.home;
-      case 'directions_car': return Icons.directions_car;
-      case 'savings': return Icons.savings;
-      default: return Icons.star;
+      case 'flight':
+        return Icons.flight;
+      case 'laptop':
+        return Icons.laptop;
+      case 'home':
+        return Icons.home;
+      case 'directions_car':
+        return Icons.directions_car;
+      case 'savings':
+        return Icons.savings;
+      default:
+        return Icons.star;
     }
   }
 }
@@ -266,7 +325,8 @@ class _AddAllocationSheet extends ConsumerStatefulWidget {
   const _AddAllocationSheet({required this.goalId});
 
   @override
-  ConsumerState<_AddAllocationSheet> createState() => _AddAllocationSheetState();
+  ConsumerState<_AddAllocationSheet> createState() =>
+      _AddAllocationSheetState();
 }
 
 class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
@@ -275,8 +335,16 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
   String? _selectedWalletId;
 
   @override
+  void dispose() {
+    _amountController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final walletsAsync = ref.watch(walletsStreamProvider);
+    final wallets = walletsAsync.value ?? const [];
 
     return Container(
       padding: EdgeInsets.only(
@@ -293,31 +361,68 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Alokasikan Dana', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text(
+            'Alokasikan Dana',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 24),
-          const Text('Pilih Sumber Dompet', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Pilih Sumber Dompet',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           walletsAsync.when(
             data: (wallets) => DropdownButtonFormField<String>(
               initialValue: _selectedWalletId,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              items: wallets.map((w) => DropdownMenuItem(value: w.id, child: Text(w.name))).toList(),
+              items: wallets
+                  .map(
+                    (w) => DropdownMenuItem(
+                      value: w.id,
+                      child: Text(
+                        '${w.name} (${CurrencyFormatter.format(w.balance)})',
+                      ),
+                    ),
+                  )
+                  .toList(),
               onChanged: (val) => setState(() => _selectedWalletId = val),
             ),
             loading: () => const CircularProgressIndicator(),
             error: (error, stack) => const Text('Error'),
           ),
           const SizedBox(height: 16),
-          const Text('Jumlah Alokasi', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Jumlah Alokasi',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _amountController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               prefixText: 'Rp ',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Catatan (Opsional)',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _noteController,
+            decoration: InputDecoration(
+              hintText: 'Misal: alokasi bonus bulanan',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -326,25 +431,69 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
             height: 55,
             child: ElevatedButton(
               onPressed: () async {
-                if (_selectedWalletId == null || _amountController.text.isEmpty) return;
-                
-                final amount = double.parse(_amountController.text);
+                if (_selectedWalletId == null ||
+                    _amountController.text.isEmpty) {
+                  return;
+                }
+
+                final amount = double.tryParse(_amountController.text);
+                if (amount == null || amount <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Nominal alokasi harus lebih dari 0'),
+                    ),
+                  );
+                  return;
+                }
+
+                dynamic selectedWallet;
+                for (final wallet in wallets) {
+                  if (wallet.id == _selectedWalletId) {
+                    selectedWallet = wallet;
+                    break;
+                  }
+                }
+                if (selectedWallet == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Pilih dompet sumber terlebih dahulu'),
+                    ),
+                  );
+                  return;
+                }
+
+                if (selectedWallet.balance < amount) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Saldo dompet tidak mencukupi'),
+                    ),
+                  );
+                  return;
+                }
+
                 final allocation = GoalAllocationModel(
                   goalId: widget.goalId,
                   walletId: _selectedWalletId!,
                   amount: amount,
                   note: _noteController.text,
                 );
-                
-                await ref.read(goalControllerProvider.notifier).addAllocation(allocation);
+
+                await ref
+                    .read(goalControllerProvider.notifier)
+                    .addAllocation(allocation);
                 if (context.mounted) Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: const Text('Konfirmasi Alokasi', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Konfirmasi Alokasi',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

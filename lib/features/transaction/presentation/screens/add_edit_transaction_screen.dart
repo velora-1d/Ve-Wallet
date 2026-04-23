@@ -15,11 +15,13 @@ import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider
 class AddEditTransactionScreen extends ConsumerStatefulWidget {
   final bool isEdit;
   final String? transactionId;
+  final String? initialWalletId;
 
   const AddEditTransactionScreen({
     super.key,
     this.isEdit = false,
     this.transactionId,
+    this.initialWalletId,
   });
 
   @override
@@ -43,6 +45,7 @@ class _AddEditTransactionScreenState
   @override
   void initState() {
     super.initState();
+    _selectedWalletId = widget.initialWalletId;
     if (widget.isEdit) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadTransactionData();

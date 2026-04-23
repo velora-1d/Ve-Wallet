@@ -23,7 +23,9 @@ class DashboardScreen extends ConsumerWidget {
     final transactionsAsync = ref.watch(transactionsStreamProvider(null));
     final goalsAsync = ref.watch(goalsStreamProvider);
     final now = DateTime.now();
-    final budgetsAsync = ref.watch(budgetsStreamProvider(DateTime(now.year, now.month)));
+    final budgetsAsync = ref.watch(
+      budgetsStreamProvider(DateTime(now.year, now.month)),
+    );
 
     // Calculate totals
     double totalBalance = 0;
@@ -74,7 +76,9 @@ class DashboardScreen extends ConsumerWidget {
                     color: AppColors.surfaceContainerHighest,
                     shape: BoxShape.circle,
                     image: const DecorationImage(
-                      image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuBbh3gAOTLPt1TqjQq8vaskm5aDjbEdvBAjz96LvBnWAhaVhNasOw1ql-2DxSjwUotFPduC3AkWhs6ogYZz0VaL9kcQfItEN1F0_N6YQpaNeyyK55R6kU_6Nq7VqRb7mt1j0-i0_TLew3uG6d9dh6IGhCIS8VZhiFQInMeBN93CFwQO1KIwQUabKWFSiD9SDS98lboCcBDgQ8QzmzNcO2PZ0ee8HYtMtEq7agSbxo9hFUM9hYXZ60yMIpxpDBTJVAcJntiw4ZyqctP5'),
+                      image: NetworkImage(
+                        'https://lh3.googleusercontent.com/aida-public/AB6AXuBbh3gAOTLPt1TqjQq8vaskm5aDjbEdvBAjz96LvBnWAhaVhNasOw1ql-2DxSjwUotFPduC3AkWhs6ogYZz0VaL9kcQfItEN1F0_N6YQpaNeyyK55R6kU_6Nq7VqRb7mt1j0-i0_TLew3uG6d9dh6IGhCIS8VZhiFQInMeBN93CFwQO1KIwQUabKWFSiD9SDS98lboCcBDgQ8QzmzNcO2PZ0ee8HYtMtEq7agSbxo9hFUM9hYXZ60yMIpxpDBTJVAcJntiw4ZyqctP5',
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -120,8 +124,11 @@ class DashboardScreen extends ConsumerWidget {
                   alignment: Alignment.center,
                   children: [
                     IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.notifications_outlined, color: AppColors.outline),
+                      onPressed: () => context.push('/notifications'),
+                      icon: const Icon(
+                        Icons.notifications_outlined,
+                        color: AppColors.outline,
+                      ),
                     ),
                     Positioned(
                       top: 14,
@@ -156,11 +163,11 @@ class DashboardScreen extends ConsumerWidget {
                   // Hero Card
                   _buildBalanceCard(totalBalance, totalIncome, totalExpense),
                   const SizedBox(height: 24),
-                  
+
                   // Expense Chart
                   _buildExpenseChart(context),
                   const SizedBox(height: 24),
-                  
+
                   // Savings Goals
                   goalsAsync.when(
                     data: (goals) => _buildSavingsGoals(context, goals),
@@ -168,19 +175,22 @@ class DashboardScreen extends ConsumerWidget {
                     error: (error, stack) => const SizedBox(),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Budget Alert
                   budgetsAsync.when(
-                    data: (budgets) => _buildBudgetAlert(context, budgets, transactions ?? []),
+                    data: (budgets) =>
+                        _buildBudgetAlert(context, budgets, transactions ?? []),
                     loading: () => const SizedBox(),
                     error: (error, stack) => const SizedBox(),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Recent Transactions
                   transactionsAsync.when(
-                    data: (transactions) => _buildRecentTransactions(context, transactions),
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    data: (transactions) =>
+                        _buildRecentTransactions(context, transactions),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (err, stack) => Center(child: Text('Error: $err')),
                   ),
                   const SizedBox(height: 100), // Spacing for bottom nav
@@ -226,7 +236,11 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.visibility_outlined, color: Colors.white.withValues(alpha: 0.7), size: 16),
+              Icon(
+                Icons.visibility_outlined,
+                color: Colors.white.withValues(alpha: 0.7),
+                size: 16,
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -260,7 +274,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBalanceSummary({required IconData icon, required Color color, required String label}) {
+  Widget _buildBalanceSummary({
+    required IconData icon,
+    required Color color,
+    required String label,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -323,16 +341,29 @@ class DashboardScreen extends ConsumerWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
-                      const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-                      final isHighlight = value.toInt() == 3; // Thursday highlight as in design
+                      const days = [
+                        'Sen',
+                        'Sel',
+                        'Rab',
+                        'Kam',
+                        'Jum',
+                        'Sab',
+                        'Min',
+                      ];
+                      final isHighlight =
+                          value.toInt() == 3; // Thursday highlight as in design
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           days[value.toInt()],
                           style: GoogleFonts.inter(
-                            color: isHighlight ? AppColors.onBackground : AppColors.outline,
+                            color: isHighlight
+                                ? AppColors.onBackground
+                                : AppColors.outline,
                             fontSize: 12,
-                            fontWeight: isHighlight ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight: isHighlight
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
                         ),
                       );
@@ -340,9 +371,15 @@ class DashboardScreen extends ConsumerWidget {
                     reservedSize: 30,
                   ),
                 ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               gridData: const FlGridData(show: false),
               borderData: FlBorderData(show: false),
@@ -350,7 +387,11 @@ class DashboardScreen extends ConsumerWidget {
                 _buildBarGroup(0, 30),
                 _buildBarGroup(1, 50),
                 _buildBarGroup(2, 40),
-                _buildBarGroup(3, 90, color: AppColors.secondaryContainer), // Kam - Highlight
+                _buildBarGroup(
+                  3,
+                  90,
+                  color: AppColors.secondaryContainer,
+                ), // Kam - Highlight
                 _buildBarGroup(4, 60),
                 _buildBarGroup(5, 20),
                 _buildBarGroup(6, 35),
@@ -362,7 +403,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  BarChartGroupData _buildBarGroup(int x, double y, {Color color = AppColors.primaryFixedDim}) {
+  BarChartGroupData _buildBarGroup(
+    int x,
+    double y, {
+    Color color = AppColors.primaryFixedDim,
+  }) {
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -423,10 +468,8 @@ class DashboardScreen extends ConsumerWidget {
               mainAxisExtent: 110,
             ),
             itemCount: goals.length > 2 ? 2 : goals.length,
-            itemBuilder: (context, index) => _buildGoalCard(
-              context: context,
-              goal: goals[index],
-            ),
+            itemBuilder: (context, index) =>
+                _buildGoalCard(context: context, goal: goals[index]),
           ),
       ],
     );
@@ -437,7 +480,7 @@ class DashboardScreen extends ConsumerWidget {
     required GoalModel goal,
   }) {
     final progress = goal.progress;
-    
+
     return InkWell(
       onTap: () => context.push('/goal-detail/${goal.id}'),
       child: Container(
@@ -483,7 +526,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const Spacer(),
             Text(
-              goal.name, 
+              goal.name,
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -498,7 +541,9 @@ class DashboardScreen extends ConsumerWidget {
               child: LinearProgressIndicator(
                 value: progress > 1.0 ? 1.0 : progress,
                 backgroundColor: AppColors.surfaceContainer,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primary,
+                ),
                 minHeight: 6,
               ),
             ),
@@ -510,16 +555,26 @@ class DashboardScreen extends ConsumerWidget {
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'flight': return Icons.flight_takeoff;
-      case 'laptop': return Icons.laptop_mac;
-      case 'home': return Icons.home;
-      case 'directions_car': return Icons.directions_car;
-      case 'savings': return Icons.savings;
-      default: return Icons.star;
+      case 'flight':
+        return Icons.flight_takeoff;
+      case 'laptop':
+        return Icons.laptop_mac;
+      case 'home':
+        return Icons.home;
+      case 'directions_car':
+        return Icons.directions_car;
+      case 'savings':
+        return Icons.savings;
+      default:
+        return Icons.star;
     }
   }
 
-  Widget _buildBudgetAlert(BuildContext context, List<BudgetModel> budgets, List<TransactionModel> transactions) {
+  Widget _buildBudgetAlert(
+    BuildContext context,
+    List<BudgetModel> budgets,
+    List<TransactionModel> transactions,
+  ) {
     if (budgets.isEmpty) return const SizedBox();
 
     // Find budget with highest usage percentage
@@ -528,11 +583,13 @@ class DashboardScreen extends ConsumerWidget {
 
     for (var budget in budgets) {
       final spent = transactions
-          .where((tx) =>
-              tx.categoryId == budget.categoryId &&
-              tx.type == TransactionType.expense &&
-              tx.date.month == budget.periodMonth &&
-              tx.date.year == budget.periodYear)
+          .where(
+            (tx) =>
+                tx.categoryId == budget.categoryId &&
+                tx.type == TransactionType.expense &&
+                tx.date.month == budget.periodMonth &&
+                tx.date.year == budget.periodYear,
+          )
           .fold(0.0, (sum, tx) => sum + tx.amount);
 
       final usage = budget.amount > 0 ? spent / budget.amount : 0.0;
@@ -564,18 +621,22 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  isOver ? Icons.error_outline : Icons.warning_amber_rounded, 
-                  color: isOver ? AppColors.error : AppColors.secondaryContainer, 
-                  size: 20
+                  isOver ? Icons.error_outline : Icons.warning_amber_rounded,
+                  color: isOver
+                      ? AppColors.error
+                      : AppColors.secondaryContainer,
+                  size: 20,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    isOver 
-                      ? 'Anggaran ${criticalBudget.categoryName} terlampaui!' 
-                      : 'Anggaran ${criticalBudget.categoryName} ${(maxUsage * 100).toInt()}% terpakai',
+                    isOver
+                        ? 'Anggaran ${criticalBudget.categoryName} terlampaui!'
+                        : 'Anggaran ${criticalBudget.categoryName} ${(maxUsage * 100).toInt()}% terpakai',
                     style: GoogleFonts.inter(
-                      color: isOver ? AppColors.error : AppColors.onSecondaryContainer,
+                      color: isOver
+                          ? AppColors.error
+                          : AppColors.onSecondaryContainer,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -590,7 +651,7 @@ class DashboardScreen extends ConsumerWidget {
                 value: maxUsage > 1.0 ? 1.0 : maxUsage,
                 backgroundColor: Colors.white.withValues(alpha: 0.5),
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  isOver ? AppColors.error : AppColors.secondaryContainer
+                  isOver ? AppColors.error : AppColors.secondaryContainer,
                 ),
                 minHeight: 8,
               ),
@@ -601,7 +662,10 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentTransactions(BuildContext context, List<TransactionModel> transactions) {
+  Widget _buildRecentTransactions(
+    BuildContext context,
+    List<TransactionModel> transactions,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -617,7 +681,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () => context.push('/transactions'),
               child: Text(
                 'Lihat Semua',
                 style: GoogleFonts.inter(
@@ -667,23 +731,29 @@ class DashboardScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final tx = transactions[index];
                 final isIncome = tx.type == TransactionType.income;
-                
+
                 // Determine icon based on category name roughly
-                IconData iconData = _getTransactionIcon(tx.categoryName, isIncome);
-                Color iconColor = isIncome ? AppColors.onPrimaryFixedVariant : AppColors.secondary;
-                Color bgColor = isIncome ? AppColors.primaryFixedDim : AppColors.secondaryFixed;
-                
+                IconData iconData = _getTransactionIcon(
+                  tx.categoryName,
+                  isIncome,
+                );
+                Color iconColor = isIncome
+                    ? AppColors.onPrimaryFixedVariant
+                    : AppColors.secondary;
+                Color bgColor = isIncome
+                    ? AppColors.primaryFixedDim
+                    : AppColors.secondaryFixed;
+
                 return _buildTransactionItem(
                   icon: iconData,
                   iconColor: iconColor,
                   bgColor: bgColor,
                   title: tx.note.isNotEmpty ? tx.note : tx.categoryName,
                   subtitle: _formatTransactionDate(tx.date),
-                  amount: '${isIncome ? '+' : '-'} ${CurrencyFormatter.format(tx.amount)}',
+                  amount:
+                      '${isIncome ? '+' : '-'} ${CurrencyFormatter.format(tx.amount)}',
                   amountColor: isIncome ? AppColors.primary : AppColors.error,
-                  onTap: () {
-                    // Navigate to detail if needed
-                  }
+                  onTap: () => context.push('/transaction-detail', extra: tx),
                 );
               },
             ),
@@ -696,21 +766,42 @@ class DashboardScreen extends ConsumerWidget {
     if (isIncome) return Icons.work_outline;
     final cat = category.toLowerCase();
     if (cat.contains('makan') || cat.contains('food')) return Icons.restaurant;
-    if (cat.contains('transport') || cat.contains('bensin')) return Icons.directions_car_outlined;
-    if (cat.contains('belanja') || cat.contains('shop')) return Icons.shopping_bag_outlined;
+    if (cat.contains('transport') || cat.contains('bensin')) {
+      return Icons.directions_car_outlined;
+    }
+    if (cat.contains('belanja') || cat.contains('shop')) {
+      return Icons.shopping_bag_outlined;
+    }
     return Icons.receipt_long_outlined;
   }
 
   String _formatTransactionDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date).inDays;
-    if (diff == 0) return 'Hari ini, ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-    if (diff == 1) return 'Kemarin, ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    if (diff == 0) {
+      return 'Hari ini, ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    }
+    if (diff == 1) {
+      return 'Kemarin, ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    }
     return '${date.day} ${_getMonthName(date.month)}, ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
     return months[month - 1];
   }
 
@@ -733,10 +824,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
-                color: bgColor,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
               child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 12),
@@ -756,7 +844,10 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   Text(
                     subtitle,
-                    style: GoogleFonts.inter(color: AppColors.outline, fontSize: 12),
+                    style: GoogleFonts.inter(
+                      color: AppColors.outline,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),

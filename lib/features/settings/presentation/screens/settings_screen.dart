@@ -40,7 +40,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildSettingsTile(
                 icon: Icons.notifications_none,
                 title: 'Notifikasi',
-                onTap: () {},
+                onTap: () => context.push('/notifications'),
               ),
             ],
           ),
@@ -56,13 +56,19 @@ class SettingsScreen extends ConsumerWidget {
               _buildSettingsTile(
                 icon: Icons.language,
                 title: 'Bahasa',
-                trailing: const Text('Indonesia', style: TextStyle(color: AppColors.outline)),
+                trailing: const Text(
+                  'Indonesia',
+                  style: TextStyle(color: AppColors.outline),
+                ),
                 onTap: () {},
               ),
               _buildSettingsTile(
                 icon: Icons.dark_mode_outlined,
                 title: 'Tema',
-                trailing: const Text('Terang', style: TextStyle(color: AppColors.outline)),
+                trailing: const Text(
+                  'Terang',
+                  style: TextStyle(color: AppColors.outline),
+                ),
                 onTap: () {},
               ),
               _buildSettingsTile(
@@ -82,7 +88,9 @@ class SettingsScreen extends ConsumerWidget {
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: Colors.red),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -90,7 +98,9 @@ class SettingsScreen extends ConsumerWidget {
           Center(
             child: Text(
               'Versi 1.0.0',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.outline),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(color: AppColors.outline),
             ),
           ),
         ],
@@ -106,7 +116,11 @@ class SettingsScreen extends ConsumerWidget {
             CircleAvatar(
               radius: 50,
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              child: const Icon(Icons.person, size: 50, color: AppColors.primary),
+              child: const Icon(
+                Icons.person,
+                size: 50,
+                color: AppColors.primary,
+              ),
             ),
             Positioned(
               bottom: 0,
@@ -117,7 +131,11 @@ class SettingsScreen extends ConsumerWidget {
                   color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                child: const Icon(
+                  Icons.camera_alt,
+                  size: 18,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -143,16 +161,24 @@ class SettingsScreen extends ConsumerWidget {
           onPressed: () {},
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
-          child: const Text('Edit Profil', style: TextStyle(color: Colors.white)),
+          child: const Text(
+            'Edit Profil',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSettingsGroup({required String title, required List<Widget> items}) {
+  Widget _buildSettingsGroup({
+    required String title,
+    required List<Widget> items,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +221,8 @@ class SettingsScreen extends ConsumerWidget {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
       title: Text(title, style: const TextStyle(fontSize: 16)),
-      trailing: trailing ?? const Icon(Icons.chevron_right, color: AppColors.outline),
+      trailing:
+          trailing ?? const Icon(Icons.chevron_right, color: AppColors.outline),
       onTap: onTap,
     );
   }

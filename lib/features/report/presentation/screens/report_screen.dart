@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,14 +17,20 @@ class ReportScreen extends ConsumerStatefulWidget {
 }
 
 class _ReportScreenState extends ConsumerState<ReportScreen> {
-  final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+  final currencyFormat = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
 
   Future<void> _showCustomDateRangePicker() async {
     final currentRange = ref.read(customDateRangeProvider);
-    final initialRange = currentRange ?? DateTimeRange(
-      start: DateTime.now().subtract(const Duration(days: 30)),
-      end: DateTime.now(),
-    );
+    final initialRange =
+        currentRange ??
+        DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 30)),
+          end: DateTime.now(),
+        );
 
     final pickedRange = await showDateRangePicker(
       context: context,
@@ -71,13 +78,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               children: [
                 // Spacing for Extended AppBar
                 const SizedBox(height: 100),
-                
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       _buildPeriodSelector(selectedPeriod),
-                      if (selectedPeriod == ReportPeriod.custom && customRange != null) ...[
+                      if (selectedPeriod == ReportPeriod.custom &&
+                          customRange != null) ...[
                         const SizedBox(height: 12),
                         _buildCustomRangeBadge(customRange),
                       ],
@@ -149,8 +157,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: AppColors.outline, size: 22),
-                onPressed: () {},
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: AppColors.outline,
+                  size: 22,
+                ),
+                onPressed: () => context.push('/notifications'),
               ),
               const SizedBox(width: 4),
             ],
@@ -194,22 +206,31 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               borderRadius: BorderRadius.circular(24),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.surfaceContainer,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.surfaceContainer,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: isSelected ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    )
-                  ] : null,
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Text(
                   entry.key,
                   style: GoogleFonts.inter(
-                    color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+                    color: isSelected
+                        ? Colors.white
+                        : AppColors.onSurfaceVariant,
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
@@ -233,13 +254,17 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.primary),
+          const Icon(
+            Icons.calendar_today_rounded,
+            size: 14,
+            color: AppColors.primary,
+          ),
           const SizedBox(width: 8),
           Text(
             '${DateFormat('dd MMM', 'id_ID').format(range.start)} - ${DateFormat('dd MMM yyyy', 'id_ID').format(range.end)}',
             style: GoogleFonts.inter(
-              color: AppColors.primary, 
-              fontSize: 12, 
+              color: AppColors.primary,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -265,11 +290,33 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       child: IntrinsicHeight(
         child: Row(
           children: [
-            _buildSummaryItem('Pemasukan', currencyFormat.format(data.totalIncome), AppColors.primary),
-            VerticalDivider(color: AppColors.outlineVariant.withValues(alpha: 0.5), thickness: 1, indent: 4, endIndent: 4),
-            _buildSummaryItem('Pengeluaran', currencyFormat.format(data.totalExpense), AppColors.error),
-            VerticalDivider(color: AppColors.outlineVariant.withValues(alpha: 0.5), thickness: 1, indent: 4, endIndent: 4),
-            _buildSummaryItem('Surplus', currencyFormat.format(data.netFlow), AppColors.tertiary),
+            _buildSummaryItem(
+              'Pemasukan',
+              currencyFormat.format(data.totalIncome),
+              AppColors.primary,
+            ),
+            VerticalDivider(
+              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              thickness: 1,
+              indent: 4,
+              endIndent: 4,
+            ),
+            _buildSummaryItem(
+              'Pengeluaran',
+              currencyFormat.format(data.totalExpense),
+              AppColors.error,
+            ),
+            VerticalDivider(
+              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              thickness: 1,
+              indent: 4,
+              endIndent: 4,
+            ),
+            _buildSummaryItem(
+              'Surplus',
+              currencyFormat.format(data.netFlow),
+              AppColors.tertiary,
+            ),
           ],
         ),
       ),
@@ -283,7 +330,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           Text(
             label,
             style: GoogleFonts.inter(
-              fontSize: 11, 
+              fontSize: 11,
               color: AppColors.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
@@ -330,8 +377,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               Text(
                 title,
                 style: GoogleFonts.inter(
-                  fontSize: 16, 
-                  fontWeight: FontWeight.w700, 
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.onSurface,
                   letterSpacing: -0.4,
                 ),
@@ -347,7 +394,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   Widget _buildCashFlowChart(ReportDataModel data) {
-    if (data.dailyFlows.isEmpty) return const SizedBox(height: 150, child: Center(child: Text('Tidak ada data')));
+    if (data.dailyFlows.isEmpty) {
+      return const SizedBox(
+        height: 150,
+        child: Center(child: Text('Tidak ada data')),
+      );
+    }
 
     double maxVal = 0;
     for (var f in data.dailyFlows) {
@@ -370,7 +422,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     return BarTooltipItem(
                       currencyFormat.format(rod.toY),
-                      GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                      GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
                     );
                   },
                 ),
@@ -386,8 +442,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Text(
-                            'M${i + 1}', 
-                            style: GoogleFonts.inter(fontSize: 10, color: AppColors.outline, fontWeight: FontWeight.w500)
+                            'M${i + 1}',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: AppColors.outline,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         );
                       }
@@ -400,22 +460,53 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (v, m) {
-                      if (v == 0) return Text('0', style: GoogleFonts.inter(fontSize: 10, color: AppColors.outlineVariant));
-                      if (v == maxVal / 2) return Text(NumberFormat.compact().format(v), style: GoogleFonts.inter(fontSize: 10, color: AppColors.outlineVariant));
-                      if (v >= maxVal * 0.9) return Text(NumberFormat.compact().format(v), style: GoogleFonts.inter(fontSize: 10, color: AppColors.outlineVariant));
+                      if (v == 0) {
+                        return Text(
+                          '0',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppColors.outlineVariant,
+                          ),
+                        );
+                      }
+                      if (v == maxVal / 2) {
+                        return Text(
+                          NumberFormat.compact().format(v),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppColors.outlineVariant,
+                          ),
+                        );
+                      }
+                      if (v >= maxVal * 0.9) {
+                        return Text(
+                          NumberFormat.compact().format(v),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppColors.outlineVariant,
+                          ),
+                        );
+                      }
                       return const SizedBox();
                     },
                     reservedSize: 35,
                   ),
                 ),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               gridData: const FlGridData(show: false),
               borderData: FlBorderData(
-                show: true, 
+                show: true,
                 border: Border(
-                  bottom: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5), width: 1),
+                  bottom: BorderSide(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
                 ),
               ),
               barGroups: List.generate(data.dailyFlows.length, (i) {
@@ -424,16 +515,20 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   x: i,
                   barRods: [
                     BarChartRodData(
-                      toY: f.income, 
-                      color: AppColors.primary, 
-                      width: 10, 
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
+                      toY: f.income,
+                      color: AppColors.primary,
+                      width: 10,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(3),
+                      ),
                     ),
                     BarChartRodData(
-                      toY: f.expense, 
-                      color: AppColors.secondary, 
-                      width: 10, 
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
+                      toY: f.expense,
+                      color: AppColors.secondary,
+                      width: 10,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(3),
+                      ),
                     ),
                   ],
                 );
@@ -455,7 +550,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   Widget _buildCategoryDonutChart(ReportDataModel data) {
-    if (data.expenseByCategories.isEmpty) return const SizedBox(height: 150, child: Center(child: Text('Tidak ada data')));
+    if (data.expenseByCategories.isEmpty) {
+      return const SizedBox(
+        height: 150,
+        child: Center(child: Text('Tidak ada data')),
+      );
+    }
 
     return Column(
       children: [
@@ -483,13 +583,24 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Total', 
-                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.outline, fontWeight: FontWeight.w500)
+                    'Total',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.outline,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(data.totalExpense),
-                    style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.5),
+                    NumberFormat.compactCurrency(
+                      locale: 'id_ID',
+                      symbol: '',
+                    ).format(data.totalExpense),
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                 ],
               ),
@@ -497,32 +608,47 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        ...data.expenseByCategories.take(5).map((cat) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 10, 
-                    height: 10, 
-                    decoration: BoxDecoration(color: Color(cat.colorValue), shape: BoxShape.circle),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    cat.categoryName, 
-                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.onSurface),
-                  ),
-                ],
+        ...data.expenseByCategories
+            .take(5)
+            .map(
+              (cat) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: Color(cat.colorValue),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          cat.categoryName,
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${cat.percentage.toStringAsFixed(1)}%',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: AppColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                '${cat.percentage.toStringAsFixed(1)}%', 
-                style: GoogleFonts.inter(fontSize: 13, color: AppColors.onSurfaceVariant, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        )),
+            ),
       ],
     );
   }
@@ -546,8 +672,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            months[v.toInt()], 
-                            style: GoogleFonts.inter(fontSize: 10, color: AppColors.outline, fontWeight: FontWeight.w500),
+                            months[v.toInt()],
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: AppColors.outline,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         );
                       }
@@ -556,20 +686,39 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                     reservedSize: 24,
                   ),
                 ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               borderData: FlBorderData(
-                show: true, 
+                show: true,
                 border: Border(
-                  bottom: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5), width: 1),
-                  left: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5), width: 1),
+                  bottom: BorderSide(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                  left: BorderSide(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
                 ),
               ),
               lineBarsData: [
                 LineChartBarData(
-                  spots: const [FlSpot(0, 2), FlSpot(1, 1.5), FlSpot(2, 3), FlSpot(3, 2.5), FlSpot(4, 4), FlSpot(5, 3.5)],
+                  spots: const [
+                    FlSpot(0, 2),
+                    FlSpot(1, 1.5),
+                    FlSpot(2, 3),
+                    FlSpot(3, 2.5),
+                    FlSpot(4, 4),
+                    FlSpot(5, 3.5),
+                  ],
                   isCurved: true,
                   curveSmoothness: 0.35,
                   color: AppColors.secondaryContainer,
@@ -577,15 +726,16 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   isStrokeCapRound: true,
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
-                      radius: 3,
-                      color: Colors.white,
-                      strokeWidth: 2,
-                      strokeColor: AppColors.secondaryContainer,
-                    ),
+                    getDotPainter: (spot, percent, barData, index) =>
+                        FlDotCirclePainter(
+                          radius: 3,
+                          color: Colors.white,
+                          strokeWidth: 2,
+                          strokeColor: AppColors.secondaryContainer,
+                        ),
                   ),
                   belowBarData: BarAreaData(
-                    show: true, 
+                    show: true,
                     gradient: LinearGradient(
                       colors: [
                         AppColors.secondaryContainer.withValues(alpha: 0.2),
@@ -627,90 +777,97 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           Text(
             'Breakdown Kategori',
             style: GoogleFonts.inter(
-              fontSize: 16, 
-              fontWeight: FontWeight.w700, 
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
               color: AppColors.onSurface,
               letterSpacing: -0.4,
             ),
           ),
           const SizedBox(height: 20),
-          ...data.expenseByCategories.map((cat) => Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: Color(cat.colorValue).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(22),
+          ...data.expenseByCategories.map(
+            (cat) => Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Color(cat.colorValue).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Icon(
+                      _getCategoryIcon(cat.categoryName),
+                      size: 20,
+                      color: Color(cat.colorValue),
+                    ),
                   ),
-                  child: Icon(
-                    _getCategoryIcon(cat.categoryName), 
-                    size: 20, 
-                    color: Color(cat.colorValue),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              cat.categoryName, 
-                              style: GoogleFonts.inter(
-                                fontSize: 14, 
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.onSurface,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                cat.categoryName,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.onSurface,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            currencyFormat.format(cat.amount), 
-                            style: GoogleFonts.inter(
-                              fontSize: 14, 
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.onSurface,
-                              letterSpacing: -0.2,
+                            Text(
+                              currencyFormat.format(cat.amount),
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.onSurface,
+                                letterSpacing: -0.2,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: cat.percentage / 100,
-                          backgroundColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(cat.colorValue)),
-                          minHeight: 8,
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: cat.percentage / 100,
+                            backgroundColor: AppColors.surfaceVariant
+                                .withValues(alpha: 0.5),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(cat.colorValue),
+                            ),
+                            minHeight: 8,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )),
+          ),
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () => context.push('/reports'),
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.surfaceContainerLow,
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: Text(
-                'Lihat Semua Kategori', 
+                'Lihat Semua Kategori',
                 style: GoogleFonts.inter(
-                  color: AppColors.primary, 
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
                 ),
@@ -726,12 +883,16 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 6),
         Text(
-          label, 
+          label,
           style: GoogleFonts.inter(
-            fontSize: 12, 
+            fontSize: 12,
             color: AppColors.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),

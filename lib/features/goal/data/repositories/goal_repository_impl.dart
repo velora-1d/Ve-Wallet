@@ -48,7 +48,7 @@ class GoalRepositoryImpl implements GoalRepository {
         .from('goal_allocations')
         .select('*, wallets(name)')
         .eq('goal_id', goalId);
-    
+
     return (response as List).map((json) {
       final walletJson = json['wallets'];
       if (walletJson != null) {
@@ -64,33 +64,70 @@ class GoalRepositoryImpl implements GoalRepository {
         .from('goal_allocations')
         .stream(primaryKey: ['id'])
         .eq('goal_id', goalId)
-        .map((data) => data.map((json) => GoalAllocationModel.fromJson(json)).toList());
+        .map(
+          (data) =>
+              data.map((json) => GoalAllocationModel.fromJson(json)).toList(),
+        );
   }
 
   @override
   Future<void> addAllocation(GoalAllocationModel allocation) async {
-    // We should use a transaction here: insert allocation and update goal's current_amount
-    // But since Supabase client doesn't support complex transactions easily from client side
-    // (requires RPC or simple sequential calls), we'll do sequential for now.
-    // Better: use Supabase Functions or a trigger in the DB.
-    
+    final walletJson = await _client
+        .from('wallets')
+        .select('balance')
+        .eq('id', allocation.walletId)
+        .single();
+    final walletBalance = (walletJson['balance'] as num).toDouble();
+    if (walletBalance < allocation.amount) {
+      throw Exception('Saldo dompet tidak mencukupi untuk alokasi');
+    }
+
+    await _client
+        .from('wallets')
+        .update({'balance': walletBalance - allocation.amount})
+        .eq('id', allocation.walletId);
+
     await _client.from('goal_allocations').insert(allocation.toJson());
-    
-    // Update goal amount (simplified, better to do in DB)
+
     final goal = await getGoalById(allocation.goalId);
-    await updateGoal(goal.copyWith(currentAmount: goal.currentAmount + allocation.amount));
+    final updatedAmount = goal.currentAmount + allocation.amount;
+    await updateGoal(
+      goal.copyWith(
+        currentAmount: updatedAmount,
+        isCompleted: updatedAmount >= goal.targetAmount,
+      ),
+    );
   }
 
   @override
   Future<void> deleteAllocation(String id) async {
-    // Get allocation first to know the amount and goalId
-    final allocationJson = await _client.from('goal_allocations').select().eq('id', id).single();
+    final allocationJson = await _client
+        .from('goal_allocations')
+        .select()
+        .eq('id', id)
+        .single();
     final allocation = GoalAllocationModel.fromJson(allocationJson);
-    
+
+    final walletJson = await _client
+        .from('wallets')
+        .select('balance')
+        .eq('id', allocation.walletId)
+        .single();
+    final walletBalance = (walletJson['balance'] as num).toDouble();
+    await _client
+        .from('wallets')
+        .update({'balance': walletBalance + allocation.amount})
+        .eq('id', allocation.walletId);
+
     await _client.from('goal_allocations').delete().eq('id', id);
-    
-    // Update goal amount
+
     final goal = await getGoalById(allocation.goalId);
-    await updateGoal(goal.copyWith(currentAmount: goal.currentAmount - allocation.amount));
+    final updatedAmount = goal.currentAmount - allocation.amount;
+    await updateGoal(
+      goal.copyWith(
+        currentAmount: updatedAmount < 0 ? 0 : updatedAmount,
+        isCompleted: false,
+      ),
+    );
   }
 }

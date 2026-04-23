@@ -6,21 +6,31 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
+import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
 
 class TransactionDetailScreen extends ConsumerWidget {
   final TransactionModel transaction;
 
-  const TransactionDetailScreen({
-    super.key,
-    required this.transaction,
-  });
+  const TransactionDetailScreen({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
     final dateFormat = DateFormat('d MMM yyyy, HH:mm', 'id_ID');
+    final wallets = ref.watch(walletsStreamProvider).value ?? const [];
 
     final isExpense = transaction.type == TransactionType.expense;
+    String? walletName;
+    for (final wallet in wallets) {
+      if (wallet.id == transaction.walletId) {
+        walletName = wallet.name;
+        break;
+      }
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -51,9 +61,9 @@ class TransactionDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                   // Header Section (Icon, Category, Amount)
                   _buildHeader(isExpense, currencyFormat),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Details List
                   Container(
                     decoration: BoxDecoration(
@@ -70,40 +80,34 @@ class TransactionDetailScreen extends ConsumerWidget {
                     child: Column(
                       children: [
                         _buildDetailRow(
-                          'Dompet', 
-                          'Bank BCA', // Hardcoded placeholder for now, should come from model if available
+                          'Dompet',
+                          walletName ?? 'Dompet tidak diketahui',
                           icon: Icons.account_balance,
                           iconColor: AppColors.primary,
                         ),
                         _buildDetailRow(
-                          'Tanggal', 
+                          'Tanggal',
                           dateFormat.format(transaction.date),
                         ),
                         _buildDetailRow(
-                          'Catatan', 
+                          'Catatan',
                           transaction.note.isEmpty ? '-' : transaction.note,
                           isLast: true,
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
-                  // Meta Info (Optional, e.g., Created By)
+
                   _buildMetaInfo(),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Receipt Placeholder
-                  _buildReceiptSection(),
-                  
+
                   const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
-          
+
           // Sticky Footer Actions
           _buildFooterActions(context, ref),
         ],
@@ -119,7 +123,9 @@ class TransactionDetailScreen extends ConsumerWidget {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color: isExpense ? const Color(0xFFFEE2E2) : const Color(0xFFDCFCE7),
+            color: isExpense
+                ? const Color(0xFFFEE2E2)
+                : const Color(0xFFDCFCE7),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -143,7 +149,9 @@ class TransactionDetailScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: isExpense ? const Color(0xFFFEE2E2) : const Color(0xFFDCFCE7),
+            color: isExpense
+                ? const Color(0xFFFEE2E2)
+                : const Color(0xFFDCFCE7),
             borderRadius: BorderRadius.circular(100),
           ),
           child: Text(
@@ -170,16 +178,24 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {IconData? icon, Color? iconColor, bool isLast = false}) {
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    IconData? icon,
+    Color? iconColor,
+    bool isLast = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        border: isLast ? null : Border(
-          bottom: BorderSide(
-            color: AppColors.outlineVariant.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
+        border: isLast
+            ? null
+            : Border(
+                bottom: BorderSide(
+                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,7 +255,9 @@ class TransactionDetailScreen extends ConsumerWidget {
             children: [
               const CircleAvatar(
                 radius: 12,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=user123'),
+                backgroundImage: NetworkImage(
+                  'https://i.pravatar.cc/150?u=user123',
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -257,34 +275,14 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildReceiptSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Struk',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            color: const Color(0xFF64748B),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Text(
-          'Tidak ada',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF64748B),
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildFooterActions(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + MediaQuery.paddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        16,
+        24,
+        16 + MediaQuery.paddingOf(context).bottom,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
         border: Border(
@@ -305,7 +303,9 @@ class TransactionDetailScreen extends ConsumerWidget {
                 foregroundColor: const Color(0xFF64748B),
                 side: const BorderSide(color: Color(0xFFE2E8F0)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
               ),
             ),
@@ -314,20 +314,25 @@ class TransactionDetailScreen extends ConsumerWidget {
           // Edit Button
           Expanded(
             child: ElevatedButton(
-              onPressed: () => context.push('/add-transaction', extra: {
-                'isEdit': true,
-                'transactionId': transaction.id,
-              }),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryContainer,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ).copyWith(
-                shadowColor: WidgetStateProperty.all(AppColors.primaryContainer.withValues(alpha: 0.2)),
+              onPressed: () => context.push(
+                '/add-transaction',
+                extra: {'isEdit': true, 'transactionId': transaction.id},
               ),
+              style:
+                  ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryContainer,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ).copyWith(
+                    shadowColor: WidgetStateProperty.all(
+                      AppColors.primaryContainer.withValues(alpha: 0.2),
+                    ),
+                  ),
               child: const Text('Edit'),
             ),
           ),
@@ -338,7 +343,9 @@ class TransactionDetailScreen extends ConsumerWidget {
 
   IconData _getCategoryIcon(String categoryName) {
     final name = categoryName.toLowerCase();
-    if (name.contains('makan') || name.contains('minum')) return Icons.restaurant;
+    if (name.contains('makan') || name.contains('minum')) {
+      return Icons.restaurant;
+    }
     if (name.contains('transport')) return Icons.directions_car;
     if (name.contains('belanja')) return Icons.shopping_bag;
     if (name.contains('gaji') || name.contains('income')) return Icons.payments;
@@ -353,8 +360,14 @@ class TransactionDetailScreen extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Hapus Transaksi?', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
-        content: Text('Tindakan ini tidak dapat dibatalkan.', style: GoogleFonts.inter()),
+        title: Text(
+          'Hapus Transaksi?',
+          style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          'Tindakan ini tidak dapat dibatalkan.',
+          style: GoogleFonts.inter(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -364,7 +377,9 @@ class TransactionDetailScreen extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(dialogContext);
               try {
-                await ref.read(transactionRepositoryProvider).deleteTransaction(transaction.id);
+                await ref
+                    .read(transactionRepositoryProvider)
+                    .deleteTransaction(transaction.id);
                 if (context.mounted) {
                   context.pop();
                 }
@@ -377,11 +392,13 @@ class TransactionDetailScreen extends ConsumerWidget {
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text('Hapus', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            child: Text(
+              'Hapus',
+              style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
     );
   }
 }
-

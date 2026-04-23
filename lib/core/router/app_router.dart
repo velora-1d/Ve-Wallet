@@ -15,6 +15,7 @@ import 'package:ve_wallet/features/transaction/domain/models/transaction_model.d
 import 'package:ve_wallet/features/transaction/presentation/screens/transaction_detail_screen.dart';
 import 'package:ve_wallet/features/transaction/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/settings_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/notification_screen.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/screens/category_settings_screen.dart';
 import 'package:ve_wallet/features/category/presentation/screens/add_edit_category_screen.dart';
@@ -34,21 +35,24 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) {
       final user = authState.value;
-      final isAuthPath = state.uri.path == '/login' || 
-                        state.uri.path == '/register' || 
-                        state.uri.path == '/onboarding' ||
-                        state.uri.path == '/';
+      final isAuthPath =
+          state.uri.path == '/login' ||
+          state.uri.path == '/register' ||
+          state.uri.path == '/onboarding' ||
+          state.uri.path == '/';
 
       if (authState.isLoading) return null;
 
       if (user == null) {
-        if (!isAuthPath && state.uri.path != '/forgot-password') return '/login';
+        if (!isAuthPath && state.uri.path != '/forgot-password') {
+          return '/login';
+        }
       } else {
         // Redirect to appropriate dashboard if on auth path
         if (isAuthPath) {
           return user.role == 'admin' ? '/admin' : '/dashboard';
         }
-        
+
         // Protect admin route
         if (state.uri.path.startsWith('/admin') && user.role != 'admin') {
           return '/dashboard';
@@ -58,18 +62,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const SplashScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
@@ -81,6 +79,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const MainScreen(),
+      ),
+      GoRoute(
+        path: '/transactions',
+        builder: (context, state) => const MainScreen(initialIndex: 1),
       ),
       GoRoute(
         path: '/wallet-detail',
@@ -95,12 +97,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           final extra = state.extra as Map<String, dynamic>?;
           final isEdit = extra?['isEdit'] as bool? ?? false;
           final initialWallet = extra?['wallet'] as WalletModel?;
-          return AddEditWalletScreen(isEdit: isEdit, initialWallet: initialWallet);
+          return AddEditWalletScreen(
+            isEdit: isEdit,
+            initialWallet: initialWallet,
+          );
         },
       ),
       GoRoute(
         path: '/add-transaction',
-        builder: (context, state) => const AddEditTransactionScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return AddEditTransactionScreen(
+            isEdit: extra?['isEdit'] as bool? ?? false,
+            transactionId: extra?['transactionId'] as String?,
+            initialWalletId: extra?['walletId'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: '/reports',
@@ -116,6 +128,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: '/category-settings',
