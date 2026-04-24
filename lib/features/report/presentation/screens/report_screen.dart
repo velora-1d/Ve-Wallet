@@ -103,9 +103,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       ),
                       const SizedBox(height: 24),
                       _buildChartContainer(
-                        title: 'Tren Kategori 6 Bulan',
+                        title: 'Tren Arus Bersih',
                         child: _buildTrendChart(data),
                       ),
+                      const SizedBox(height: 24),
+                      _buildTopExpensesSection(data),
                       const SizedBox(height: 24),
                       _buildCategoryBreakdownList(data),
                       const SizedBox(height: 100),
@@ -201,6 +203,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   _showCustomDateRangePicker();
                 } else {
                   ref.read(reportPeriodProvider.notifier).state = entry.value;
+                  ref.read(reportDataProvider.notifier).refresh();
                 }
               },
               borderRadius: BorderRadius.circular(24),
@@ -313,9 +316,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               endIndent: 4,
             ),
             _buildSummaryItem(
-              'Surplus',
+              data.netFlow >= 0 ? 'Surplus' : 'Defisit',
               currencyFormat.format(data.netFlow),
-              AppColors.tertiary,
+              data.netFlow >= 0 ? AppColors.tertiary : AppColors.error,
             ),
           ],
         ),
@@ -654,6 +657,28 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   Widget _buildTrendChart(ReportDataModel data) {
+    if (data.dailyFlows.isEmpty) {
+      return const SizedBox(
+        height: 150,
+        child: Center(child: Text('Tidak ada data')),
+      );
+    }
+
+    final spots = <FlSpot>[];
+    double minY = 0;
+    double maxY = 0;
+
+    for (var i = 0; i < data.dailyFlows.length; i++) {
+      final flow = data.dailyFlows[i];
+      final net = flow.income - flow.expense;
+      spots.add(FlSpot(i.toDouble(), net));
+      if (net < minY) minY = net;
+      if (net > maxY) maxY = net;
+    }
+
+    final rangePadding = (maxY - minY).abs() < 1 ? 100 : (maxY - minY).abs() * 0.2;
+    final lineColor = data.netFlow >= 0 ? AppColors.tertiary : AppColors.error;
+
     return Column(
       children: [
         SizedBox(
@@ -661,18 +686,21 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           child: LineChart(
             LineChartData(
               gridData: const FlGridData(show: false),
+              minY: minY - rangePadding,
+              maxY: maxY + rangePadding,
               titlesData: FlTitlesData(
                 show: true,
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (v, m) {
-                      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'];
-                      if (v.toInt() >= 0 && v.toInt() < months.length) {
+                      final index = v.toInt();
+                      if (index >= 0 && index < data.dailyFlows.length) {
+                        final date = data.dailyFlows[index].date;
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            months[v.toInt()],
+                            DateFormat('dd/MM').format(date),
                             style: GoogleFonts.inter(
                               fontSize: 10,
                               color: AppColors.outline,
@@ -711,17 +739,10 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               ),
               lineBarsData: [
                 LineChartBarData(
-                  spots: const [
-                    FlSpot(0, 2),
-                    FlSpot(1, 1.5),
-                    FlSpot(2, 3),
-                    FlSpot(3, 2.5),
-                    FlSpot(4, 4),
-                    FlSpot(5, 3.5),
-                  ],
+                  spots: spots,
                   isCurved: true,
                   curveSmoothness: 0.35,
-                  color: AppColors.secondaryContainer,
+                  color: lineColor,
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(
@@ -731,15 +752,15 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           radius: 3,
                           color: Colors.white,
                           strokeWidth: 2,
-                          strokeColor: AppColors.secondaryContainer,
+                          strokeColor: lineColor,
                         ),
                   ),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.secondaryContainer.withValues(alpha: 0.2),
-                        AppColors.secondaryContainer.withValues(alpha: 0),
+                        lineColor.withValues(alpha: 0.2),
+                        lineColor.withValues(alpha: 0),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -751,8 +772,84 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        _buildLegendCircle('Makanan & Minuman', AppColors.secondaryContainer),
+        _buildLegendCircle(
+          data.netFlow >= 0 ? 'Arus bersih positif' : 'Arus bersih negatif',
+          lineColor,
+        ),
       ],
+    );
+  }
+
+  Widget _buildTopExpensesSection(ReportDataModel data) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Pengeluaran Terbesar',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.onSurface,
+                  letterSpacing: -0.4,
+                ),
+              ),
+              TextButton(
+                onPressed: () => context.push('/transactions'),
+                child: const Text('Lihat semua'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (data.topExpenses.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: Text('Belum ada pengeluaran')),
+            )
+          else
+            ...data.topExpenses.take(5).map(
+              (tx) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  backgroundColor: AppColors.error.withValues(alpha: 0.12),
+                  child: const Icon(
+                    Icons.arrow_upward,
+                    color: AppColors.error,
+                    size: 18,
+                  ),
+                ),
+                title: Text(tx.note.isNotEmpty ? tx.note : tx.categoryName),
+                subtitle: Text(
+                  DateFormat('dd MMM yyyy', 'id_ID').format(tx.date),
+                ),
+                trailing: Text(
+                  currencyFormat.format(tx.amount),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.error,
+                  ),
+                ),
+                onTap: () => context.push('/transaction-detail', extra: tx),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -856,7 +953,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           SizedBox(
             width: double.infinity,
             child: TextButton(
-              onPressed: () => context.push('/reports'),
+              onPressed: () => context.push('/transactions'),
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.surfaceContainerLow,
                 padding: const EdgeInsets.symmetric(vertical: 12),

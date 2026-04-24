@@ -159,7 +159,7 @@ class WalletDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => context.push('/transactions'),
                     child: const Text('Lihat Semua'),
                   ),
                 ],

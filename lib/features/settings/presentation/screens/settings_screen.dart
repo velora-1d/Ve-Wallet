@@ -22,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 24),
         children: [
-          _buildProfileHeader(user),
+          _buildProfileHeader(context, user),
           const SizedBox(height: 32),
           _buildSettingsGroup(
             title: 'Akun',
@@ -30,17 +30,22 @@ class SettingsScreen extends ConsumerWidget {
               _buildSettingsTile(
                 icon: Icons.person_outline,
                 title: 'Informasi Pribadi',
-                onTap: () {},
+                onTap: () => context.push('/profile-info'),
               ),
               _buildSettingsTile(
                 icon: Icons.security_outlined,
                 title: 'Keamanan',
-                onTap: () {},
+                onTap: () => context.push('/security-settings'),
               ),
               _buildSettingsTile(
                 icon: Icons.notifications_none,
                 title: 'Notifikasi',
                 onTap: () => context.push('/notifications'),
+              ),
+              _buildSettingsTile(
+                icon: Icons.people_outline,
+                title: 'Shared Account',
+                onTap: () => context.push('/shared-account'),
               ),
             ],
           ),
@@ -60,7 +65,7 @@ class SettingsScreen extends ConsumerWidget {
                   'Indonesia',
                   style: TextStyle(color: AppColors.outline),
                 ),
-                onTap: () {},
+                onTap: () => context.push('/language-settings'),
               ),
               _buildSettingsTile(
                 icon: Icons.dark_mode_outlined,
@@ -69,12 +74,12 @@ class SettingsScreen extends ConsumerWidget {
                   'Terang',
                   style: TextStyle(color: AppColors.outline),
                 ),
-                onTap: () {},
+                onTap: () => context.push('/theme-settings'),
               ),
               _buildSettingsTile(
                 icon: Icons.help_outline,
                 title: 'Bantuan',
-                onTap: () {},
+                onTap: () => context.push('/help-center'),
               ),
             ],
           ),
@@ -108,7 +113,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileHeader(dynamic user) {
+  Widget _buildProfileHeader(BuildContext context, dynamic user) {
     return Column(
       children: [
         Stack(
@@ -158,7 +163,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => context.push('/profile-info'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             shape: RoundedRectangleBorder(

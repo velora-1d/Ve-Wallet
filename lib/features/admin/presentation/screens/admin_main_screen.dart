@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/admin/presentation/screens/admin_dashboard_screen.dart';
+import 'package:ve_wallet/features/admin/presentation/screens/admin_history_screen.dart';
+import 'package:ve_wallet/features/admin/presentation/screens/admin_profile_screen.dart';
+import 'package:ve_wallet/features/admin/presentation/screens/admin_security_screen.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});
@@ -14,9 +17,9 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
   final List<Widget> _screens = [
     const AdminDashboardScreen(),
-    const Scaffold(body: Center(child: Text('Security Management'))),
-    const Scaffold(body: Center(child: Text('System History'))),
-    const Scaffold(body: Center(child: Text('Admin Profile'))),
+    const AdminSecurityScreen(),
+    const AdminHistoryScreen(),
+    const AdminProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

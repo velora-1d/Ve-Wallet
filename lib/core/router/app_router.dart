@@ -16,6 +16,11 @@ import 'package:ve_wallet/features/transaction/presentation/screens/transaction_
 import 'package:ve_wallet/features/transaction/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/settings_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/notification_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/profile_info_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/security_settings_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/app_preferences_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/help_center_screen.dart';
+import 'package:ve_wallet/features/shared_account/presentation/screens/shared_account_screen.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/screens/category_settings_screen.dart';
 import 'package:ve_wallet/features/category/presentation/screens/add_edit_category_screen.dart';
@@ -132,6 +137,38 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: '/profile-info',
+        builder: (context, state) => const ProfileInfoScreen(),
+      ),
+      GoRoute(
+        path: '/security-settings',
+        builder: (context, state) => const SecuritySettingsScreen(),
+      ),
+      GoRoute(
+        path: '/language-settings',
+        builder: (context, state) => const AppPreferencesScreen(
+          title: 'Bahasa',
+          currentValue: 'Indonesia',
+          options: ['Indonesia', 'English'],
+        ),
+      ),
+      GoRoute(
+        path: '/theme-settings',
+        builder: (context, state) => const AppPreferencesScreen(
+          title: 'Tema',
+          currentValue: 'Terang',
+          options: ['Terang', 'Gelap', 'Sistem'],
+        ),
+      ),
+      GoRoute(
+        path: '/help-center',
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: '/shared-account',
+        builder: (context, state) => const SharedAccountScreen(),
       ),
       GoRoute(
         path: '/category-settings',

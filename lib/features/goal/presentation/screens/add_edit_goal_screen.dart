@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/models/goal_model.dart';
@@ -86,6 +87,26 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
     if (mounted) context.pop();
   }
 
+  Future<void> _pickDeadline() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _selectedDeadline ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+    );
+    if (date != null) {
+      setState(() => _selectedDeadline = date);
+    }
+  }
+
+  Future<void> _deleteGoal() async {
+    if (widget.initialGoal == null) return;
+    await ref
+        .read(goalControllerProvider.notifier)
+        .deleteGoal(widget.initialGoal!.id);
+    if (mounted) context.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.initialGoal != null;
@@ -93,6 +114,37 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit ? 'Edit Target' : 'Tambah Target'),
+        actions: [
+          if (isEdit)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: const Text('Hapus Target?'),
+                    content: const Text('Tindakan ini tidak dapat dibatalkan.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: const Text('Batal'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.pop(dialogContext);
+                          await _deleteGoal();
+                        },
+                        child: const Text(
+                          'Hapus',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -184,15 +236,7 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
               const Text('Deadline (Opsional)', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               InkWell(
-                onTap: () async {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDeadline ?? DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 3650)),
-                  );
-                  if (date != null) setState(() => _selectedDeadline = date);
-                },
+                onTap: _pickDeadline,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -203,11 +247,24 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _selectedDeadline == null 
-                          ? 'Pilih Tanggal' 
-                          : '${_selectedDeadline!.day}/${_selectedDeadline!.month}/${_selectedDeadline!.year}',
+                        _selectedDeadline == null
+                            ? 'Pilih Tanggal'
+                            : DateFormat('dd MMM yyyy', 'id_ID').format(_selectedDeadline!),
                       ),
-                      const Icon(Icons.calendar_today, size: 18),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_selectedDeadline != null)
+                            IconButton(
+                              onPressed: () => setState(() => _selectedDeadline = null),
+                              icon: const Icon(Icons.close, size: 18),
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.only(right: 8),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          const Icon(Icons.calendar_today, size: 18),
+                        ],
+                      ),
                     ],
                   ),
                 ),

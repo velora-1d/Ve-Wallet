@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../providers/goal_provider.dart';
@@ -30,11 +31,23 @@ class GoalListScreen extends ConsumerWidget {
           if (goals.isEmpty) {
             return _buildEmptyState(context);
           }
+          final sortedGoals = [...goals]
+            ..sort((a, b) {
+              final aDone = a.isCompleted || a.progress >= 1.0;
+              final bDone = b.isCompleted || b.progress >= 1.0;
+              if (aDone != bDone) {
+                return aDone ? 1 : -1;
+              }
+              if (a.deadline == null && b.deadline == null) return 0;
+              if (a.deadline == null) return 1;
+              if (b.deadline == null) return -1;
+              return a.deadline!.compareTo(b.deadline!);
+            });
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: goals.length,
+            itemCount: sortedGoals.length,
             itemBuilder: (context, index) {
-              return _buildGoalCard(context, goals[index]);
+              return _buildGoalCard(context, sortedGoals[index]);
             },
           );
         },
@@ -47,6 +60,19 @@ class GoalListScreen extends ConsumerWidget {
   Widget _buildGoalCard(BuildContext context, GoalModel goal) {
     final progress = goal.progress;
     final isCompleted = goal.isCompleted || progress >= 1.0;
+    final daysLeft = goal.deadline?.difference(
+      DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+    ).inDays;
+    final isUrgent = daysLeft != null && daysLeft <= 30 && !isCompleted;
+    final accentColor = isCompleted
+        ? Colors.green
+        : isUrgent
+        ? Colors.orange
+        : Color(int.parse(goal.color));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -94,14 +120,27 @@ class GoalListScreen extends ConsumerWidget {
                         ),
                         if (goal.deadline != null)
                           Text(
-                            'Target: ${goal.deadline!.day}/${goal.deadline!.month}/${goal.deadline!.year}',
+                            'Target: ${DateFormat('dd MMM yyyy', 'id_ID').format(goal.deadline!)}',
                             style: const TextStyle(color: AppColors.outline, fontSize: 12),
                           ),
                       ],
                     ),
                   ),
-                  if (isCompleted)
-                    const Icon(Icons.check_circle, color: Colors.green, size: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      isCompleted ? 'Selesai' : isUrgent ? 'Prioritas' : 'Aktif',
+                      style: TextStyle(
+                        color: accentColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -135,12 +174,28 @@ class GoalListScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${(progress * 100).toInt()}% tercapai',
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppColors.outline),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isCompleted
+                        ? 'Target tercapai'
+                        : 'Sisa ${CurrencyFormatter.format(goal.remainingAmount > 0 ? goal.remainingAmount : 0)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: AppColors.outline,
+                    ),
+                  ),
+                  Text(
+                    '${(progress * 100).toInt()}% tercapai',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: AppColors.outline,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

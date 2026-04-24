@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
@@ -41,6 +45,8 @@ class _AddEditTransactionScreenState
   String? _selectedWalletId;
   String? _selectedToWalletId;
   String? _selectedCategoryId;
+  String? _receiptUrl;
+  XFile? _receiptFile;
   bool _isLoading = false;
 
   bool get _isTransfer => _selectedType == TransactionType.transfer;
@@ -79,6 +85,7 @@ class _AddEditTransactionScreenState
         _selectedWalletId = tx.walletId;
         _selectedToWalletId = tx.toWalletId;
         _selectedCategoryId = tx.isTransfer ? null : tx.categoryId;
+        _receiptUrl = tx.receiptUrl;
       });
     } catch (e) {
       if (!mounted) return;
@@ -222,6 +229,7 @@ class _AddEditTransactionScreenState
         note: _noteController.text.trim(),
         date: _selectedDate,
         toWalletId: _isTransfer ? _selectedToWalletId : null,
+        receiptUrl: await _resolveReceiptUrl(user.id),
       );
 
       if (widget.isEdit) {
@@ -245,6 +253,109 @@ class _AddEditTransactionScreenState
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<String?> _resolveReceiptUrl(String userId) async {
+    if (_receiptFile == null) {
+      return _receiptUrl;
+    }
+
+    final extensionIndex = _receiptFile!.path.lastIndexOf('.');
+    final extension = extensionIndex >= 0
+        ? _receiptFile!.path.substring(extensionIndex)
+        : '.jpg';
+    final fileName =
+        '$userId/${DateTime.now().millisecondsSinceEpoch}$extension';
+    final file = File(_receiptFile!.path);
+
+    try {
+      await Supabase.instance.client.storage
+          .from('receipts')
+          .upload(
+            fileName,
+            file,
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      return Supabase.instance.client.storage.from('receipts').getPublicUrl(
+            fileName,
+          );
+    } catch (_) {
+      return _receiptFile!.path;
+    }
+  }
+
+  bool _isLocalReceiptPath(String value) {
+    return !value.startsWith('http://') && !value.startsWith('https://');
+  }
+
+  Future<void> _pickReceipt(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final file = await picker.pickImage(
+        source: source,
+        imageQuality: 82,
+        maxWidth: 1800,
+      );
+      if (file == null || !mounted) return;
+      setState(() {
+        _receiptFile = file;
+        _receiptUrl = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengambil foto struk: $e')),
+      );
+    }
+  }
+
+  void _showReceiptPicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickReceipt(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickReceipt(ImageSource.gallery);
+                },
+              ),
+              if (_receiptFile != null || _receiptUrl != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: const Text('Hapus Foto Struk'),
+                  textColor: Colors.red,
+                  iconColor: Colors.red,
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _receiptFile = null;
+                      _receiptUrl = null;
+                    });
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -805,57 +916,90 @@ class _AddEditTransactionScreenState
   }
 
   Widget _buildNoteAndPhotoSection() {
+    final hasReceipt = _receiptFile != null || _receiptUrl != null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAEDFF),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _noteController,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: const Color(0xFF131B2E),
-                ),
-                decoration: InputDecoration(
-                  hintText: _isTransfer
-                      ? 'Catatan transfer...'
-                      : 'Tambah catatan...',
-                  hintStyle: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: const Color(0xFF737686),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAEDFF),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  border: InputBorder.none,
-                  icon: const Icon(Icons.edit_note, color: Color(0xFF737686)),
+                  child: TextField(
+                    controller: _noteController,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: const Color(0xFF131B2E),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: _isTransfer
+                          ? 'Catatan transfer...'
+                          : 'Tambah catatan...',
+                      hintStyle: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: const Color(0xFF737686),
+                      ),
+                      border: InputBorder.none,
+                      icon: const Icon(
+                        Icons.edit_note,
+                        color: Color(0xFF737686),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Fitur kamera belum tersedia')),
-              );
-            },
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEAEDFF),
-                borderRadius: BorderRadius.circular(12),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _showReceiptPicker,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: hasReceipt
+                        ? const Color(0xFFDBEAFE)
+                        : const Color(0xFFEAEDFF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    hasReceipt
+                        ? Icons.receipt_long_outlined
+                        : Icons.photo_camera_outlined,
+                    color: const Color(0xFF004AC6),
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.photo_camera_outlined,
-                color: Color(0xFF004AC6),
+            ],
+          ),
+          if (hasReceipt) ...[
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 180,
+                child: _receiptFile != null
+                    ? Image.file(
+                        File(_receiptFile!.path),
+                        fit: BoxFit.cover,
+                      )
+                    : _isLocalReceiptPath(_receiptUrl!)
+                        ? Image.file(
+                            File(_receiptUrl!),
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            _receiptUrl!,
+                            fit: BoxFit.cover,
+                          ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

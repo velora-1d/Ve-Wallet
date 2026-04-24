@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../category/presentation/providers/category_provider.dart';
@@ -71,6 +72,32 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
     if (mounted) context.pop();
   }
 
+  Future<void> _selectBudgetMonth() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      initialDatePickerMode: DatePickerMode.year,
+      helpText: 'Pilih Bulan Budget',
+      fieldLabelText: 'Bulan Budget',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = DateTime(picked.year, picked.month);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesStreamProvider(TransactionType.expense));
@@ -135,6 +162,24 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
                   if (double.tryParse(value) == null) return 'Jumlah tidak valid';
                   return null;
                 },
+              ),
+              const SizedBox(height: 20),
+              const Text('Periode', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: _selectBudgetMonth,
+                borderRadius: BorderRadius.circular(12),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    suffixIcon: const Icon(Icons.calendar_month_outlined),
+                  ),
+                  child: Text(
+                    DateFormat('MMMM yyyy', 'id_ID').format(_selectedDate),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               SwitchListTile(

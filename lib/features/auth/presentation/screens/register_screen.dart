@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:ve_wallet/features/shared_account/presentation/providers/shared_account_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -40,6 +42,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Setujui syarat terlebih dahulu')),
+      );
+      return;
+    }
+
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password tidak cocok')),
@@ -57,17 +66,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
 
       if (user != null && mounted) {
+        try {
+          final householdName =
+              'Rumah ${_nameController.text.trim().split(' ').first}';
+          await ref
+              .read(sharedAccountRepositoryProvider)
+              .createHousehold(householdName);
+        } catch (_) {}
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registrasi berhasil! Silakan cek email untuk verifikasi.')),
+          const SnackBar(
+            content: Text(
+              'Registrasi berhasil. Jika email confirmation aktif, cek inbox Anda.',
+            ),
+          ),
         );
         context.go('/login');
       }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_mapAuthError(e))),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal daftar: ${e.toString()}')),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal daftar: $e')));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -80,201 +105,203 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              // Header Logo
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/logos/logo.png',
-                    width: 32,
-                    height: 32,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Ve-Wallet',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              // Heading
-              Text(
-                'Buat Akun Baru',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onBackground,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Mulai kelola keuanganmu hari ini',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Form
-              _buildTextField(
-                controller: _nameController,
-                hintText: 'Nama Lengkap',
-                icon: Icons.person_outline,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _emailController,
-                hintText: 'Email',
-                icon: Icons.mail_outline,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-              _buildPasswordField(),
-              const SizedBox(height: 8),
-              // Password Strength
-              _buildPasswordStrengthIndicator(),
-              const SizedBox(height: 16),
-              _buildConfirmPasswordField(),
-              const SizedBox(height: 16),
-              // Terms Checkbox
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: _agreedToTerms,
-                      onChanged: (value) => setState(() => _agreedToTerms = value ?? false),
-                      activeColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text.rich(
-                      TextSpan(
-                        text: 'Saya setuju dengan ',
-                        children: [
-                          TextSpan(
-                            text: 'Syarat & Ketentuan',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            gradient: AppColors.heroGradient,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.18),
+                                blurRadius: 24,
+                                offset: const Offset(0, 12),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Image.asset(
+                              'assets/logos/logo.png',
+                              fit: BoxFit.contain,
                             ),
                           ),
-                          const TextSpan(text: ' serta '),
-                          TextSpan(
-                            text: 'Kebijakan Privasi',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          'Buat Akun Baru',
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.onBackground,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Mulai kelola keuanganmu hari ini',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: AppColors.outlineVariant),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                          const TextSpan(text: ' Ve-Wallet.'),
-                        ],
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
+                          child: Column(
+                            children: [
+                              _buildTextField(
+                                controller: _nameController,
+                                hintText: 'Nama Lengkap',
+                                icon: Icons.person_outline,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildTextField(
+                                controller: _emailController,
+                                hintText: 'Email',
+                                icon: Icons.mail_outline,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildPasswordField(),
+                              const SizedBox(height: 8),
+                              _buildPasswordStrengthIndicator(),
+                              const SizedBox(height: 16),
+                              _buildConfirmPasswordField(),
+                              const SizedBox(height: 16),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Checkbox(
+                                      value: _agreedToTerms,
+                                      onChanged: (value) => setState(
+                                        () => _agreedToTerms = value ?? false,
+                                      ),
+                                      activeColor: AppColors.primary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text.rich(
+                                      TextSpan(
+                                        text: 'Saya setuju dengan ',
+                                        children: [
+                                          TextSpan(
+                                            text: 'Syarat & Ketentuan',
+                                            style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const TextSpan(text: ' serta '),
+                                          TextSpan(
+                                            text: 'Kebijakan Privasi',
+                                            style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const TextSpan(text: ' Ve-Wallet.'),
+                                        ],
+                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                AppColors.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton(
+                                  onPressed: _isLoading ? null : _register,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Text('Daftar'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Sudah punya akun? ',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            GestureDetector(
+                              onTap: () => context.pop(),
+                              child: Text(
+                                'Masuk',
+                                style: Theme.of(context).textTheme.labelLarge
+                                    ?.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Register Button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: (_agreedToTerms && !_isLoading) ? _register : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading 
-                    ? const SizedBox(
-                        height: 20, 
-                        width: 20, 
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                    : const Text('Daftar'),
                 ),
               ),
-              const SizedBox(height: 24),
-              // Divider
-              Row(
-                children: [
-                  const Expanded(child: Divider(color: AppColors.outlineVariant)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      'atau',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.outline,
-                      ),
-                    ),
-                  ),
-                  const Expanded(child: Divider(color: AppColors.outlineVariant)),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Google Login
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.g_mobiledata, size: 32, color: Colors.blue), // Using icon for now
-                  label: const Text('Daftar dengan Google'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.onSurface,
-                    side: const BorderSide(color: AppColors.outlineVariant),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Login Link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Sudah punya akun? ',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Text(
-                      'Masuk',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -322,7 +349,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
             color: AppColors.outline,
           ),
-          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+          onPressed: () =>
+              setState(() => _isPasswordVisible = !_isPasswordVisible),
         ),
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
@@ -351,10 +379,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
         suffixIcon: IconButton(
           icon: Icon(
-            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            _isConfirmPasswordVisible
+                ? Icons.visibility
+                : Icons.visibility_off,
             color: AppColors.outline,
           ),
-          onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+          onPressed: () => setState(
+            () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
+          ),
         ),
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
@@ -417,5 +449,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
       ],
     );
+  }
+
+  String _mapAuthError(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('user already registered')) {
+      return 'Email sudah terdaftar. Coba masuk saja.';
+    }
+    if (message.contains('password should be')) {
+      return 'Password tidak memenuhi syarat minimum.';
+    }
+    if (message.contains('email address')) {
+      return 'Format email tidak valid.';
+    }
+    return 'Gagal daftar: ${error.message}';
   }
 }

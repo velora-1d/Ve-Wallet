@@ -11,6 +11,7 @@ class TransactionModel {
   final String note;
   final DateTime date;
   final String? toWalletId;
+  final String? receiptUrl;
   final DateTime createdAt;
 
   TransactionModel({
@@ -24,6 +25,7 @@ class TransactionModel {
     required this.note,
     required this.date,
     this.toWalletId,
+    this.receiptUrl,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -44,6 +46,7 @@ class TransactionModel {
       note: json['note'] ?? '',
       date: DateTime.parse(json['date'] as String),
       toWalletId: json['to_wallet_id'] as String?,
+      receiptUrl: json['receipt_url'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
@@ -59,6 +62,7 @@ class TransactionModel {
       'note': note,
       'date': date.toIso8601String(),
       'to_wallet_id': toWalletId,
+      'receipt_url': receiptUrl,
     };
     if (id.isNotEmpty) {
       map['id'] = id;
@@ -82,6 +86,7 @@ class TransactionModel {
     String? note,
     DateTime? date,
     String? toWalletId,
+    String? receiptUrl,
     DateTime? createdAt,
   }) {
     return TransactionModel(
@@ -95,6 +100,7 @@ class TransactionModel {
       note: note ?? this.note,
       date: date ?? this.date,
       toWalletId: toWalletId ?? this.toWalletId,
+      receiptUrl: receiptUrl ?? this.receiptUrl,
       createdAt: createdAt ?? this.createdAt,
     );
   }

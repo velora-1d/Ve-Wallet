@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../wallet/presentation/providers/wallet_provider.dart';
@@ -26,6 +27,14 @@ class GoalDetailScreen extends ConsumerWidget {
             data: (goal) => IconButton(
               icon: const Icon(Icons.edit_outlined),
               onPressed: () => context.push('/add-edit-goal', extra: goal),
+            ),
+            loading: () => const SizedBox(),
+            error: (error, stack) => const SizedBox(),
+          ),
+          goalAsync.when(
+            data: (goal) => IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: () => _confirmDeleteGoal(context, ref, goal),
             ),
             loading: () => const SizedBox(),
             error: (error, stack) => const SizedBox(),
@@ -72,6 +81,14 @@ class GoalDetailScreen extends ConsumerWidget {
 
   Widget _buildGoalHeader(GoalModel goal) {
     final progress = goal.progress;
+    final remaining = goal.remainingAmount > 0 ? goal.remainingAmount : 0.0;
+    final daysLeft = goal.deadline?.difference(
+      DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+    ).inDays;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -143,6 +160,30 @@ class GoalDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildSummaryStat(
+                  'Sisa',
+                  CurrencyFormatter.format(remaining),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildSummaryStat(
+                  'Status',
+                  goal.isCompleted || progress >= 1.0 ? 'Selesai' : 'Aktif',
+                ),
+              ),
+              if (daysLeft != null) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildSummaryStat('Sisa Hari', '$daysLeft hari'),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 16),
           if (goal.deadline != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +195,7 @@ class GoalDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Deadline: ${goal.deadline!.day}/${goal.deadline!.month}/${goal.deadline!.year}',
+                  'Deadline: ${DateFormat('dd MMM yyyy', 'id_ID').format(goal.deadline!)}',
                   style: const TextStyle(
                     color: AppColors.outline,
                     fontSize: 14,
@@ -242,11 +283,19 @@ class GoalDetailScreen extends ConsumerWidget {
                         fontSize: 12,
                       ),
                     ),
+                    if (alloc.note.isNotEmpty)
+                      Text(
+                        alloc.note,
+                        style: const TextStyle(
+                          color: AppColors.onSurfaceVariant,
+                          fontSize: 12,
+                        ),
+                      ),
                   ],
                 ),
               ),
               Text(
-                '${alloc.createdAt.day}/${alloc.createdAt.month}',
+                DateFormat('dd MMM', 'id_ID').format(alloc.createdAt),
                 style: const TextStyle(color: AppColors.outline, fontSize: 12),
               ),
               IconButton(
@@ -296,6 +345,56 @@ class GoalDetailScreen extends ConsumerWidget {
               if (context.mounted) Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteGoal(BuildContext context, WidgetRef ref, GoalModel goal) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Hapus Target?'),
+        content: const Text(
+          'Target dan histori alokasinya akan dihapus. Dana yang sudah dialokasikan tidak otomatis kembali ke dompet.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await ref.read(goalControllerProvider.notifier).deleteGoal(goal.id);
+              if (dialogContext.mounted) Navigator.pop(dialogContext);
+              if (context.mounted) context.pop();
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryStat(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: AppColors.outline),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
       ),

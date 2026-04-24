@@ -3,6 +3,8 @@ import '../../domain/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
+  static const String _adminEmail = 'nawawimahinutsman@gmail.com';
+
   final SupabaseClient _supabase;
 
   AuthRepositoryImpl(this._supabase);
@@ -19,7 +21,9 @@ class AuthRepositoryImpl implements AuthRepository {
       email: user.email ?? '',
       fullName: profile?['full_name'] ?? user.userMetadata?['full_name'],
       avatarUrl: profile?['avatar_url'] ?? user.userMetadata?['avatar_url'],
-      role: profile?['role'] ?? 'user',
+      role:
+          profile?['role'] ??
+          ((user.email ?? '').toLowerCase() == _adminEmail ? 'admin' : 'user'),
     );
   }
 
@@ -33,6 +37,38 @@ class AuthRepositoryImpl implements AuthRepository {
       return await _populateUserModel(response.user!);
     }
     return null;
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    await _supabase.auth.resetPasswordForEmail(email);
+  }
+
+  @override
+  Future<UserModel?> updateProfile({
+    required String fullName,
+    String? avatarUrl,
+  }) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return null;
+
+    await _supabase.from('profiles').update({
+      'full_name': fullName,
+      'avatar_url': avatarUrl?.trim().isEmpty ?? true ? null : avatarUrl?.trim(),
+    }).eq('id', user.id);
+
+    await _supabase.auth.updateUser(
+      UserAttributes(
+        data: {
+          'full_name': fullName,
+          'avatar_url': avatarUrl?.trim().isEmpty ?? true
+              ? null
+              : avatarUrl?.trim(),
+        },
+      ),
+    );
+
+    return getCurrentUser();
   }
 
   @override

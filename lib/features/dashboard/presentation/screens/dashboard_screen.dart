@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/currency_formatter.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
@@ -165,7 +166,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
 
                   // Expense Chart
-                  _buildExpenseChart(context),
+                  _buildExpenseChart(context, transactions ?? const []),
                   const SizedBox(height: 24),
 
                   // Savings Goals
@@ -303,7 +304,35 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildExpenseChart(BuildContext context) {
+  Widget _buildExpenseChart(
+    BuildContext context,
+    List<TransactionModel> transactions,
+  ) {
+    final now = DateTime.now();
+    final last7Days = List.generate(7, (index) {
+      final date = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: 6 - index));
+      final total = transactions
+          .where(
+            (tx) =>
+                tx.isExpense &&
+                tx.date.year == date.year &&
+                tx.date.month == date.month &&
+                tx.date.day == date.day,
+          )
+          .fold(0.0, (sum, tx) => sum + tx.amount);
+      return (date: date, total: total);
+    });
+
+    final maxTotal = last7Days.fold<double>(
+      0,
+      (max, item) => item.total > max ? item.total : max,
+    );
+    final double maxY = maxTotal == 0 ? 100.0 : maxTotal * 1.2;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,7 +362,7 @@ class DashboardScreen extends ConsumerWidget {
           child: BarChart(
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
-              maxY: 100,
+              maxY: maxY,
               barTouchData: BarTouchData(enabled: false),
               titlesData: FlTitlesData(
                 show: true,
@@ -341,21 +370,16 @@ class DashboardScreen extends ConsumerWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
-                      const days = [
-                        'Sen',
-                        'Sel',
-                        'Rab',
-                        'Kam',
-                        'Jum',
-                        'Sab',
-                        'Min',
-                      ];
-                      final isHighlight =
-                          value.toInt() == 3; // Thursday highlight as in design
+                      final index = value.toInt();
+                      if (index < 0 || index >= last7Days.length) {
+                        return const SizedBox();
+                      }
+                      final date = last7Days[index].date;
+                      final isHighlight = index == last7Days.length - 1;
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          days[value.toInt()],
+                          DateFormat('E', 'id_ID').format(date),
                           style: GoogleFonts.inter(
                             color: isHighlight
                                 ? AppColors.onBackground
@@ -383,19 +407,16 @@ class DashboardScreen extends ConsumerWidget {
               ),
               gridData: const FlGridData(show: false),
               borderData: FlBorderData(show: false),
-              barGroups: [
-                _buildBarGroup(0, 30),
-                _buildBarGroup(1, 50),
-                _buildBarGroup(2, 40),
-                _buildBarGroup(
-                  3,
-                  90,
-                  color: AppColors.secondaryContainer,
-                ), // Kam - Highlight
-                _buildBarGroup(4, 60),
-                _buildBarGroup(5, 20),
-                _buildBarGroup(6, 35),
-              ],
+              barGroups: List.generate(last7Days.length, (index) {
+                final item = last7Days[index];
+                return _buildBarGroup(
+                  index,
+                  item.total,
+                  color: index == last7Days.length - 1
+                      ? AppColors.secondaryContainer
+                      : AppColors.primaryFixedDim,
+                );
+              }),
             ),
           ),
         ),

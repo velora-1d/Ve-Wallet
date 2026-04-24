@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -108,6 +110,12 @@ class TransactionDetailScreen extends ConsumerWidget {
                   ),
 
                   const SizedBox(height: 24),
+
+                  if (transaction.receiptUrl != null &&
+                      transaction.receiptUrl!.isNotEmpty) ...[
+                    _buildReceiptCard(transaction.receiptUrl!),
+                    const SizedBox(height: 24),
+                  ],
 
                   _buildMetaInfo(),
 
@@ -289,6 +297,57 @@ class TransactionDetailScreen extends ConsumerWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReceiptCard(String receiptUrl) {
+    final isLocal = !receiptUrl.startsWith('http://') &&
+        !receiptUrl.startsWith('https://');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Foto Struk',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              width: double.infinity,
+              height: 220,
+              child: isLocal
+                  ? Image.file(
+                      File(receiptUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      receiptUrl,
+                      fit: BoxFit.cover,
+                    ),
+            ),
           ),
         ],
       ),

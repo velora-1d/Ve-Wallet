@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
@@ -12,105 +12,64 @@ class AdminDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.blue[700],
-        elevation: 2,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
-        ),
-        title: const Text(
-          'Ve-Wallet Admin',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        title: const Text('Ve-Wallet Admin'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              ref.read(authRepositoryProvider).signOut();
-            },
+            onPressed: () => ref.read(authRepositoryProvider).signOut(),
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Greeting Card
-            _buildGreetingCard(),
-            const SizedBox(height: 24),
-            // Stats Grid
+            _buildHeroCard(),
+            const SizedBox(height: 20),
             _buildStatsGrid(),
+            const SizedBox(height: 20),
+            _buildGrowthChart(),
+            const SizedBox(height: 20),
+            _buildActivityLog(),
             const SizedBox(height: 24),
-            // Growth Chart
-            _buildGrowthChart(context),
-            const SizedBox(height: 24),
-            // Activity Log
-            _buildActivityLog(context),
-            const SizedBox(height: 100),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGreetingCard() {
+  Widget _buildHeroCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: const Border(
-          left: BorderSide(color: AppColors.primary, width: 4),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F172A), Color(0xFF1D4ED8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(24),
       ),
-      child: Stack(
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Halo, Admin 👋',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Berikut ringkasan Ve-Wallet untuk hari ini.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-            ],
+          Text(
+            'Halo, Admin',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-          Positioned(
-            right: -20,
-            top: -20,
-            bottom: -20,
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryFixedDim.withValues(alpha: 0.3),
-                    Colors.transparent,
-                  ],
-                  begin: Alignment.centerRight,
-                  end: Alignment.centerLeft,
-                ),
-              ),
+          SizedBox(height: 8),
+          Text(
+            'Ringkasan operasional hari ini untuk user, household, transaksi, dan aktivitas sistem.',
+            style: TextStyle(
+              color: Color(0xFFDCE8FF),
+              height: 1.5,
             ),
           ),
         ],
@@ -119,104 +78,97 @@ class AdminDashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildStatsGrid() {
-    return GridView.count(
+    final cards = [
+      (
+        icon: Icons.group_outlined,
+        value: '312',
+        label: 'Total User',
+        color: AppColors.primary,
+        bg: AppColors.primaryFixed,
+      ),
+      (
+        icon: Icons.bolt_outlined,
+        value: '48',
+        label: 'Aktif Hari Ini',
+        color: const Color(0xFF10B981),
+        bg: const Color(0xFFECFDF5),
+      ),
+      (
+        icon: Icons.swap_horiz,
+        value: '256',
+        label: 'Transaksi Hari Ini',
+        color: AppColors.secondary,
+        bg: AppColors.secondaryFixed,
+      ),
+      (
+        icon: Icons.home_work_outlined,
+        value: '89',
+        label: 'Shared Household',
+        color: AppColors.tertiary,
+        bg: AppColors.tertiaryFixed,
+      ),
+    ];
+
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.2,
-      children: [
-        _buildStatCard(
-          icon: Icons.group,
-          iconColor: AppColors.primary,
-          bgColor: AppColors.primaryFixed,
-          value: '312',
-          label: 'Total User',
-        ),
-        _buildStatCard(
-          icon: Icons.how_to_reg,
-          iconColor: const Color(0xFF10B981),
-          bgColor: const Color(0xFFECFDF5),
-          value: '48',
-          label: 'Aktif Hari Ini',
-        ),
-        _buildStatCard(
-          icon: Icons.swap_horiz,
-          iconColor: AppColors.secondary,
-          bgColor: AppColors.secondaryFixed,
-          value: '256',
-          label: 'Transaksi Hari Ini',
-        ),
-        _buildStatCard(
-          icon: Icons.home,
-          iconColor: Colors.purple[600]!,
-          bgColor: Colors.purple[50]!,
-          value: '89',
-          label: 'Household',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatCard({
-    required IconData icon,
-    required Color iconColor,
-    required Color bgColor,
-    required String value,
-    required String label,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+      itemCount: cards.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.18,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
-                ),
-              ),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.onSurfaceVariant,
-                ),
+      itemBuilder: (context, index) {
+        final card = cards[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CircleAvatar(
+                backgroundColor: card.bg,
+                child: Icon(card.icon, color: card.color),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    card.value,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    card.label,
+                    style: const TextStyle(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildGrowthChart(BuildContext context) {
+  Widget _buildGrowthChart() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -225,84 +177,97 @@ class AdminDashboardScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.onSurface,
           ),
         ),
         const SizedBox(height: 12),
         Container(
-          height: 200,
-          padding: const EdgeInsets.all(16),
+          height: 220,
+          padding: const EdgeInsets.fromLTRB(12, 16, 16, 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(20),
           ),
           child: LineChart(
             LineChartData(
-              gridData: const FlGridData(show: false),
-              titlesData: FlTitlesData(
+              minX: 0,
+              maxX: 6,
+              minY: 0,
+              maxY: 9,
+              gridData: FlGridData(
                 show: true,
+                horizontalInterval: 2,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (value) => FlLine(
+                  color: AppColors.outlineVariant.withValues(alpha: 0.35),
+                  strokeWidth: 1,
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+              titlesData: FlTitlesData(
+                leftTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
+                    reservedSize: 24,
                     getTitlesWidget: (value, meta) {
-                      const titles = ['1 Nov', '8 Nov', '15 Nov', '22 Nov', '30 Nov'];
-                      if (value % 2 == 0 && value.toInt() ~/ 2 < titles.length) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            titles[value.toInt() ~/ 2],
-                            style: const TextStyle(color: AppColors.outline, fontSize: 10),
+                      const labels = [
+                        'Sen',
+                        'Sel',
+                        'Rab',
+                        'Kam',
+                        'Jum',
+                        'Sab',
+                        'Min',
+                      ];
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          labels[value.toInt()],
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.outline,
                           ),
-                        );
-                      }
-                      return const SizedBox();
+                        ),
+                      );
                     },
-                    reservedSize: 30,
                   ),
                 ),
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
-              borderData: FlBorderData(show: false),
               lineBarsData: [
                 LineChartBarData(
                   spots: const [
-                    FlSpot(0, 1),
-                    FlSpot(2, 3),
-                    FlSpot(4, 2),
-                    FlSpot(6, 5),
-                    FlSpot(8, 4),
-                    FlSpot(10, 8),
+                    FlSpot(0, 1.5),
+                    FlSpot(1, 2.4),
+                    FlSpot(2, 2.2),
+                    FlSpot(3, 4.8),
+                    FlSpot(4, 5.1),
+                    FlSpot(5, 6.8),
+                    FlSpot(6, 7.6),
                   ],
                   isCurved: true,
                   color: AppColors.primary,
                   barWidth: 3,
-                  isStrokeCapRound: true,
                   dotData: FlDotData(
                     show: true,
-                    getDotPainter: (spot, percent, barData, index) {
-                      if (index == 3 || index == 5) {
-                        return FlDotCirclePainter(
-                          radius: 4,
-                          color: AppColors.secondaryContainer,
-                          strokeWidth: 2,
-                          strokeColor: Colors.white,
-                        );
-                      }
-                      return FlDotCirclePainter(radius: 0);
-                    },
+                    getDotPainter: (spot, percent, barData, index) =>
+                        FlDotCirclePainter(
+                      radius: index == 6 ? 4.5 : 3,
+                      color: AppColors.primary,
+                      strokeColor: Colors.white,
+                      strokeWidth: 2,
+                    ),
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withValues(alpha: 0.10),
                   ),
                 ),
               ],
@@ -313,7 +278,13 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityLog(BuildContext context) {
+  Widget _buildActivityLog() {
+    final logs = [
+      ('User Registered', 'Budi Santoso joined Ve-Wallet', '10:42'),
+      ('Invite Regenerated', 'Household invite code refreshed', '09:15'),
+      ('Budget Alert Sent', 'Warning delivered to 14 users', '08:30'),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,116 +293,45 @@ class AdminDashboardScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.onSurface,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
-            children: [
-              _buildLogItem(
-                dotColor: AppColors.primary,
-                bgColor: AppColors.primaryFixed,
-                title: 'User Registered',
-                subtitle: 'Budi Santoso joined Ve-Wallet',
-                time: '10:42 AM',
-              ),
-              const Divider(height: 1, color: AppColors.outlineVariant),
-              _buildLogItem(
-                dotColor: AppColors.secondary,
-                bgColor: AppColors.secondaryFixed,
-                title: 'Notification Sent',
-                subtitle: 'System maintenance alert dispatched',
-                time: '09:15 AM',
-              ),
-              const Divider(height: 1, color: AppColors.outlineVariant),
-              _buildLogItem(
-                dotColor: AppColors.error,
-                bgColor: AppColors.errorContainer,
-                title: 'User Suspended',
-                subtitle: 'Account #88921 flagged for suspicious activity',
-                time: 'Yesterday',
-              ),
-            ],
+            children: logs
+                .map(
+                  (log) => ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: const CircleAvatar(
+                      backgroundColor: AppColors.primaryFixed,
+                      child: Icon(
+                        Icons.circle,
+                        size: 12,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    title: Text(log.$1),
+                    subtitle: Text(log.$2),
+                    trailing: Text(
+                      log.$3,
+                      style: const TextStyle(
+                        color: AppColors.outline,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLogItem({
-    required Color dotColor,
-    required Color bgColor,
-    required String title,
-    required String subtitle,
-    required String time,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: dotColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            time,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.outline,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
