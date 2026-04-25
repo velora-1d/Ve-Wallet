@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
@@ -34,16 +35,27 @@ class TransactionDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.onSurface),
-          onPressed: () => context.pop(),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close_rounded, color: AppColors.onSurface, size: 20),
+            ),
+            onPressed: () => context.pop(),
+          ),
         ),
         title: Text(
           'Detail Transaksi',
-          style: GoogleFonts.inter(
+          style: GoogleFonts.plusJakartaSans(
             color: AppColors.onSurface,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             fontSize: 18,
+            letterSpacing: -0.5,
           ),
         ),
         centerTitle: true,
@@ -148,58 +160,97 @@ class TransactionDetailScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: chipColor,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            _getCategoryIcon(),
-            color: accentColor,
-            size: 32,
-          ),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+            ),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+            ),
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: accentColor,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Icon(
+                _getCategoryIcon(),
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         Text(
-          isTransfer ? 'Transfer' : transaction.categoryName,
-          style: GoogleFonts.inter(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
+          isTransfer ? 'Transfer Saldo' : transaction.categoryName,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
             color: const Color(0xFF0F172A),
+            letterSpacing: -0.5,
           ),
         ),
         const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
             color: chipColor,
             borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: accentColor.withValues(alpha: 0.1),
+              width: 1,
+            ),
           ),
           child: Text(
             isTransfer
-                ? 'Transfer'
+                ? 'Internal Transfer'
                 : isExpense
-                ? 'Pengeluaran'
-                : 'Pemasukan',
-            style: GoogleFonts.inter(
+                    ? 'Pengeluaran'
+                    : 'Pemasukan',
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               color: accentColor,
+              letterSpacing: 0.2,
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Text(
-          isTransfer
-              ? currencyFormat.format(transaction.amount)
-              : '${isExpense ? '-' : '+'} ${currencyFormat.format(transaction.amount)}',
-          style: GoogleFonts.inter(
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            color: accentColor,
-            letterSpacing: -0.5,
+        const SizedBox(height: 24),
+        ShaderMask(
+          shaderCallback: (bounds) => LinearGradient(
+            colors: [accentColor, accentColor.withValues(alpha: 0.8)],
+          ).createShader(bounds),
+          child: Text(
+            isTransfer
+                ? currencyFormat.format(transaction.amount)
+                : '${isExpense ? '-' : '+'} ${currencyFormat.format(transaction.amount)}',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 40,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -1.5,
+            ),
           ),
         ),
       ],
@@ -214,46 +265,46 @@ class TransactionDetailScreen extends ConsumerWidget {
     bool isLast = false,
   }) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
         border: isLast
             ? null
             : Border(
                 bottom: BorderSide(
                   color: AppColors.outlineVariant.withValues(alpha: 0.3),
-                  width: 1,
+                  width: 0.5,
                 ),
               ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               color: const Color(0xFF64748B),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 24),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 20, color: iconColor),
+                  Icon(icon, size: 18, color: iconColor?.withValues(alpha: 0.8)),
                   const SizedBox(width: 8),
                 ],
                 Flexible(
                   child: Text(
                     value,
                     textAlign: TextAlign.end,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0F172A),
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -309,44 +360,72 @@ class TransactionDetailScreen extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(
+          color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Foto Struk',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0F172A),
+          Row(
+            children: [
+              const Icon(Icons.receipt_long_rounded, size: 20, color: AppColors.primary),
+              const SizedBox(width: 10),
+              Text(
+                'Bukti Pembayaran',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              color: AppColors.surfaceContainerHigh.withValues(alpha: 0.2),
+              child: SizedBox(
+                width: double.infinity,
+                height: 250,
+                child: isLocal
+                    ? Image.file(
+                        File(receiptUrl),
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        receiptUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                      ),
+              ),
             ),
           ),
           const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: SizedBox(
-              width: double.infinity,
-              height: 220,
-              child: isLocal
-                  ? Image.file(
-                      File(receiptUrl),
-                      fit: BoxFit.cover,
-                    )
-                  : Image.network(
-                      receiptUrl,
-                      fit: BoxFit.cover,
-                    ),
+          Center(
+            child: Text(
+              'Ketuk untuk memperbesar',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -363,56 +442,68 @@ class TransactionDetailScreen extends ConsumerWidget {
         16 + MediaQuery.paddingOf(context).bottom,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        border: Border(
-          top: BorderSide(
-            color: AppColors.outlineVariant.withValues(alpha: 0.2),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
           ),
-        ),
+        ],
       ),
       child: Row(
         children: [
           // Delete Button
-          Expanded(
-            child: OutlinedButton.icon(
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.error.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: IconButton(
               onPressed: () => _showDeleteConfirmation(context, ref),
-              icon: const Icon(Icons.delete_outline, size: 20),
-              label: const Text('Hapus'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF64748B),
-                side: const BorderSide(color: Color(0xFFE2E8F0)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
+              icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+              tooltip: 'Hapus Transaksi',
             ),
           ),
           const SizedBox(width: 16),
           // Edit Button
           Expanded(
-            child: ElevatedButton(
-              onPressed: () => context.push(
-                '/add-transaction',
-                extra: {'isEdit': true, 'transactionId': transaction.id},
-              ),
-              style:
-                  ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryContainer,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                  ).copyWith(
-                    shadowColor: WidgetStateProperty.all(
-                      AppColors.primaryContainer.withValues(alpha: 0.2),
-                    ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
-              child: const Text('Edit'),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: () => context.push(
+                  '/add-transaction',
+                  extra: {'isEdit': true, 'transactionId': transaction.id},
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  textStyle: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                child: const Text('Edit Transaksi'),
+              ),
             ),
           ),
         ],
@@ -448,50 +539,21 @@ class TransactionDetailScreen extends ConsumerWidget {
     return null;
   }
 
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Hapus Transaksi?',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w700),
-        ),
-        content: Text(
-          'Tindakan ini tidak dapat dibatalkan.',
-          style: GoogleFonts.inter(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Batal', style: GoogleFonts.inter(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              try {
-                await ref
-                    .read(transactionRepositoryProvider)
-                    .deleteTransaction(transaction.id);
-                if (context.mounted) {
-                  context.pop();
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Gagal menghapus: $e')),
-                  );
-                }
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(
-              'Hapus',
-              style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
+    final confirmed = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Transaksi?',
+      message: 'Tindakan ini tidak dapat dibatalkan.',
+      confirmLabel: 'Hapus',
     );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref
+          .read(transactionRepositoryProvider)
+          .deleteTransaction(transaction.id);
+      if (context.mounted) context.pop();
+    } catch (e) {
+      if (context.mounted) AppUI.showError(context, 'Gagal menghapus: $e');
+    }
   }
 }

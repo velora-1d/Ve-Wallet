@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
@@ -28,73 +30,103 @@ class WalletDetailScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           // Hero Header with Balance
+          // Hero Header with Balance
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: 240,
             pinned: true,
+            stretch: true,
             backgroundColor: Color(wallet.color),
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
               onPressed: () => context.pop(),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
+                icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 26),
                 onPressed: () => context.push(
                   '/add-wallet',
                   extra: {'isEdit': true, 'wallet': wallet},
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.white),
+                icon: const Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 26),
                 onPressed: () => _showDeleteConfirmation(context, ref),
               ),
+              const SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
+              stretchModes: const [
+                StretchMode.zoomBackground,
+                StretchMode.blurBackground,
+              ],
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
                       Color(wallet.color),
-                      Color(wallet.color).withValues(alpha: 0.8),
+                      Color(wallet.color).withValues(alpha: 0.7),
                     ],
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        WalletIconUtils.getIcon(wallet.icon),
-                        color: Colors.white,
-                        size: 32,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      wallet.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                    // Decorative patterns
+                    Positioned(
+                      top: -50,
+                      right: -50,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      currencyFormat.format(wallet.balance),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              WalletIconUtils.getIcon(wallet.icon),
+                              color: Colors.white,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          wallet.name.toUpperCase(),
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          currencyFormat.format(wallet.balance),
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 34,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -144,23 +176,39 @@ class WalletDetailScreen extends ConsumerWidget {
           ),
 
           // Recent Transactions Header
+          // Recent Transactions Header
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Riwayat Transaksi',
-                    style: TextStyle(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.onSurface,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1E293B),
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () => context.push('/transactions'),
-                    child: const Text('Lihat Semua'),
+                  GestureDetector(
+                    onTap: () => context.push('/transactions'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Lihat Semua',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -197,11 +245,19 @@ class WalletDetailScreen extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
             context.push('/add-transaction', extra: {'walletId': wallet.id}),
         backgroundColor: Color(wallet.color),
-        child: const Icon(Icons.add, color: Colors.white),
+        elevation: 8,
+        label: Text(
+          'Catat Transaksi',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        icon: const Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }
@@ -221,48 +277,46 @@ class WalletDetailScreen extends ConsumerWidget {
 
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: iconColor, size: 16),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 16),
             ),
             const SizedBox(height: 12),
             Text(
+              title,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
               currencyFormat.format(amount),
-              style: const TextStyle(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1E293B),
+                letterSpacing: -0.5,
               ),
             ),
           ],
@@ -284,59 +338,65 @@ class WalletDetailScreen extends ConsumerWidget {
     return InkWell(
       onTap: () => context.push('/transaction-detail', extra: tx),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(10),
+                color: isTransfer
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : isExpense
+                        ? AppColors.error.withValues(alpha: 0.1)
+                        : AppColors.success.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 isTransfer
-                    ? Icons.swap_horiz
+                    ? Icons.swap_horiz_rounded
                     : isExpense
-                    ? Icons.shopping_bag
-                    : Icons.payments,
+                        ? Icons.shopping_bag_rounded
+                        : Icons.payments_rounded,
                 color: isTransfer
                     ? AppColors.primary
                     : isExpense
-                    ? AppColors.error
-                    : AppColors.success,
-                size: 20,
+                        ? AppColors.error
+                        : AppColors.success,
+                size: 24,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     isTransfer ? 'Transfer' : tx.categoryName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
                       fontSize: 14,
+                      color: const Color(0xFF1E293B),
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     dateFormat.format(tx.date),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.onSurfaceVariant,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -346,14 +406,15 @@ class WalletDetailScreen extends ConsumerWidget {
               isTransfer
                   ? currencyFormat.format(tx.amount)
                   : (isExpense ? '-' : '+') + currencyFormat.format(tx.amount),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w900,
                 color: isTransfer
                     ? AppColors.primary
                     : isExpense
-                    ? AppColors.error
-                    : AppColors.success,
-                fontSize: 14,
+                        ? AppColors.error
+                        : AppColors.success,
+                fontSize: 15,
+                letterSpacing: -0.5,
               ),
             ),
           ],
@@ -362,51 +423,23 @@ class WalletDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
     if (wallet.balance != 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Dompet hanya bisa dihapus jika saldo = 0'),
-        ),
-      );
+      AppUI.showWarning(context, 'Dompet hanya bisa dihapus jika saldo = 0');
       return;
     }
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Hapus Dompet?'),
-        content: const Text(
-          'Seluruh riwayat transaksi di dompet ini juga akan terhapus.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              try {
-                await ref
-                    .read(walletRepositoryProvider)
-                    .deleteWallet(wallet.id);
-                if (context.mounted) {
-                  context.pop();
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Gagal menghapus dompet: $e')),
-                  );
-                }
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
+    final confirmed = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Dompet?',
+      message: 'Seluruh riwayat transaksi di dompet ini juga akan terhapus.',
+      confirmLabel: 'Hapus',
     );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref.read(walletRepositoryProvider).deleteWallet(wallet.id);
+      if (context.mounted) context.pop();
+    } catch (e) {
+      if (context.mounted) AppUI.showError(context, 'Gagal menghapus dompet: $e');
+    }
   }
 }

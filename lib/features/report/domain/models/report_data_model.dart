@@ -1,4 +1,5 @@
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
+import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 
 class CategoryReport {
   final String categoryName;
@@ -34,6 +35,7 @@ class ReportDataModel {
   final List<CategoryReport> incomeByCategories;
   final List<DailyFlow> dailyFlows;
   final List<TransactionModel> topExpenses;
+  final List<WalletModel> wallets;
 
   ReportDataModel({
     required this.totalIncome,
@@ -43,6 +45,7 @@ class ReportDataModel {
     required this.incomeByCategories,
     required this.dailyFlows,
     required this.topExpenses,
+    required this.wallets,
   });
 
   factory ReportDataModel.empty() {
@@ -54,6 +57,7 @@ class ReportDataModel {
       incomeByCategories: [],
       dailyFlows: [],
       topExpenses: [],
+      wallets: [],
     );
   }
 }

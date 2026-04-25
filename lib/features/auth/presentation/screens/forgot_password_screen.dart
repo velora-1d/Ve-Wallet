@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -26,8 +27,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Future<void> _submit() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email harus diisi')),
+      AppUI.showSnack(
+        context,
+        'Email harus diisi',
+        type: SnackType.warning,
       );
       return;
     }
@@ -36,23 +39,25 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     try {
       await ref.read(authRepositoryProvider).resetPassword(email: email);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Link reset password sudah dikirim. Cek inbox atau folder spam.',
-          ),
-        ),
+      AppUI.showSnack(
+        context,
+        'Link reset password sudah dikirim. Cek inbox atau folder spam.',
+        type: SnackType.success,
       );
       context.pop();
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_mapAuthError(e))),
+      AppUI.showSnack(
+        context,
+        _mapAuthError(e),
+        type: SnackType.error,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mengirim email reset: $e')),
+      AppUI.showSnack(
+        context,
+        'Gagal mengirim email reset: $e',
+        type: SnackType.error,
       );
     } finally {
       if (mounted) {

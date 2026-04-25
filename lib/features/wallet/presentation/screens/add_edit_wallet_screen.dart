@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddEditWalletScreen extends ConsumerStatefulWidget {
   final bool isEdit;
@@ -118,9 +120,7 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Gagal menyimpan dompet: $e')));
+          AppUI.showError(context, 'Gagal menyimpan dompet: $e');
         }
       } finally {
         if (mounted) {
@@ -135,44 +135,62 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.onSurfaceVariant),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E293B), size: 20),
           onPressed: () => context.pop(),
         ),
+        centerTitle: true,
         title: Text(
-          widget.isEdit ? 'Edit Dompet' : 'Tambah Dompet Baru',
-          style: const TextStyle(
-            color: AppColors.onSurface,
-            fontWeight: FontWeight.bold,
+          widget.isEdit ? 'Edit Dompet' : 'Dompet Baru',
+          style: GoogleFonts.plusJakartaSans(
+            color: const Color(0xFF1E293B),
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
           ),
         ),
-        actions: [
-          _isLoading
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : _saveWallet,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0F172A),
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            elevation: 0,
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
                   ),
                 )
-              : TextButton(
-                  onPressed: _saveWallet,
-                  child: const Text(
-                    'Simpan',
-                    style: TextStyle(
-                      color: AppColors.primaryContainer,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+              : Text(
+                  widget.isEdit ? 'Simpan Perubahan' : 'Buat Dompet Sekarang',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-          const SizedBox(width: 8),
-        ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -187,101 +205,143 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
 
               // Name Input
               _buildSectionTitle('Nama Dompet'),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Contoh: Tabungan Utama',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                validator: (value) =>
-                    value!.isEmpty ? 'Nama tidak boleh kosong' : null,
-                onChanged: (val) => setState(() {}),
+                child: TextFormField(
+                  controller: _nameController,
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    hintText: 'Contoh: Tabungan Utama',
+                    hintStyle: GoogleFonts.plusJakartaSans(
+                      color: const Color(0xFF94A3B8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                  onChanged: (val) => setState(() {}),
+                ),
               ),
               const SizedBox(height: 24),
 
               // Balance Input
-              _buildSectionTitle('Saldo Awal'),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _balanceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixText: 'Rp ',
-                  hintText: '0',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
+              _buildSectionTitle('Saldo Saat Ini'),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                validator: (value) =>
-                    value!.isEmpty ? 'Saldo tidak boleh kosong' : null,
-                onChanged: (val) => setState(() {}),
+                child: TextFormField(
+                  controller: _balanceController,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    color: const Color(0xFF0F172A),
+                  ),
+                  decoration: InputDecoration(
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(
+                        'Rp',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                    ),
+                    hintText: '0',
+                    hintStyle: GoogleFonts.plusJakartaSans(
+                      color: const Color(0xFF94A3B8),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Saldo tidak boleh kosong' : null,
+                  onChanged: (val) => setState(() {}),
+                ),
               ),
               const SizedBox(height: 24),
 
               // Wallet Type
               _buildSectionTitle('Tipe Dompet'),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: _walletTypes.map((type) {
-                  final isSelected = _selectedType == type['name'];
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedType = type['name']),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppColors.primaryContainer
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: isSelected
-                                ? null
-                                : Border.all(color: AppColors.outlineVariant),
-                          ),
-                          child: Icon(
-                            type['icon'],
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.onSurfaceVariant,
-                          ),
+              const SizedBox(height: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _walletTypes.map((type) {
+                    final isSelected = _selectedType == type['name'];
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedType = type['name']),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF0F172A)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected 
+                                ? const Color(0xFF0F172A).withValues(alpha: 0.2)
+                                : Colors.black.withValues(alpha: 0.02),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          type['name'],
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? AppColors.primaryContainer
-                                : AppColors.onSurfaceVariant,
-                          ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              type['icon'],
+                              size: 18,
+                              color: isSelected ? Colors.white : const Color(0xFF64748B),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              type['name'],
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
               const SizedBox(height: 32),
 
@@ -364,10 +424,11 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.onSurface,
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 15,
+        fontWeight: FontWeight.w800,
+        color: const Color(0xFF1E293B),
+        letterSpacing: -0.3,
       ),
     );
   }
@@ -375,68 +436,106 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
   Widget _buildPreviewCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      height: 180,
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [_selectedColor, _selectedColor.withValues(alpha: 0.8)],
+          colors: [
+            _selectedColor,
+            _selectedColor.withValues(alpha: 0.8),
+          ],
         ),
-        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: _selectedColor.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -30,
+              top: -30,
+              child: Container(
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  WalletIconUtils.getIcon(_selectedIconKey),
-                  color: Colors.white,
-                  size: 28,
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.1),
                 ),
               ),
-              Text(
-                _selectedType,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            WalletIconUtils.getIcon(_selectedIconKey),
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _selectedType.toUpperCase(),
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    _nameController.text.isEmpty ? 'NAMA DOMPET' : _nameController.text.toUpperCase(),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Rp ${_balanceController.text.isEmpty ? '0' : _balanceController.text}',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.0,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          Text(
-            _nameController.text.isEmpty ? 'Nama Dompet' : _nameController.text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Rp ${_balanceController.text.isEmpty ? '0' : _balanceController.text}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

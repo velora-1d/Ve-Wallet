@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
@@ -89,9 +90,7 @@ class _AddEditTransactionScreenState
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat data transaksi: $e')),
-      );
+      AppUI.showError(context, 'Gagal memuat data transaksi: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -164,38 +163,26 @@ class _AddEditTransactionScreenState
   Future<void> _saveTransaction() async {
     final amount = double.tryParse(_amountString) ?? 0;
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nominal harus lebih dari 0')),
-      );
+      AppUI.showWarning(context, 'Nominal harus lebih dari 0');
       return;
     }
 
     if (_selectedWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih dompet asal')),
-      );
+      AppUI.showWarning(context, 'Pilih dompet asal');
       return;
     }
 
     if (_isTransfer) {
       if (_selectedToWalletId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pilih dompet tujuan')),
-        );
+        AppUI.showWarning(context, 'Pilih dompet tujuan');
         return;
       }
       if (_selectedWalletId == _selectedToWalletId) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Dompet asal dan tujuan tidak boleh sama'),
-          ),
-        );
+        AppUI.showWarning(context, 'Dompet asal dan tujuan tidak boleh sama');
         return;
       }
     } else if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih kategori')),
-      );
+      AppUI.showWarning(context, 'Pilih kategori');
       return;
     }
 
@@ -245,9 +232,7 @@ class _AddEditTransactionScreenState
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menyimpan: $e')),
-      );
+      AppUI.showError(context, 'Gagal menyimpan: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -304,9 +289,7 @@ class _AddEditTransactionScreenState
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mengambil foto struk: $e')),
-      );
+      AppUI.showError(context, 'Gagal mengambil foto struk: $e');
     }
   }
 
@@ -442,42 +425,46 @@ class _AddEditTransactionScreenState
   Widget _buildTypeTabItem(String label, TransactionType type) {
     final isSelected = _selectedType == type;
 
-    Color background = const Color(0xFFEAEDFF);
-    Color textColor = const Color(0xFF434655);
+    Color activeColor;
+    Color activeBg;
 
-    if (isSelected) {
-      switch (type) {
-        case TransactionType.expense:
-          background = const Color(0xFFFFDAD6);
-          textColor = const Color(0xFFBA1A1A);
-          break;
-        case TransactionType.income:
-          background = const Color(0xFFDCFCE7);
-          textColor = const Color(0xFF15803D);
-          break;
-        case TransactionType.transfer:
-          background = const Color(0xFFDBEAFE);
-          textColor = const Color(0xFF1D4ED8);
-          break;
-      }
+    switch (type) {
+      case TransactionType.expense:
+        activeColor = const Color(0xFFEF4444);
+        activeBg = const Color(0xFFFEF2F2);
+        break;
+      case TransactionType.income:
+        activeColor = const Color(0xFF10B981);
+        activeBg = const Color(0xFFECFDF5);
+        break;
+      case TransactionType.transfer:
+        activeColor = const Color(0xFF3B82F6);
+        activeBg = const Color(0xFFEFF6FF);
+        break;
     }
 
     return Expanded(
       child: GestureDetector(
         onTap: () => _setTransactionType(type),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: background,
+            color: isSelected ? activeBg : AppColors.surfaceContainerHigh.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: isSelected ? activeColor.withValues(alpha: 0.2) : Colors.transparent,
+              width: 1.5,
+            ),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: textColor,
+              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+              color: isSelected ? activeColor : const Color(0xFF64748B),
+              letterSpacing: -0.2,
             ),
           ),
         ),
@@ -489,46 +476,74 @@ class _AddEditTransactionScreenState
     final value = int.tryParse(_amountString) ?? 0;
     final displayAmount = formatter.format(value);
 
+    Color themeColor;
+    switch (_selectedType) {
+      case TransactionType.expense:
+        themeColor = const Color(0xFFEF4444);
+        break;
+      case TransactionType.income:
+        themeColor = const Color(0xFF10B981);
+        break;
+      case TransactionType.transfer:
+        themeColor = const Color(0xFF3B82F6);
+        break;
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.symmetric(vertical: 28),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFDBEAFE)),
+        gradient: LinearGradient(
+          colors: [
+            themeColor.withValues(alpha: 0.08),
+            themeColor.withValues(alpha: 0.03),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: themeColor.withValues(alpha: 0.1),
+          width: 1.5,
+        ),
       ),
       child: Column(
         children: [
           Text(
-            _isTransfer ? 'Nominal Transfer' : 'Nominal Transaksi',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: const Color(0xFF004AC6),
-              fontWeight: FontWeight.w500,
+            _isTransfer ? 'NOMINAL TRANSFER' : 'NOMINAL TRANSAKSI',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              color: themeColor.withValues(alpha: 0.6),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Rp',
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF004AC6),
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: themeColor.withValues(alpha: 0.5),
                 ),
               ),
-              const SizedBox(width: 4),
-              Text(
-                displayAmount,
-                style: GoogleFonts.inter(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF004AC6),
-                  letterSpacing: -1,
+              const SizedBox(width: 8),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    displayAmount,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w900,
+                      color: themeColor,
+                      letterSpacing: -1.5,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -547,21 +562,26 @@ class _AddEditTransactionScreenState
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: OutlinedButton(
-                onPressed: () => _handlePresetPress(value),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  side: const BorderSide(color: Color(0xFFFD761A)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
+              child: InkWell(
+                onTap: () => _handlePresetPress(value),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerHigh.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.outlineVariant.withValues(alpha: 0.1),
+                    ),
                   ),
-                ),
-                child: Text(
-                  value,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFFFD761A),
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF475569),
+                    ),
                   ),
                 ),
               ),
@@ -609,21 +629,30 @@ class _AddEditTransactionScreenState
     return GestureDetector(
       onTap: () => _handleNumpadPress(value),
       child: Container(
-        width: 64,
-        height: 64,
+        width: 68,
+        height: 68,
         decoration: BoxDecoration(
-          color: isSpecial ? Colors.transparent : const Color(0xFFF1F5F9),
+          color: isSpecial ? Colors.transparent : Colors.white,
           shape: BoxShape.circle,
+          boxShadow: isSpecial
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Center(
           child: icon != null
-              ? Icon(icon, size: 24, color: const Color(0xFF0F172A))
+              ? Icon(icon, size: 24, color: const Color(0xFF1E293B))
               : Text(
                   value,
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0F172A),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1E293B),
                   ),
                 ),
         ),
@@ -696,43 +725,41 @@ class _AddEditTransactionScreenState
                       child: Column(
                         children: [
                           Container(
-                            width: 44,
-                            height: 44,
-                            padding: isSelected ? const EdgeInsets.all(2) : null,
+                            width: 52,
+                            height: 52,
+                            padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: isSelected
-                                  ? Border.all(
-                                      color: const Color(0xFF004AC6),
-                                      width: 2,
-                                    )
-                                  : null,
+                              border: Border.all(
+                                color: isSelected
+                                    ? Color(category.color)
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
                             ),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Color(
-                                  category.color,
-                                ).withValues(alpha: 0.15),
+                                color: Color(category.color).withValues(alpha: isSelected ? 0.2 : 0.08),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 CategoryUtils.getIcon(category.icon),
                                 color: Color(category.color),
-                                size: 22,
+                                size: 24,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 8),
                           Text(
                             category.name,
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
                               fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
                               color: isSelected
-                                  ? const Color(0xFF131B2E)
-                                  : const Color(0xFF64748B),
+                                  ? const Color(0xFF0F172A)
+                                  : const Color(0xFF94A3B8),
                             ),
                           ),
                         ],
@@ -824,46 +851,64 @@ class _AddEditTransactionScreenState
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFEAEDFF),
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: AppColors.surfaceContainerHigh.withValues(alpha: 0.8),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: const Color(0xFF737686)),
-            const SizedBox(width: 8),
-            if (wallet != null) ...[
-              Icon(
-                WalletIconUtils.getIcon(wallet.icon),
-                color: Color(wallet.color),
-                size: 18,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: (wallet != null ? Color(wallet.color) : AppColors.primary)
+                    .withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 8),
-            ],
+              child: Icon(
+                wallet != null ? WalletIconUtils.getIcon(wallet.icon) : icon,
+                size: 20,
+                color: wallet != null ? Color(wallet.color) : AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
-                      color: const Color(0xFF737686),
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
                     ),
                   ),
                   Text(
                     wallet?.name ?? 'Pilih Dompet',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF131B2E),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
+            const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF94A3B8), size: 20),
           ],
         ),
       ),
@@ -874,36 +919,56 @@ class _AddEditTransactionScreenState
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFEAEDFF),
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: AppColors.surfaceContainerHigh.withValues(alpha: 0.8),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            const Icon(
-              Icons.calendar_today_outlined,
-              size: 20,
-              color: Color(0xFF737686),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.calendar_today_rounded,
+                size: 20,
+                color: AppColors.primary,
+              ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tanggal',
-                    style: GoogleFonts.inter(
+                    'TANGGAL',
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
-                      color: const Color(0xFF737686),
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
                     ),
                   ),
                   Text(
                     DateFormat('dd MMM yyyy').format(_selectedDate),
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF131B2E),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
                     ),
                   ),
                 ],
@@ -926,29 +991,35 @@ class _AddEditTransactionScreenState
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAEDFF),
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.surfaceContainerHigh.withValues(alpha: 0.8),
+                    ),
                   ),
                   child: TextField(
                     controller: _noteController,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
-                      color: const Color(0xFF131B2E),
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1E293B),
                     ),
                     decoration: InputDecoration(
                       hintText: _isTransfer
                           ? 'Catatan transfer...'
                           : 'Tambah catatan...',
-                      hintStyle: GoogleFonts.inter(
+                      hintStyle: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
-                        color: const Color(0xFF737686),
+                        color: const Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w500,
                       ),
                       border: InputBorder.none,
                       icon: const Icon(
-                        Icons.edit_note,
-                        color: Color(0xFF737686),
+                        Icons.sticky_note_2_rounded,
+                        color: AppColors.primary,
+                        size: 22,
                       ),
                     ),
                   ),
@@ -958,45 +1029,88 @@ class _AddEditTransactionScreenState
               GestureDetector(
                 onTap: _showReceiptPicker,
                 child: Container(
-                  width: 48,
-                  height: 48,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    color: hasReceipt
-                        ? const Color(0xFFDBEAFE)
-                        : const Color(0xFFEAEDFF),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: hasReceipt 
+                        ? [const Color(0xFF3B82F6), const Color(0xFF2563EB)]
+                        : [AppColors.surfaceContainerHigh.withValues(alpha: 0.5), AppColors.surfaceContainerHigh.withValues(alpha: 0.3)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: hasReceipt ? [
+                      BoxShadow(
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ] : null,
                   ),
                   child: Icon(
                     hasReceipt
-                        ? Icons.receipt_long_outlined
-                        : Icons.photo_camera_outlined,
-                    color: const Color(0xFF004AC6),
+                        ? Icons.receipt_long_rounded
+                        : Icons.add_a_photo_rounded,
+                    color: hasReceipt ? Colors.white : const Color(0xFF64748B),
                   ),
                 ),
               ),
             ],
           ),
           if (hasReceipt) ...[
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 180,
-                child: _receiptFile != null
-                    ? Image.file(
-                        File(_receiptFile!.path),
-                        fit: BoxFit.cover,
-                      )
-                    : _isLocalReceiptPath(_receiptUrl!)
-                        ? Image.file(
-                            File(_receiptUrl!),
-                            fit: BoxFit.cover,
-                          )
-                        : Image.network(
-                            _receiptUrl!,
-                            fit: BoxFit.cover,
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 200,
+                      child: _receiptFile != null
+                          ? Image.file(
+                              File(_receiptFile!.path),
+                              fit: BoxFit.cover,
+                            )
+                          : _isLocalReceiptPath(_receiptUrl!)
+                              ? Image.file(
+                                  File(_receiptUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  _receiptUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                    ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: GestureDetector(
+                        onTap: () => setState(() {
+                          _receiptFile = null;
+                          _receiptUrl = null;
+                        }),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
                           ),
+                          child: const Icon(Icons.close_rounded, color: Colors.white, size: 18),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -1015,51 +1129,65 @@ class _AddEditTransactionScreenState
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: const Color(0xFFC3C6D7).withValues(alpha: 0.3),
-          ),
-        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -8),
+            blurRadius: 25,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _saveTransaction,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF004AC6),
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 54),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
           ),
-          elevation: 4,
-          shadowColor: const Color(0xFF004AC6).withValues(alpha: 0.3),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0F172A).withValues(alpha: 0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        child: _isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.check_circle_outline, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.isEdit
-                        ? (_isTransfer
-                              ? 'Simpan Transfer'
-                              : 'Simpan Perubahan')
-                        : (_isTransfer ? 'Simpan Transfer' : 'Simpan Transaksi'),
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : _saveTransaction,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            shadowColor: Colors.transparent,
+            minimumSize: const Size(double.infinity, 60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.rocket_launch_rounded, size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      widget.isEdit
+                          ? (_isTransfer
+                                ? 'Update Transfer'
+                                : 'Simpan Perubahan')
+                          : (_isTransfer ? 'Kirim Transfer' : 'Catat Transaksi'),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+        ),
       ),
     );
   }

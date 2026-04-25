@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
@@ -49,12 +50,12 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
+        preferredSize: const Size.fromHeight(130),
         child: ClipRRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withValues(alpha: 0.75),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -64,33 +65,45 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                     leading: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: AppColors.surfaceVariant,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.person,
+                          Icons.person_outline,
                           color: AppColors.primary,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
                     ),
                     centerTitle: true,
                     title: Text(
-                      'Transaksi',
-                      style: GoogleFonts.inter(
+                      'Riwayat Transaksi',
+                      style: GoogleFonts.plusJakartaSans(
                         color: AppColors.onSurface,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        letterSpacing: -0.5,
                       ),
                     ),
                     actions: [
-                      IconButton(
-                        icon: Icon(
-                          _searchQuery.isEmpty ? Icons.search : Icons.close,
-                          color: AppColors.onSurfaceVariant,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: IconButton(
+                          icon: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _searchQuery.isEmpty ? Icons.search_rounded : Icons.close_rounded,
+                              color: AppColors.onSurfaceVariant,
+                              size: 20,
+                            ),
+                          ),
+                          onPressed: () => _toggleSearch(context),
                         ),
-                        onPressed: () => _toggleSearch(context),
                       ),
                     ],
                   ),
@@ -99,6 +112,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                     categoriesAsync.value ?? const <CategoryModel>[],
                     walletsAsync.value ?? const <WalletModel>[],
                   ),
+                  const SizedBox(height: 8),
                 ],
               ),
             ),
@@ -343,37 +357,22 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     }
   }
 
-  void _toggleSearch(BuildContext context) {
+  Future<void> _toggleSearch(BuildContext context) async {
     if (_searchQuery.isNotEmpty) {
       setState(() => _searchQuery = '');
       return;
     }
 
-    final controller = TextEditingController(text: _searchQuery);
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Cari transaksi'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'Kategori atau catatan'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() => _searchQuery = controller.text.trim());
-              Navigator.pop(dialogContext);
-            },
-            child: const Text('Terapkan'),
-          ),
-        ],
-      ),
+    final result = await AppUI.showInputDialog(
+      context,
+      title: 'Cari transaksi',
+      hintText: 'Kategori atau catatan',
+      initialText: _searchQuery,
     );
+
+    if (result != null && mounted) {
+      setState(() => _searchQuery = result);
+    }
   }
 
   Widget _buildFilterBar(
@@ -430,24 +429,44 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive
-              ? AppColors.primary
-              : AppColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(20),
-          border: isActive ? null : Border.all(color: AppColors.outlineVariant),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: GoogleFonts.inter(
-              color: isActive ? Colors.white : AppColors.onSurfaceVariant,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
+          color: isActive ? AppColors.primary : Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: isActive ? AppColors.primary : AppColors.outlineVariant.withValues(alpha: 0.5),
+            width: 1,
           ),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : [],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                color: isActive ? Colors.white : AppColors.onSurfaceVariant,
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Icon(
+              Icons.expand_more_rounded,
+              size: 16,
+              color: isActive ? Colors.white : AppColors.onSurfaceVariant.withValues(alpha: 0.6),
+            ),
+          ],
         ),
       ),
     );
@@ -693,101 +712,153 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     double totalExpense,
   ) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 25,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(
+          color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  'Pemasukan',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.outline,
-                    fontWeight: FontWeight.w500,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.success.withValues(alpha: 0.05),
+                        Colors.white,
+                      ],
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.north_east_rounded,
+                              size: 12,
+                              color: AppColors.success,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Pemasukan',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          currencyFormat.format(totalIncome),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.success,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.arrow_upward,
-                      size: 16,
-                      color: AppColors.success,
+              ),
+              VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                indent: 15,
+                endIndent: 15,
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.error.withValues(alpha: 0.05),
+                        Colors.white,
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        currencyFormat.format(totalIncome),
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.success,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.south_west_rounded,
+                              size: 12,
+                              color: AppColors.error,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Pengeluaran',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 32,
-            color: AppColors.outlineVariant.withValues(alpha: 0.5),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  'Pengeluaran',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.outline,
-                    fontWeight: FontWeight.w500,
+                      const SizedBox(height: 12),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          currencyFormat.format(totalExpense),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.error,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.arrow_downward,
-                      size: 16,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        currencyFormat.format(totalExpense),
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.error,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -801,30 +872,66 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+          padding: const EdgeInsets.only(left: 4, right: 4, top: 24, bottom: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                date,
+                date.toUpperCase(),
                 style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.outline,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.onSurfaceVariant.withValues(alpha: 0.6),
+                  letterSpacing: 1,
                 ),
               ),
               Text(
                 totalAmount,
                 style: GoogleFonts.inter(
                   fontSize: 12,
-                  color: AppColors.outline,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
-        ...items,
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+            border: Border.all(
+              color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            children: List.generate(items.length, (index) {
+              return Column(
+                children: [
+                  items[index],
+                  if (index < items.length - 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Divider(
+                        height: 1,
+                        thickness: 0.5,
+                        indent: 56,
+                        color: AppColors.surfaceContainerHigh.withValues(alpha: 0.8),
+                      ),
+                    ),
+                ],
+              );
+            }),
+          ),
+        ),
       ],
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 
 import '../../domain/models/household_model.dart';
 import '../providers/shared_account_provider.dart';
@@ -191,9 +192,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
                         ClipboardData(text: household.inviteCode!),
                       );
                       if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Kode invite disalin')),
-                      );
+                      AppUI.showSuccess(context, 'Kode invite disalin');
                     },
                     icon: const Icon(Icons.copy),
                     label: const Text('Salin'),
@@ -273,9 +272,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
   Future<void> _createHousehold() async {
     final name = _householdNameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nama household harus diisi')),
-      );
+      AppUI.showWarning(context, 'Nama household harus diisi');
       return;
     }
 
@@ -284,9 +281,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     final state = ref.read(sharedAccountControllerProvider);
     if (!mounted) return;
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${state.error}')));
+      AppUI.showError(context, '${state.error}');
       return;
     }
     _householdNameController.clear();
@@ -298,18 +293,14 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     final state = ref.read(sharedAccountControllerProvider);
     if (!mounted) return;
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${state.error}')));
+      AppUI.showError(context, '${state.error}');
     }
   }
 
   Future<void> _joinHousehold() async {
     final inviteCode = _inviteCodeController.text.trim().toUpperCase();
     if (inviteCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kode invite harus diisi')),
-      );
+      AppUI.showWarning(context, 'Kode invite harus diisi');
       return;
     }
 
@@ -318,45 +309,28 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     final state = ref.read(sharedAccountControllerProvider);
     if (!mounted) return;
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${state.error}')));
+      AppUI.showError(context, '${state.error}');
       return;
     }
     _inviteCodeController.clear();
   }
 
   Future<void> _leaveHousehold(String householdId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Keluar Household?'),
-        content: const Text(
-          'Anda akan keluar dari shared account saat ini.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Keluar', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+    final confirm = await AppUI.showConfirm(
+      context,
+      title: 'Keluar Household?',
+      message: 'Anda akan keluar dari shared account saat ini.',
+      confirmLabel: 'Keluar',
+      isDangerous: true,
     );
-
-    if (confirmed != true) return;
-
-    final controller = ref.read(sharedAccountControllerProvider.notifier);
-    await controller.leaveHousehold(householdId);
-    final state = ref.read(sharedAccountControllerProvider);
-    if (!mounted) return;
-    if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${state.error}')));
+    if (confirm) {
+      final controller = ref.read(sharedAccountControllerProvider.notifier);
+      await controller.leaveHousehold(householdId);
+      final state = ref.read(sharedAccountControllerProvider);
+      if (!mounted) return;
+      if (state.hasError) {
+        AppUI.showError(context, '${state.error}');
+      }
     }
   }
 }

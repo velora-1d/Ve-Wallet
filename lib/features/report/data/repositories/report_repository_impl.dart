@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
+import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import '../../domain/models/report_data_model.dart';
 import '../../domain/repositories/report_repository.dart';
 
@@ -33,7 +34,17 @@ class ReportRepositoryImpl implements ReportRepository {
     final categories = (catResponse as List).map((json) => CategoryModel.fromJson(json)).toList();
     final categoryMap = {for (var cat in categories) cat.id: cat};
 
-    // 3. Aggregate Data
+    // 3. Fetch wallets used for export metadata and balance summary.
+    var walletQuery = _client.from('wallets').select();
+    if (walletId != null) {
+      walletQuery = walletQuery.eq('id', walletId);
+    }
+    final walletResponse = await walletQuery;
+    final wallets = (walletResponse as List)
+        .map((json) => WalletModel.fromJson(json))
+        .toList();
+
+    // 4. Aggregate Data
     double totalIncome = 0;
     double totalExpense = 0;
     Map<String, double> expenseByCat = {};
@@ -125,6 +136,7 @@ class ReportRepositoryImpl implements ReportRepository {
       incomeByCategories: incomeReports,
       dailyFlows: dailyFlowList,
       topExpenses: top5Expenses,
+      wallets: wallets,
     );
   }
 }

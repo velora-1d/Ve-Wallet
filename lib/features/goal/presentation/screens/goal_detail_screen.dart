@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/app_ui.dart';
 import '../../../wallet/presentation/providers/wallet_provider.dart';
 import '../../domain/models/goal_model.dart';
 import '../providers/goal_provider.dart';
@@ -322,59 +323,39 @@ class GoalDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmDeleteAllocation(
+  Future<void> _confirmDeleteAllocation(
     BuildContext context,
     WidgetRef ref,
     GoalAllocationModel alloc,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Alokasi?'),
-        content: const Text('Saldo target akan dikurangi sesuai jumlah ini.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await ref
-                  .read(goalControllerProvider.notifier)
-                  .deleteAllocation(alloc);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+  ) async {
+    final confirmed = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Alokasi?',
+      message: 'Saldo target akan dikurangi sesuai jumlah ini.',
+      confirmLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDangerous: true,
     );
+    
+    if (confirmed && context.mounted) {
+      await ref.read(goalControllerProvider.notifier).deleteAllocation(alloc);
+    }
   }
 
-  void _confirmDeleteGoal(BuildContext context, WidgetRef ref, GoalModel goal) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Hapus Target?'),
-        content: const Text(
-          'Target dan histori alokasinya akan dihapus. Dana yang sudah dialokasikan tidak otomatis kembali ke dompet.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await ref.read(goalControllerProvider.notifier).deleteGoal(goal.id);
-              if (dialogContext.mounted) Navigator.pop(dialogContext);
-              if (context.mounted) context.pop();
-            },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+  Future<void> _confirmDeleteGoal(BuildContext context, WidgetRef ref, GoalModel goal) async {
+    final confirmed = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Target?',
+      message: 'Target dan histori alokasinya akan dihapus. Dana yang sudah dialokasikan tidak otomatis kembali ke dompet.',
+      confirmLabel: 'Hapus',
+      cancelLabel: 'Batal',
+      isDangerous: true,
     );
+    
+    if (confirmed && context.mounted) {
+      await ref.read(goalControllerProvider.notifier).deleteGoal(goal.id);
+      if (context.mounted) context.pop();
+    }
   }
 
   Widget _buildSummaryStat(String label, String value) {
@@ -537,11 +518,7 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
 
                 final amount = double.tryParse(_amountController.text);
                 if (amount == null || amount <= 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Nominal alokasi harus lebih dari 0'),
-                    ),
-                  );
+                  AppUI.showWarning(context, 'Nominal alokasi harus lebih dari 0');
                   return;
                 }
 
@@ -553,20 +530,12 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
                   }
                 }
                 if (selectedWallet == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Pilih dompet sumber terlebih dahulu'),
-                    ),
-                  );
+                  AppUI.showWarning(context, 'Pilih dompet sumber terlebih dahulu');
                   return;
                 }
 
                 if (selectedWallet.balance < amount) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Saldo dompet tidak mencukupi'),
-                    ),
-                  );
+                  AppUI.showWarning(context, 'Saldo dompet tidak mencukupi');
                   return;
                 }
 

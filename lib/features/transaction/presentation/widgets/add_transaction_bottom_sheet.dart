@@ -7,6 +7,7 @@ import 'package:ve_wallet/features/transaction/domain/models/transaction_model.d
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
 import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:intl/intl.dart';
 
 class AddTransactionBottomSheet extends ConsumerStatefulWidget {
@@ -105,24 +106,18 @@ class _AddTransactionBottomSheetState
   Future<void> _saveTransaction() async {
     final amountParsed = double.tryParse(_amount) ?? 0.0;
     if (amountParsed <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nominal harus lebih dari 0')),
-      );
+      AppUI.showWarning(context, 'Nominal harus lebih dari 0');
       return;
     }
 
     if (_selectedWallet == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih dompet terlebih dahulu')),
-      );
+      AppUI.showWarning(context, 'Pilih dompet terlebih dahulu');
       return;
     }
 
     final user = ref.read(currentUserProvider);
     if (user == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Anda belum login')));
+      AppUI.showError(context, 'Anda belum login');
       return;
     }
 
@@ -160,9 +155,7 @@ class _AddTransactionBottomSheetState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e')));
+        AppUI.showError(context, 'Gagal menyimpan: $e');
       }
     } finally {
       if (mounted) {

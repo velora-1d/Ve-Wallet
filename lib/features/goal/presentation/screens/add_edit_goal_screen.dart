@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_ui.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/models/goal_model.dart';
 import '../providers/goal_provider.dart';
@@ -118,30 +119,17 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
           if (isEdit)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text('Hapus Target?'),
-                    content: const Text('Tindakan ini tidak dapat dibatalkan.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: const Text('Batal'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          Navigator.pop(dialogContext);
-                          await _deleteGoal();
-                        },
-                        child: const Text(
-                          'Hapus',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
+              onPressed: () async {
+                final confirm = await AppUI.showConfirm(
+                  context,
+                  title: 'Hapus Target?',
+                  message: 'Tindakan ini tidak dapat dibatalkan.',
+                  confirmLabel: 'Hapus',
+                  isDangerous: true,
                 );
+                if (confirm) {
+                  await _deleteGoal();
+                }
               },
             ),
         ],

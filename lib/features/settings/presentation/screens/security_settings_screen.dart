@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 
 class SecuritySettingsScreen extends StatefulWidget {
   const SecuritySettingsScreen({super.key});
@@ -14,98 +16,175 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   bool _notifyNewDevice = true;
 
   void _saveSettings() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preferensi keamanan disimpan')),
-    );
+    AppUI.showSuccess(context, 'Preferensi keamanan disimpan');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surfaceContainerLowest,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Keamanan'),
+        title: Text(
+          'Keamanan',
+          style: GoogleFonts.plusJakartaSans(
+            color: const Color(0xFF1E293B),
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          color: const Color(0xFF1E293B),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         children: [
           _buildHeroCard(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
+          Text(
+            'Proteksi Aplikasi',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF64748B),
+              letterSpacing: 1.0,
+            ),
+          ),
+          const SizedBox(height: 12),
           _buildToggleTile(
-            icon: Icons.lock_outline,
+            icon: Icons.lock_outline_rounded,
+            iconBgColor: const Color(0xFFF5F3FF),
+            iconColor: const Color(0xFF8B5CF6),
             title: 'PIN Aplikasi',
-            subtitle: 'Minta PIN saat aplikasi dibuka.',
+            subtitle: 'Minta PIN saat aplikasi dibuka',
             value: _usePin,
             onChanged: (value) => setState(() => _usePin = value),
           ),
           _buildToggleTile(
-            icon: Icons.fingerprint,
+            icon: Icons.fingerprint_rounded,
+            iconBgColor: const Color(0xFFECFDF5),
+            iconColor: const Color(0xFF10B981),
             title: 'Biometrik',
-            subtitle: 'Gunakan sidik jari atau face unlock jika tersedia.',
+            subtitle: 'Sidik jari atau Face ID',
             value: _useBiometric,
             onChanged: (value) => setState(() => _useBiometric = value),
           ),
           _buildToggleTile(
-            icon: Icons.devices_outlined,
-            title: 'Notifikasi Perangkat Baru',
-            subtitle: 'Kirim peringatan jika ada login dari perangkat lain.',
+            icon: Icons.devices_other_rounded,
+            iconBgColor: const Color(0xFFEFF6FF),
+            iconColor: const Color(0xFF3B82F6),
+            title: 'Sesi Aktif',
+            subtitle: 'Peringatan login perangkat baru',
             value: _notifyNewDevice,
             onChanged: (value) => setState(() => _notifyNewDevice = value),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           _buildInfoCard(
-            title: 'Catatan',
+            title: 'Status Sistem',
             body:
-                'Toggle ini sudah interaktif di aplikasi. Integrasi native untuk biometrik dan PIN penuh masih perlu dihubungkan ke package keamanan device.',
+                'Fitur keamanan biometric saat ini menggunakan simulasi UI. Integrasi native dengan hardware device akan tersedia pada update mendatang.',
           ),
-          const SizedBox(height: 18),
-          SizedBox(
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _saveSettings,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text('Simpan Pengaturan'),
-            ),
+          const SizedBox(height: 40),
+          _buildSaveButton(),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Container(
+      width: double.infinity,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
+      ),
+      child: ElevatedButton(
+        onPressed: _saveSettings,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          'Simpan Konfigurasi',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildHeroCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0F172A), Color(0xFF1D4ED8)],
+          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Lapisan keamanan akun',
-            style: TextStyle(
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.security_rounded,
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              size: 28,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 20),
           Text(
-            'Atur proteksi dasar aplikasi agar akses akun tetap terkendali.',
-            style: TextStyle(color: Color(0xFFDCE8FF), height: 1.5),
+            'Proteksi Akun Anda',
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Aktifkan lapisan keamanan tambahan untuk menjaga aset dan data transaksi Anda tetap aman.',
+            style: GoogleFonts.plusJakartaSans(
+              color: const Color(0xFF94A3B8),
+              fontSize: 14,
+              height: 1.5,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -114,24 +193,59 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
 
   Widget _buildToggleTile({
     required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
     required String title,
     required String subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      child: SwitchListTile(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: AppColors.primary,
-        secondary: Icon(icon, color: AppColors.primary),
-        title: Text(title),
-        subtitle: Text(subtitle),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: SwitchListTile(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: AppColors.primary,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          secondary: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: iconBgColor,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: iconColor, size: 22),
+          ),
+          title: Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1E293B),
+            ),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -141,28 +255,40 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
     required String body,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.outlineVariant),
+        color: const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFFEF3C7)),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            body,
-            style: const TextStyle(
-              color: AppColors.onSurfaceVariant,
-              height: 1.5,
+          const Icon(Icons.info_rounded, color: Color(0xFFD97706), size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF92400E),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  body,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: const Color(0xFFB45309),
+                    fontSize: 12,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

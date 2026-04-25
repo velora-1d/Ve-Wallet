@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/shared_account/presentation/providers/shared_account_provider.dart';
 
@@ -36,22 +37,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Semua field harus diisi')),
+      AppUI.showSnack(
+        context,
+        'Semua field harus diisi',
+        type: SnackType.warning,
       );
       return;
     }
 
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Setujui syarat terlebih dahulu')),
+      AppUI.showSnack(
+        context,
+        'Setujui syarat terlebih dahulu',
+        type: SnackType.warning,
       );
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password tidak cocok')),
+      AppUI.showSnack(
+        context,
+        'Password tidak cocok',
+        type: SnackType.warning,
       );
       return;
     }
@@ -74,25 +81,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               .createHousehold(householdName);
         } catch (_) {}
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Registrasi berhasil. Jika email confirmation aktif, cek inbox Anda.',
-            ),
-          ),
+        AppUI.showSnack(
+          context,
+          'Registrasi berhasil. Jika email confirmation aktif, cek inbox Anda.',
+          type: SnackType.success,
         );
         context.go('/login');
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_mapAuthError(e))),
+      AppUI.showSnack(
+        context,
+        _mapAuthError(e),
+        type: SnackType.error,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      AppUI.showSnack(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal daftar: $e')));
+        'Gagal daftar: $e',
+        type: SnackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -135,7 +144,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(14),
                             child: Image.asset(
-                              'assets/logos/logo.png',
+                              'assets/images/logo/logo.png',
                               fit: BoxFit.contain,
                             ),
                           ),

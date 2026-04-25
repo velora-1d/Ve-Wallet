@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/report/domain/models/report_data_model.dart';
 import 'package:ve_wallet/features/report/presentation/providers/report_provider.dart';
+import 'package:ve_wallet/features/report/data/services/report_export_service.dart';
 
 class ReportScreen extends ConsumerStatefulWidget {
   const ReportScreen({super.key});
@@ -56,6 +57,122 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       ref.read(reportPeriodProvider.notifier).state = ReportPeriod.custom;
       ref.read(reportDataProvider.notifier).refresh();
     }
+  }
+
+  String _getPeriodTitle(ReportPeriod period, DateTimeRange? customRange) {
+    switch (period) {
+      case ReportPeriod.week:
+        return 'Minggu Ini';
+      case ReportPeriod.month:
+        return 'Bulan Ini';
+      case ReportPeriod.threeMonths:
+        return '3 Bulan Terakhir';
+      case ReportPeriod.year:
+        return 'Tahun Ini';
+      case ReportPeriod.custom:
+        if (customRange != null) {
+          return '${DateFormat('dd MMM').format(customRange.start)} - ${DateFormat('dd MMM yyyy').format(customRange.end)}';
+        }
+        return 'Kustom';
+    }
+  }
+
+  void _showExportOptions(ReportDataModel data, String periodTitle) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Ekspor Laporan',
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Pilih format file untuk laporan periode $periodTitle',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildExportOption(
+                        icon: Icons.picture_as_pdf_rounded,
+                        label: 'PDF',
+                        color: Colors.red.shade600,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await ReportExportService.exportToPdf(data, periodTitle);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildExportOption(
+                        icon: Icons.table_chart_rounded,
+                        label: 'CSV',
+                        color: Colors.green.shade600,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await ReportExportService.exportToCsv(data, periodTitle);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildExportOption({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.outlineVariant),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -126,54 +243,50 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(kToolbarHeight),
+      preferredSize: const Size.fromHeight(70),
       child: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: AppBar(
-            backgroundColor: Colors.white.withValues(alpha: 0.8),
+            backgroundColor: AppColors.background.withValues(alpha: 0.7),
             elevation: 0,
+            scrolledUnderElevation: 0,
             centerTitle: true,
-            leading: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.surfaceContainerHigh,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.network(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuBFKDqKlHUqrS9iHXD_bPSTsVft2VuBsAoHAcd2xnlcGvB77kvA2qkOwhmysDnlr1RN_bgM1sauwG3mwa3BKCto9dLUEak4xN-vlL_3Kl1y8OjIGBiZOeVZyvv4ZvMV7hde6FFFJOvy6ACUltB35b7yODE41fw5hoKPOCxi5xHLNHU5gHD5uElz4F9zLaLbb65SHJEDU6ld0XLPGZc2XbFHAegmXQmjftF4KPYuD1gKMMsTWvgE4CZCqWP2HKDuWphpmZB56rohBbny',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
             title: Text(
-              'Laporan',
-              style: GoogleFonts.inter(
+              'Laporan Keuangan',
+              style: GoogleFonts.plusJakartaSans(
                 color: AppColors.onSurface,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                letterSpacing: -0.2,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                letterSpacing: -0.5,
               ),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.outline,
-                  size: 22,
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
                 ),
-                onPressed: () => context.push('/notifications'),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.ios_share_rounded,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    final reportAsync = ref.read(reportDataProvider);
+                    final period = ref.read(reportPeriodProvider);
+                    final customRange = ref.read(customDateRangeProvider);
+                    
+                    reportAsync.whenData((data) {
+                      _showExportOptions(data, _getPeriodTitle(period, customRange));
+                    });
+                  },
+                ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 8),
             ],
-            shape: Border(
-              bottom: BorderSide(
-                color: Colors.black.withValues(alpha: 0.05),
-                width: 1,
-              ),
-            ),
           ),
         ),
       ),
@@ -277,48 +390,77 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   Widget _buildSummaryRow(ReportDataModel data) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: IntrinsicHeight(
-        child: Row(
+    return Row(
+      children: [
+        _buildSummaryCard(
+          label: 'Pemasukan',
+          amount: currencyFormat.format(data.totalIncome),
+          icon: Icons.arrow_downward_rounded,
+          color: AppColors.primary,
+        ),
+        const SizedBox(width: 12),
+        _buildSummaryCard(
+          label: 'Pengeluaran',
+          amount: currencyFormat.format(data.totalExpense),
+          icon: Icons.arrow_upward_rounded,
+          color: AppColors.error,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryCard({
+    required String label,
+    required String amount,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSummaryItem(
-              'Pemasukan',
-              currencyFormat.format(data.totalIncome),
-              AppColors.primary,
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 16),
             ),
-            VerticalDivider(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
-              thickness: 1,
-              indent: 4,
-              endIndent: 4,
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
-            _buildSummaryItem(
-              'Pengeluaran',
-              currencyFormat.format(data.totalExpense),
-              AppColors.error,
-            ),
-            VerticalDivider(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
-              thickness: 1,
-              indent: 4,
-              endIndent: 4,
-            ),
-            _buildSummaryItem(
-              data.netFlow >= 0 ? 'Surplus' : 'Defisit',
-              currencyFormat.format(data.netFlow),
-              data.netFlow >= 0 ? AppColors.tertiary : AppColors.error,
+            const SizedBox(height: 4),
+            Text(
+              amount,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.onSurface,
+                letterSpacing: -0.5,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -326,68 +468,35 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     );
   }
 
-  Widget _buildSummaryItem(String label, String amount, Color color) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            amount,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: color,
-              letterSpacing: -0.3,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildChartContainer({required String title, required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.onSurface,
-                  letterSpacing: -0.4,
-                ),
-              ),
-              const Icon(Icons.more_horiz, color: AppColors.outline, size: 20),
-            ],
+          Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.onSurface,
+              letterSpacing: -0.4,
+            ),
           ),
           const SizedBox(height: 24),
           child,

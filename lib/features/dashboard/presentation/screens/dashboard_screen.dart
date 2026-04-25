@@ -207,100 +207,199 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildBalanceCard(double balance, double income, double expense) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      height: 220,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1A4F9C), Color(0xFF2563EB)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF2563EB).withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                'Total Saldo',
-                style: GoogleFonts.inter(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Stack(
+          children: [
+            // Background Gradient - Modern Sleek
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF1E293B), Color(0xFF2563EB)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.visibility_outlined,
-                color: Colors.white.withValues(alpha: 0.7),
-                size: 16,
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            CurrencyFormatter.format(balance),
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -1,
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              _buildBalanceSummary(
-                icon: Icons.arrow_upward,
-                color: Colors.greenAccent,
-                label: '${CurrencyFormatter.formatCompact(income)} Masuk',
+            // Decorative Elements
+            Positioned(
+              top: -40,
+              right: -40,
+              child: Container(
+                width: 180,
+                height: 180,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.white.withValues(alpha: 0.15),
+                      Colors.white.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(width: 8),
-              _buildBalanceSummary(
-                icon: Icons.arrow_downward,
-                color: Colors.redAccent,
-                label: '${CurrencyFormatter.formatCompact(expense)} Keluar',
+            ),
+            Positioned(
+              bottom: -20,
+              left: -20,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.05),
+                ),
               ),
-            ],
-          ),
-        ],
+            ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total Saldo',
+                            style: GoogleFonts.inter(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            CurrencyFormatter.format(balance),
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 34,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.account_balance_wallet_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Glass Income/Expense Bar
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildBalanceSummary(
+                            icon: Icons.arrow_downward_rounded,
+                            color: const Color(0xFF4ADE80),
+                            label: 'Masuk',
+                            amount: CurrencyFormatter.formatCompact(income),
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 24,
+                          color: Colors.white.withValues(alpha: 0.1),
+                        ),
+                        Expanded(
+                          child: _buildBalanceSummary(
+                            icon: Icons.arrow_upward_rounded,
+                            color: const Color(0xFFF87171),
+                            label: 'Keluar',
+                            amount: CurrencyFormatter.formatCompact(expense),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _buildBalanceSummary({
     required IconData icon,
     required Color color,
     required String label,
+    required String amount,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 14),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
           ),
-        ],
-      ),
+          child: Icon(icon, color: color, size: 14),
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              amount,
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -434,9 +533,21 @@ class DashboardScreen extends ConsumerWidget {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: color,
-          width: 16, // Thinner bars like in design
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+          gradient: LinearGradient(
+            colors: [
+              color,
+              color.withValues(alpha: 0.6),
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+          width: 14,
+          borderRadius: BorderRadius.circular(6),
+          backDrawRodData: BackgroundBarChartRodData(
+            show: true,
+            toY: 1.0, // This will be relative if we set maxY correctly
+            color: color.withValues(alpha: 0.05),
+          ),
         ),
       ],
     );
@@ -846,17 +957,20 @@ class DashboardScreen extends ConsumerWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
-              child: Icon(icon, color: iconColor, size: 20),
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: bgColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -865,29 +979,42 @@ class DashboardScreen extends ConsumerWidget {
                     title,
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 15,
                       color: AppColors.onBackground,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: GoogleFonts.inter(
                       color: AppColors.outline,
-                      fontSize: 12,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
-            Text(
-              amount,
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: amountColor,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  amount,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: amountColor,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 16,
+                  color: AppColors.outline.withValues(alpha: 0.5),
+                ),
+              ],
             ),
           ],
         ),

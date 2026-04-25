@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 
 class AdminSecurityScreen extends StatelessWidget {
@@ -6,76 +7,124 @@ class AdminSecurityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildSummaryCard(),
-        const SizedBox(height: 16),
-        _buildSectionTitle('Prioritas Hari Ini'),
-        const SizedBox(height: 12),
-        _buildAlertTile(
-          icon: Icons.warning_amber_rounded,
-          iconColor: const Color(0xFFF59E0B),
-          title: '3 login gagal beruntun',
-          subtitle: 'Pantau akun yang mencoba masuk lebih dari 5 kali.',
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      appBar: AppBar(
+        title: Text(
+          'Security Panel',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        _buildAlertTile(
-          icon: Icons.lock_clock_outlined,
-          iconColor: AppColors.primary,
-          title: '12 sesi aktif lebih dari 7 hari',
-          subtitle: 'Review device lama dan paksa logout jika perlu.',
-        ),
-        _buildAlertTile(
-          icon: Icons.verified_user_outlined,
-          iconColor: const Color(0xFF10B981),
-          title: 'RLS dan policy aktif',
-          subtitle: 'Tidak ada perubahan rule yang belum ditinjau.',
-        ),
-        const SizedBox(height: 20),
-        _buildSectionTitle('Checklist Operasional'),
-        const SizedBox(height: 12),
-        _buildChecklistItem(
-          label: 'Audit role admin',
-          detail: 'Pastikan hanya akun inti yang punya akses admin.',
-        ),
-        _buildChecklistItem(
-          label: 'Rotasi service key',
-          detail: 'Jadwalkan rotasi kredensial internal per 90 hari.',
-        ),
-        _buildChecklistItem(
-          label: 'Verifikasi email confirmation',
-          detail: 'Cek user baru yang tertahan karena belum verifikasi.',
-        ),
-      ],
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        children: [
+          _buildSummaryCard(),
+          const SizedBox(height: 32),
+          _buildSectionTitle('Prioritas Hari Ini'),
+          const SizedBox(height: 16),
+          _buildAlertTile(
+            icon: Icons.warning_amber_rounded,
+            iconColor: const Color(0xFFF59E0B),
+            title: '3 Login Gagal Beruntun',
+            subtitle: 'Pantau akun yang mencoba masuk lebih dari 5 kali dalam 1 jam terakhir.',
+          ),
+          _buildAlertTile(
+            icon: Icons.lock_clock_rounded,
+            iconColor: AppColors.primary,
+            title: '12 Sesi Aktif > 7 Hari',
+            subtitle: 'Review perangkat lama dan paksa logout jika tidak dikenali.',
+          ),
+          _buildAlertTile(
+            icon: Icons.verified_user_rounded,
+            iconColor: const Color(0xFF10B981),
+            title: 'RLS Policy Aktif',
+            subtitle: 'Integritas Row Level Security di database terpantau aman.',
+          ),
+          const SizedBox(height: 24),
+          _buildSectionTitle('Checklist Operasional'),
+          const SizedBox(height: 16),
+          _buildChecklistItem(
+            label: 'Audit Role Admin',
+            detail: 'Pastikan hanya akun inti yang punya akses ke panel kontrol ini.',
+          ),
+          _buildChecklistItem(
+            label: 'Rotasi Service Key',
+            detail: 'Jadwalkan rotasi kredensial internal sistem per 90 hari.',
+          ),
+          _buildChecklistItem(
+            label: 'Verifikasi Email User',
+            detail: 'Cek user baru yang tertahan karena masalah pengiriman email konfirmasi.',
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 
   Widget _buildSummaryCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0F172A), Color(0xFF1E3A8A)],
+          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Security Status',
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Icon(Icons.shield_rounded, color: Color(0xFF10B981), size: 24),
+            ],
+          ),
+          const SizedBox(height: 12),
           Text(
-            'Security Overview',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+            'Sistem saat ini dalam kondisi optimal. Tidak ada insiden kritis yang memerlukan tindakan segera.',
+            style: GoogleFonts.inter(
+              color: const Color(0xFF94A3B8),
+              height: 1.6,
+              fontSize: 14,
             ),
           ),
-          SizedBox(height: 8),
-          Text(
-            'Tidak ada insiden kritis. Fokus pada hygiene akun dan sesi aktif.',
-            style: TextStyle(color: Color(0xFFD6E4FF), height: 1.5),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'Terakhir diperbarui: Baru saja',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -83,12 +132,15 @@ class AdminSecurityScreen extends StatelessWidget {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        color: AppColors.onSurface,
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+          color: AppColors.onSurface,
+        ),
       ),
     );
   }
@@ -100,22 +152,52 @@ class AdminSecurityScreen extends StatelessWidget {
     required String subtitle,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          backgroundColor: iconColor.withValues(alpha: 0.12),
-          child: Icon(icon, color: iconColor),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.5),
         ),
-        title: Text(title),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(subtitle),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: AppColors.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -127,15 +209,15 @@ class AdminSecurityScreen extends StatelessWidget {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -143,24 +225,29 @@ class AdminSecurityScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.only(top: 2),
-            child: Icon(Icons.check_circle, color: AppColors.success),
+            padding: EdgeInsets.only(top: 4),
+            child: Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 18),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: AppColors.onSurface,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   detail,
-                  style: const TextStyle(
+                  style: GoogleFonts.inter(
                     color: AppColors.onSurfaceVariant,
-                    height: 1.4,
+                    height: 1.5,
+                    fontSize: 13,
                   ),
                 ),
               ],
@@ -171,3 +258,4 @@ class AdminSecurityScreen extends StatelessWidget {
     );
   }
 }
+

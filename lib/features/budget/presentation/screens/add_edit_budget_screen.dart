@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/app_ui.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../category/presentation/providers/category_provider.dart';
 import '../../../transaction/domain/models/transaction_model.dart';
@@ -44,9 +45,7 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
 
   Future<void> _saveBudget() async {
     if (!_formKey.currentState!.validate() || _selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mohon lengkapi data')),
-      );
+      AppUI.showWarning(context, 'Mohon lengkapi data');
       return;
     }
 
@@ -211,26 +210,18 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
     );
   }
 
-  void _showDeleteDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Anggaran?'),
-        content: const Text('Tindakan ini tidak dapat dibatalkan.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
-          TextButton(
-            onPressed: () async {
-              await ref.read(budgetControllerProvider.notifier).deleteBudget(widget.initialBudget!.id);
-              if (context.mounted) {
-                Navigator.of(context).pop(); // Close dialog
-                if (context.mounted) context.pop(); // Go back to list
-              }
-            },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+  Future<void> _showDeleteDialog() async {
+    final confirm = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Anggaran?',
+      message: 'Tindakan ini tidak dapat dibatalkan.',
+      confirmLabel: 'Hapus',
+      isDangerous: true,
     );
+    if (confirm) {
+      await ref.read(budgetControllerProvider.notifier).deleteBudget(widget.initialBudget!.id);
+      if (!mounted) return;
+      context.pop(); // Go back to list
+    }
   }
 }

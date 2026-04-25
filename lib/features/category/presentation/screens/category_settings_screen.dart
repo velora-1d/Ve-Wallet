@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/providers/category_provider.dart';
@@ -154,26 +155,16 @@ class _CategoryItem extends ConsumerWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Kategori'),
-        content: Text('Apakah Anda yakin ingin menghapus kategori "${category.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(categoryControllerProvider.notifier).deleteCategory(category.id);
-              Navigator.pop(context);
-            },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+  Future<void> _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
+    final confirm = await AppUI.showConfirm(
+      context,
+      title: 'Hapus Kategori',
+      message: 'Apakah Anda yakin ingin menghapus kategori "${category.name}"?',
+      confirmLabel: 'Hapus',
+      isDangerous: true,
     );
+    if (confirm) {
+      ref.read(categoryControllerProvider.notifier).deleteCategory(category.id);
+    }
   }
 }

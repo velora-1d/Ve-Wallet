@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -27,8 +28,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email dan password harus diisi')),
+      AppUI.showSnack(
+        context,
+        'Email dan password harus diisi',
+        type: SnackType.warning,
       );
       return;
     }
@@ -46,14 +49,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_mapAuthError(e))),
+      AppUI.showSnack(
+        context,
+        _mapAuthError(e),
+        type: SnackType.error,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      AppUI.showSnack(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal masuk: $e')));
+        'Gagal masuk: $e',
+        type: SnackType.error,
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -96,7 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(14),
                             child: Image.asset(
-                              'assets/logos/logo.png',
+                              'assets/images/logo/logo.png',
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -205,12 +212,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(height: 14),
-                              Text(
-                                'Akun admin harus ada di Supabase Auth, bukan hanya di tabel profiles.',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: AppColors.outline),
-                                textAlign: TextAlign.center,
-                              ),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -249,7 +251,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String _mapAuthError(AuthException error) {
     final message = error.message.toLowerCase();
     if (message.contains('invalid login credentials')) {
-      return 'Email atau password salah. Jika ini akun admin, pastikan akunnya ada di Supabase Auth.';
+      return 'Email atau password salah. Silakan periksa kembali.';
     }
     if (message.contains('email not confirmed')) {
       return 'Email belum diverifikasi. Cek inbox Anda terlebih dahulu.';

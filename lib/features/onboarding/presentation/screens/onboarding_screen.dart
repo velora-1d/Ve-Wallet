@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/onboarding/domain/onboarding_model.dart';
 
@@ -17,20 +18,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingData> _pages = [
     OnboardingData(
       title: 'Catat Transaksi dengan Mudah',
-      description: 'Input pemasukan dan pengeluaran harian kamu dalam hitungan detik, kapan saja dan di mana saja.',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBN8Hvxsw9rPJWdo8TdJ1_wNBE_VLsMVfWpyXfHppUVOxRobNBBmvSgXjqrZl_yZo9PT8Bmyx_qiPLEnfFl7FcggNH9Ukllh_eAj7ux3PzAdCaXHP5L31qAtm9N5LK6cR2PSltzd69mbKlLRiLrlA5-FrZCV-VEMOTVc6ZFIuMRCPzw3sAUZAqJkBuKbTHlEHI06CBvOGxyCNTuFnHCqtz2x6aWZvyShmdbqrX98KMQ7njvOXRAlEvGSzhjfDf5XQSrAoOOngRd0bwB',
+      description:
+          'Input pemasukan dan pengeluaran harian kamu dalam hitungan detik, kapan saja dan di mana saja.',
+      imageUrl: 'assets/images/onboarding/promo reward ekslusif.svg',
       buttonText: 'Lanjut',
     ),
     OnboardingData(
-      title: 'Kelola Keuangan Berdua',
-      description: 'Hubungkan akun dengan pasangan atau keluarga. Semua transaksi tersinkronisasi secara realtime.',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDPQaGqC_7WGcut3kPS8j6tGV-5_iTZMitXYN5KEI-Y3_WBIgqqd0mN0nc0tL3y9kL7JY7wVl4Uyym1QIoDgLTdJ9UBFk1BVqK5treny6VuC4d4ZCheXwxzozi3hS2CPukPyiq8RPFSuEF_6o9D3h-3B12hSDcERmRcpxJT0Mw_iuLBYBW0ZDuE732F5yhKUF57YDbZ8K-61TxbQRjwsSQM8ZpTza7qtyVstEI7HON39XiEzWZ3leZHg8WVXAgtRSm_iGCnaoC48PNr',
+      title: 'Keamanan Tingkat Tinggi',
+      description:
+          'Data keuangan kamu terlindungi dengan enkripsi terbaik. Pantau akses akun secara realtime.',
+      imageUrl: 'assets/icons/3d/3dicons-shield-dynamic-color.png',
       buttonText: 'Lanjut',
     ),
     OnboardingData(
-      title: 'Capai Target Tabungan',
-      description: 'Tetapkan tujuan keuanganmu dan pantau progresnya setiap hari. Simulasi otomatis bantu kamu nabung lebih cerdas.',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBN8Hvxsw9rPJWdo8TdJ1_wNBE_VLsMVfWpyXfHppUVOxRobNBBmvSgXjqrZl_yZo9PT8Bmyx_qiPLEnfFl7FcggNH9Ukllh_eAj7ux3PzAdCaXHP5L31qAtm9N5LK6cR2PSltzd69mbKlLRiLrlA5-FrZCV-VEMOTVc6ZFIuMRCPzw3sAUZAqJkBuKbTHlEHI06CBvOGxyCNTuFnHCqtz2x6aWZvyShmdbqrX98KMQ7njvOXRAlEvGSzhjfDf5XQSrAoOOngRd0bwB', // Placeholder for slide 3 if needed, but the HTML design has a custom illustration. I'll use a network image for consistency.
+      title: 'Kemudahan Bayar Pakai QR',
+      description:
+          'Transaksi lebih cepat dengan fitur Scan QR. Dompet digital serbaguna dalam genggaman kamu.',
+      imageUrl: 'assets/images/onboarding/scan QR berikut.svg',
       buttonText: 'Mulai Sekarang',
     ),
   ];
@@ -88,6 +92,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
               itemBuilder: (context, index) {
                 final page = _pages[index];
+                final isSvg = page.imageUrl.endsWith('.svg');
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
@@ -98,34 +104,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         aspectRatio: 1,
                         child: Container(
                           width: double.infinity,
+                          padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: index == 1 ? const Color(0xFFFFEDD5) : AppColors.surfaceVariant,
-                            borderRadius: BorderRadius.circular(32),
+                            color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(42),
                           ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.network(
-                            page.imageUrl,
-                            fit: BoxFit.cover,
-                          ),
+                          child: isSvg
+                              ? SvgPicture.asset(
+                                  page.imageUrl,
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.asset(
+                                  page.imageUrl,
+                                  fit: BoxFit.contain,
+                                ),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 48),
                       // Title
                       Text(
                         page.title,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.onBackground,
-                        ),
+                              color: AppColors.onBackground,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 16),
                       // Description
                       Text(
                         page.description,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: AppColors.onSurface.withValues(alpha: 0.7),
+                              height: 1.5,
+                            ),
                       ),
                     ],
                   ),

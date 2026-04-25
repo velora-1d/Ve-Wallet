@@ -35,6 +35,7 @@ import 'package:ve_wallet/features/goal/presentation/screens/goal_detail_screen.
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final isAdminMode = ref.watch(adminModeProvider);
 
   return GoRouter(
     initialLocation: '/',
@@ -55,7 +56,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       } else {
         // Redirect to appropriate dashboard if on auth path
         if (isAuthPath) {
-          return user.role == 'admin' ? '/admin' : '/dashboard';
+          return (user.role == 'admin' && isAdminMode) ? '/admin' : '/dashboard';
         }
 
         // Protect admin route
