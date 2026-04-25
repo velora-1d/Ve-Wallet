@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Keamanan Tingkat Tinggi',
       description:
           'Data keuangan kamu terlindungi dengan enkripsi terbaik. Pantau akses akun secara realtime.',
-      imageUrl: 'assets/icons/3d/3dicons-shield-dynamic-color.png',
+      imageUrl: 'assets/images/onboarding/Juara.svg',
       buttonText: 'Lanjut',
     ),
     OnboardingData(

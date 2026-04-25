@@ -66,6 +66,8 @@ class AdminProfileScreen extends ConsumerWidget {
               ref.read(adminModeProvider.notifier).state = false;
             },
           ),
+          const SizedBox(height: 8),
+          _buildDeveloperCredit(),
           const SizedBox(height: 40),
         ],
       ),
@@ -267,6 +269,30 @@ class AdminProfileScreen extends ConsumerWidget {
                 size: 20,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeveloperCredit() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: AppColors.outlineVariant.withValues(alpha: 0.7),
+          ),
+        ),
+        child: Text(
+          'Dibuat oleh Mahin Utsman Nawawi, S.H',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: AppColors.onSurfaceVariant,
           ),
         ),
       ),

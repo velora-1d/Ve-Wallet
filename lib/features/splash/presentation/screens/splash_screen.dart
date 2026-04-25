@@ -80,6 +80,20 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             // Bottom Indicator
             Positioned(
+              bottom: 72,
+              left: 24,
+              right: 24,
+              child: Text(
+                'Dibuat oleh Mahin Utsman Nawawi, S.H',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.82),
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
+            Positioned(
               bottom: 32,
               child: Row(
                 children: [
