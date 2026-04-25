@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
 
@@ -32,7 +32,18 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
-      appBar: AppBar(title: const Text('Shared Account')),
+      appBar: AppBar(
+        title: Text(
+          'Shared Account',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            color: AppColors.onSurface,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(currentHouseholdProvider);
@@ -41,20 +52,36 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
           data: (household) {
             if (household == null) {
               return ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
                 children: [
+                  _buildHeroCard(
+                    title: 'Mulai akun bareng tanpa ribet',
+                    subtitle:
+                        'Buat shared account baru atau gabung pakai kode dari partner. Semua langkah ada di halaman ini.',
+                    icon: Icons.people_alt_rounded,
+                    accent: AppColors.primary,
+                  ),
+                  const SizedBox(height: 18),
                   _buildCreateCard(),
                   const SizedBox(height: 16),
                   _buildJoinCard(),
+                  const SizedBox(height: 16),
+                  _buildTipsCard(),
                 ],
               );
             }
 
             final membersAsync = ref.watch(householdMembersProvider(household.id));
             return ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
               children: [
-                _buildHouseholdCard(household),
+                _buildHeroCard(
+                  title: household.name,
+                  subtitle:
+                      'Household aktif. Bagikan kode invite ke partner supaya bisa gabung ke akun bareng ini.',
+                  icon: Icons.verified_user_rounded,
+                  accent: AppColors.secondaryContainer,
+                ),
                 const SizedBox(height: 16),
                 _buildInviteCard(household),
                 const SizedBox(height: 16),
@@ -66,14 +93,20 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: () => _leaveHousehold(household.id),
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  label: const Text(
+                  icon: const Icon(Icons.logout_rounded, color: AppColors.error),
+                  label: Text(
                     'Keluar dari Shared Account',
-                    style: TextStyle(color: Colors.red),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: AppColors.error),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
                 ),
               ],
@@ -86,16 +119,122 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     );
   }
 
+  Widget _buildHeroCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color accent,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: AppColors.heroGradient,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.18),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white.withValues(alpha: 0.84),
+              fontSize: 14,
+              height: 1.5,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.18),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: accent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Flow simpel, langsung jalan',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCreateCard() {
     return _buildCard(
       title: 'Buat Shared Account',
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Pakai opsi ini kalau kamu mau jadi orang pertama yang bikin akun bersama.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: AppColors.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
           TextField(
             controller: _householdNameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Nama Household',
               hintText: 'Misal: Rumah Hakim',
+              prefixIcon: const Icon(Icons.home_work_outlined),
+              filled: true,
+              fillColor: AppColors.surfaceContainerLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -103,7 +242,18 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _createHousehold,
-              child: const Text('Buat Shared Account'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                'Buat Shared Account',
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+              ),
             ),
           ),
         ],
@@ -115,13 +265,30 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     return _buildCard(
       title: 'Gabung dengan Kode Invite',
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Kalau partner sudah punya kode, tinggal tempel di sini lalu langsung gabung.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: AppColors.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
           TextField(
             controller: _inviteCodeController,
             textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Kode Invite',
               hintText: 'Masukkan 6 digit kode',
+              prefixIcon: const Icon(Icons.key_rounded),
+              filled: true,
+              fillColor: AppColors.surfaceContainerLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -129,7 +296,20 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
             width: double.infinity,
             child: OutlinedButton(
               onPressed: _joinHousehold,
-              child: const Text('Gabung Shared Account'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: const BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                'Gabung Shared Account',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
           ),
         ],
@@ -137,31 +317,24 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     );
   }
 
-  Widget _buildHouseholdCard(HouseholdModel household) {
+  Widget _buildTipsCard() {
     return _buildCard(
-      title: 'Household Aktif',
+      title: 'Cara paling cepat',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            household.name,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'ID: ${household.id}',
-            style: const TextStyle(color: AppColors.outline),
-          ),
+          _buildTipRow('1', 'Buat akun atau login seperti biasa'),
+          const SizedBox(height: 12),
+          _buildTipRow('2', 'Satu orang bikin shared account'),
+          const SizedBox(height: 12),
+          _buildTipRow('3', 'Partner masukin kode invite lalu gabung'),
         ],
       ),
     );
   }
 
   Widget _buildInviteCard(HouseholdModel household) {
-    final hasCode =
-        household.inviteCode != null &&
-        household.inviteExpiry != null &&
-        household.inviteExpiry!.isAfter(DateTime.now());
+    final hasCode = household.inviteCode != null;
 
     return _buildCard(
       title: 'Invite Partner',
@@ -169,18 +342,38 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (hasCode) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                'Kode aktif',
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
             Text(
               household.inviteCode!,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 30,
+                fontWeight: FontWeight.w800,
                 letterSpacing: 4,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Berlaku sampai ${DateFormat('dd MMM yyyy HH:mm', 'id_ID').format(household.inviteExpiry!)}',
-              style: const TextStyle(color: AppColors.outline),
+              'Kode ini aktif sampai kamu generate kode baru atau sudah dipakai.',
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.onSurfaceVariant,
+                fontSize: 13,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -195,14 +388,38 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
                       AppUI.showSuccess(context, 'Kode invite disalin');
                     },
                     icon: const Icon(Icons.copy),
-                    label: const Text('Salin'),
+                    label: Text(
+                      'Salin',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _generateInvite(household.id),
-                    child: const Text('Regenerate'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryContainer,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      'Regenerate',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -212,7 +429,20 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => _generateInvite(household.id),
-                child: const Text('Generate Invite Code'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: Text(
+                  'Generate Invite Code',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
             ),
         ],
@@ -222,7 +452,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
 
   Widget _buildMembersCard(List<HouseholdMemberModel> members) {
     return _buildCard(
-      title: 'Member Household',
+      title: 'Member Household (${members.length})',
       child: Column(
         children: members
             .map(
@@ -232,14 +462,42 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
                   backgroundColor: AppColors.primary.withValues(alpha: 0.12),
                   child: Text(
                     (member.fullName ?? 'U').substring(0, 1).toUpperCase(),
-                    style: const TextStyle(color: AppColors.primary),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
-                title: Text(member.fullName ?? 'Tanpa Nama'),
-                subtitle: Text(member.role ?? 'user'),
-                trailing: Text(
-                  DateFormat('dd MMM', 'id_ID').format(member.joinedAt),
-                  style: const TextStyle(color: AppColors.outline),
+                title: Text(
+                  member.fullName ?? 'Tanpa Nama',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                subtitle: Text(
+                  '${member.role ?? 'user'} • bergabung ${_formatDate(member.joinedAt)}',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    (member.role ?? 'user').toUpperCase(),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
               ),
             )
@@ -254,19 +512,84 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: AppColors.onSurface,
+            ),
           ),
           const SizedBox(height: 16),
           child,
         ],
       ),
     );
+  }
+
+  Widget _buildTipRow(String step, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              step,
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: AppColors.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+    return '${date.day} ${months[date.month - 1]}';
   }
 
   Future<void> _createHousehold() async {
@@ -285,6 +608,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
       return;
     }
     _householdNameController.clear();
+    AppUI.showSuccess(context, 'Shared account berhasil dibuat');
   }
 
   Future<void> _generateInvite(String householdId) async {
@@ -294,7 +618,9 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
     if (!mounted) return;
     if (state.hasError) {
       AppUI.showError(context, '${state.error}');
+      return;
     }
+    AppUI.showSuccess(context, 'Kode invite baru siap dibagikan');
   }
 
   Future<void> _joinHousehold() async {
@@ -313,6 +639,7 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
       return;
     }
     _inviteCodeController.clear();
+    AppUI.showSuccess(context, 'Berhasil gabung ke shared account');
   }
 
   Future<void> _leaveHousehold(String householdId) async {
@@ -330,7 +657,9 @@ class _SharedAccountScreenState extends ConsumerState<SharedAccountScreen> {
       if (!mounted) return;
       if (state.hasError) {
         AppUI.showError(context, '${state.error}');
+        return;
       }
+      AppUI.showSuccess(context, 'Kamu sudah keluar dari shared account');
     }
   }
 }

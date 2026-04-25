@@ -58,14 +58,13 @@ class SharedAccountRepositoryImpl implements SharedAccountRepository {
     }
 
     final inviteCode = _generateCode();
-    final inviteExpiry = DateTime.now().add(const Duration(hours: 24));
 
     final household = await _client
         .from('households')
         .insert({
           'name': name,
           'invite_code': inviteCode,
-          'invite_expiry': inviteExpiry.toIso8601String(),
+          'invite_expiry': null,
         })
         .select()
         .single();
@@ -81,13 +80,12 @@ class SharedAccountRepositoryImpl implements SharedAccountRepository {
   @override
   Future<HouseholdModel> generateInviteCode(String householdId) async {
     final inviteCode = _generateCode();
-    final inviteExpiry = DateTime.now().add(const Duration(hours: 24));
 
     final response = await _client
         .from('households')
         .update({
           'invite_code': inviteCode,
-          'invite_expiry': inviteExpiry.toIso8601String(),
+          'invite_expiry': null,
         })
         .eq('id', householdId)
         .select()
@@ -112,14 +110,6 @@ class SharedAccountRepositoryImpl implements SharedAccountRepository {
 
     if (household == null) {
       throw Exception('Kode invite tidak ditemukan');
-    }
-
-    final expiry = household['invite_expiry'] != null
-        ? DateTime.parse(household['invite_expiry'] as String)
-        : null;
-
-    if (expiry == null || expiry.isBefore(DateTime.now())) {
-      throw Exception('Kode invite sudah kedaluwarsa');
     }
 
     await _client.from('household_members').insert({

@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
-import 'package:ve_wallet/features/shared_account/presentation/providers/shared_account_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -73,17 +72,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
 
       if (user != null && mounted) {
-        try {
-          final householdName =
-              'Rumah ${_nameController.text.trim().split(' ').first}';
-          await ref
-              .read(sharedAccountRepositoryProvider)
-              .createHousehold(householdName);
-        } catch (_) {}
         if (!mounted) return;
         AppUI.showSnack(
           context,
-          'Registrasi berhasil. Jika email confirmation aktif, cek inbox Anda.',
+          'Registrasi berhasil. Setelah login, kamu bisa buat shared account atau gabung pakai kode invite.',
           type: SnackType.success,
         );
         context.go('/login');
