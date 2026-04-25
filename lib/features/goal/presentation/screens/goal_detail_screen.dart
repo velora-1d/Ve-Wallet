@@ -71,12 +71,18 @@ class GoalDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddAllocationDialog(context, ref),
-        label: const Text('Tambah Dana'),
-        icon: const Icon(Icons.add),
-        backgroundColor: AppColors.primary,
-      ),
+      floatingActionButton: goalAsync.value == null
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => _showAddAllocationDialog(
+                context,
+                ref,
+                goalAsync.value!,
+              ),
+              label: const Text('Tambah Dana'),
+              icon: const Icon(Icons.add),
+              backgroundColor: AppColors.primary,
+            ),
     );
   }
 
@@ -314,12 +320,12 @@ class GoalDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddAllocationDialog(BuildContext context, WidgetRef ref) {
+  void _showAddAllocationDialog(BuildContext context, WidgetRef ref, GoalModel goal) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _AddAllocationSheet(goalId: goalId),
+      builder: (context) => _AddAllocationSheet(goal: goal),
     );
   }
 
@@ -401,8 +407,8 @@ class GoalDetailScreen extends ConsumerWidget {
 }
 
 class _AddAllocationSheet extends ConsumerStatefulWidget {
-  final String goalId;
-  const _AddAllocationSheet({required this.goalId});
+  final GoalModel goal;
+  const _AddAllocationSheet({required this.goal});
 
   @override
   ConsumerState<_AddAllocationSheet> createState() =>
@@ -540,7 +546,8 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
                 }
 
                 final allocation = GoalAllocationModel(
-                  goalId: widget.goalId,
+                  userId: widget.goal.userId,
+                  goalId: widget.goal.id,
                   walletId: _selectedWalletId!,
                   amount: amount,
                   note: _noteController.text,

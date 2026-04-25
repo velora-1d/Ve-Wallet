@@ -84,6 +84,7 @@ class GoalModel {
 
 class GoalAllocationModel {
   final String id;
+  final String userId;
   final String goalId;
   final String walletId;
   final String? walletName;
@@ -93,6 +94,7 @@ class GoalAllocationModel {
 
   GoalAllocationModel({
     this.id = '',
+    required this.userId,
     required this.goalId,
     required this.walletId,
     this.walletName,
@@ -104,6 +106,7 @@ class GoalAllocationModel {
   factory GoalAllocationModel.fromJson(Map<String, dynamic> json) {
     return GoalAllocationModel(
       id: json['id'] as String,
+      userId: json['user_id'] as String? ?? '',
       goalId: json['goal_id'] as String,
       walletId: json['wallet_id'] as String,
       walletName: json['wallet_name'] as String?,
@@ -115,6 +118,7 @@ class GoalAllocationModel {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
+      'user_id': userId,
       'goal_id': goalId,
       'wallet_id': walletId,
       'amount': amount,

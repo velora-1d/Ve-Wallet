@@ -3,8 +3,6 @@ import '../../domain/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  static const String _adminEmail = 'nawawimahinutsman@gmail.com';
-
   final SupabaseClient _supabase;
 
   AuthRepositoryImpl(this._supabase);
@@ -21,9 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
       email: user.email ?? '',
       fullName: profile?['full_name'] ?? user.userMetadata?['full_name'],
       avatarUrl: profile?['avatar_url'] ?? user.userMetadata?['avatar_url'],
-      role:
-          profile?['role'] ??
-          ((user.email ?? '').toLowerCase() == _adminEmail ? 'admin' : 'user'),
+      role: profile?['role'] ?? 'user',
     );
   }
 

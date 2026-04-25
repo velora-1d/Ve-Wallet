@@ -50,44 +50,45 @@ class TransactionRepositoryImpl implements TransactionRepository {
     final normalized = await _normalizeTransaction(transaction);
     _validateTransaction(normalized);
 
-    await _applyWalletDeltas(_buildBalanceDeltas(normalized));
-    await _supabase.from('transactions').insert(normalized.toJson());
+    await _supabase.rpc('add_transaction_v1', params: {
+      'p_user_id': normalized.userId,
+      'p_wallet_id': normalized.walletId,
+      'p_category_id': normalized.categoryId,
+      'p_category_name': normalized.categoryName,
+      'p_type': normalized.type.name,
+      'p_amount': normalized.amount,
+      'p_note': normalized.note,
+      'p_date': normalized.date.toIso8601String(),
+      'p_to_wallet_id': normalized.toWalletId,
+      'p_receipt_url': normalized.receiptUrl,
+    });
   }
 
   @override
   Future<void> updateTransaction(TransactionModel transaction) async {
-    final oldTxData = await _supabase
-        .from('transactions')
-        .select()
-        .eq('id', transaction.id)
-        .single();
-    final oldTransaction = TransactionModel.fromJson(oldTxData);
     final normalized = await _normalizeTransaction(transaction);
     _validateTransaction(normalized);
 
-    final deltas = _mergeBalanceDeltas(
-      _buildBalanceDeltas(oldTransaction, reverse: true),
-      _buildBalanceDeltas(normalized),
-    );
-
-    await _applyWalletDeltas(deltas);
-    await _supabase
-        .from('transactions')
-        .update(normalized.toJson())
-        .eq('id', transaction.id);
+    await _supabase.rpc('update_transaction_v1', params: {
+      'p_id': transaction.id,
+      'p_user_id': normalized.userId,
+      'p_wallet_id': normalized.walletId,
+      'p_category_id': normalized.categoryId,
+      'p_category_name': normalized.categoryName,
+      'p_type': normalized.type.name,
+      'p_amount': normalized.amount,
+      'p_note': normalized.note,
+      'p_date': normalized.date.toIso8601String(),
+      'p_to_wallet_id': normalized.toWalletId,
+      'p_receipt_url': normalized.receiptUrl,
+    });
   }
 
   @override
   Future<void> deleteTransaction(String id) async {
-    final oldTxData = await _supabase
-        .from('transactions')
-        .select()
-        .eq('id', id)
-        .single();
-    final oldTransaction = TransactionModel.fromJson(oldTxData);
-
-    await _applyWalletDeltas(_buildBalanceDeltas(oldTransaction, reverse: true));
-    await _supabase.from('transactions').delete().eq('id', id);
+    await _supabase.rpc('delete_transaction_v1', params: {
+      'p_transaction_id': id,
+    });
   }
 
   @override
@@ -134,78 +135,6 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
     if (transaction.categoryId.isEmpty) {
       throw Exception('Kategori harus dipilih');
-    }
-  }
-
-  Map<String, double> _buildBalanceDeltas(
-    TransactionModel transaction, {
-    bool reverse = false,
-  }) {
-    final multiplier = reverse ? -1.0 : 1.0;
-    final deltas = <String, double>{};
-
-    void addDelta(String walletId, double value) {
-      deltas[walletId] = (deltas[walletId] ?? 0) + value;
-    }
-
-    switch (transaction.type) {
-      case TransactionType.income:
-        addDelta(transaction.walletId, transaction.amount * multiplier);
-        break;
-      case TransactionType.expense:
-        addDelta(transaction.walletId, -transaction.amount * multiplier);
-        break;
-      case TransactionType.transfer:
-        final toWalletId = transaction.toWalletId;
-        if (toWalletId == null || toWalletId.isEmpty) {
-          throw Exception('Dompet tujuan harus dipilih');
-        }
-        addDelta(transaction.walletId, -transaction.amount * multiplier);
-        addDelta(toWalletId, transaction.amount * multiplier);
-        break;
-    }
-
-    deltas.removeWhere((_, value) => value == 0);
-    return deltas;
-  }
-
-  Map<String, double> _mergeBalanceDeltas(
-    Map<String, double> first,
-    Map<String, double> second,
-  ) {
-    final merged = <String, double>{}..addAll(first);
-    for (final entry in second.entries) {
-      merged[entry.key] = (merged[entry.key] ?? 0) + entry.value;
-    }
-    merged.removeWhere((_, value) => value == 0);
-    return merged;
-  }
-
-  Future<void> _applyWalletDeltas(Map<String, double> deltas) async {
-    if (deltas.isEmpty) {
-      return;
-    }
-
-    final newBalances = <String, double>{};
-    for (final walletId in deltas.keys) {
-      final walletData = await _supabase
-          .from('wallets')
-          .select('balance')
-          .eq('id', walletId)
-          .single();
-      final currentBalance = (walletData['balance'] as num).toDouble();
-      final updatedBalance = currentBalance + (deltas[walletId] ?? 0);
-      if (updatedBalance < 0) {
-        throw Exception('Saldo tidak mencukupi');
-      }
-      newBalances[walletId] = updatedBalance;
-    }
-
-    for (final entry in newBalances.entries) {
-      await _supabase
-          .from('wallets')
-          .update({'balance': entry.value})
-          .eq('id', entry.key);
     }
   }
 

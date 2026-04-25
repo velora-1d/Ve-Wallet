@@ -72,62 +72,19 @@ class GoalRepositoryImpl implements GoalRepository {
 
   @override
   Future<void> addAllocation(GoalAllocationModel allocation) async {
-    final walletJson = await _client
-        .from('wallets')
-        .select('balance')
-        .eq('id', allocation.walletId)
-        .single();
-    final walletBalance = (walletJson['balance'] as num).toDouble();
-    if (walletBalance < allocation.amount) {
-      throw Exception('Saldo dompet tidak mencukupi untuk alokasi');
-    }
-
-    await _client
-        .from('wallets')
-        .update({'balance': walletBalance - allocation.amount})
-        .eq('id', allocation.walletId);
-
-    await _client.from('goal_allocations').insert(allocation.toJson());
-
-    final goal = await getGoalById(allocation.goalId);
-    final updatedAmount = goal.currentAmount + allocation.amount;
-    await updateGoal(
-      goal.copyWith(
-        currentAmount: updatedAmount,
-        isCompleted: updatedAmount >= goal.targetAmount,
-      ),
-    );
+    await _client.rpc('add_goal_allocation_v1', params: {
+      'p_user_id': allocation.userId,
+      'p_goal_id': allocation.goalId,
+      'p_wallet_id': allocation.walletId,
+      'p_amount': allocation.amount,
+      'p_date': allocation.createdAt.toIso8601String(),
+    });
   }
 
   @override
   Future<void> deleteAllocation(String id) async {
-    final allocationJson = await _client
-        .from('goal_allocations')
-        .select()
-        .eq('id', id)
-        .single();
-    final allocation = GoalAllocationModel.fromJson(allocationJson);
-
-    final walletJson = await _client
-        .from('wallets')
-        .select('balance')
-        .eq('id', allocation.walletId)
-        .single();
-    final walletBalance = (walletJson['balance'] as num).toDouble();
-    await _client
-        .from('wallets')
-        .update({'balance': walletBalance + allocation.amount})
-        .eq('id', allocation.walletId);
-
-    await _client.from('goal_allocations').delete().eq('id', id);
-
-    final goal = await getGoalById(allocation.goalId);
-    final updatedAmount = goal.currentAmount - allocation.amount;
-    await updateGoal(
-      goal.copyWith(
-        currentAmount: updatedAmount < 0 ? 0 : updatedAmount,
-        isCompleted: false,
-      ),
-    );
+    await _client.rpc('delete_goal_allocation_v1', params: {
+      'p_allocation_id': id,
+    });
   }
 }
