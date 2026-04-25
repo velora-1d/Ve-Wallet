@@ -20,7 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Catat Transaksi dengan Mudah',
       description:
           'Input pemasukan dan pengeluaran harian kamu dalam hitungan detik, kapan saja dan di mana saja.',
-      imageUrl: 'assets/images/onboarding/promo reward ekslusif.svg',
+      imageUrl: 'assets/images/onboarding/ekspresi menang.svg',
       buttonText: 'Lanjut',
     ),
     OnboardingData(
