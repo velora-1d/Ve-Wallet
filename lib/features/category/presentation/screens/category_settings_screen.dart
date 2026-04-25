@@ -79,7 +79,7 @@ class _CategoryList extends ConsumerWidget {
       data: (categories) {
         if (categories.isEmpty) {
           return const Center(
-            child: Text('Belum ada kategori'),
+            child: Text('Belum ada kategori untuk tipe ini'),
           );
         }
 
@@ -141,13 +141,43 @@ class _CategoryItem extends ConsumerWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (category.isDefault)
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Default',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
             IconButton(
               icon: const Icon(Icons.edit_outlined, color: AppColors.outline),
-              onPressed: () => context.push('/add-edit-category', extra: {'category': category, 'isEdit': true}),
+              onPressed: category.isDefault
+                  ? () => AppUI.showInfo(
+                        context,
+                        'Kategori bawaan tidak bisa diubah',
+                      )
+                  : () => context.push(
+                        '/add-edit-category',
+                        extra: {'category': category, 'isEdit': true},
+                      ),
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () => _showDeleteConfirmation(context, ref),
+              onPressed: category.isDefault
+                  ? () => AppUI.showInfo(
+                        context,
+                        'Kategori bawaan tidak bisa dihapus',
+                      )
+                  : () => _showDeleteConfirmation(context, ref),
             ),
           ],
         ),
@@ -164,7 +194,14 @@ class _CategoryItem extends ConsumerWidget {
       isDangerous: true,
     );
     if (confirm) {
-      ref.read(categoryControllerProvider.notifier).deleteCategory(category.id);
+      try {
+        await ref.read(categoryControllerProvider.notifier).deleteCategory(category.id);
+        if (!context.mounted) return;
+        AppUI.showSuccess(context, 'Kategori berhasil dihapus');
+      } catch (e) {
+        if (!context.mounted) return;
+        AppUI.showError(context, e.toString().replaceFirst('Exception: ', ''));
+      }
     }
   }
 }

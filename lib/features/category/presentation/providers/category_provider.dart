@@ -27,16 +27,31 @@ class CategoryNotifier extends AsyncNotifier<void> {
 
   Future<void> addCategory(CategoryModel category) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(categoryRepositoryProvider).addCategory(category));
+    state = await AsyncValue.guard(
+      () => ref.read(categoryRepositoryProvider).addCategory(category),
+    );
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 
   Future<void> updateCategory(CategoryModel category) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(categoryRepositoryProvider).updateCategory(category));
+    state = await AsyncValue.guard(
+      () => ref.read(categoryRepositoryProvider).updateCategory(category),
+    );
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 
   Future<void> deleteCategory(String id) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(categoryRepositoryProvider).deleteCategory(id));
+    state = await AsyncValue.guard(
+      () => ref.read(categoryRepositoryProvider).deleteCategory(id),
+    );
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/widgets/app_skeleton.dart';
 import 'package:ve_wallet/features/admin/domain/models/admin_dashboard_data_model.dart';
 import 'package:ve_wallet/features/admin/presentation/providers/admin_dashboard_provider.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
@@ -93,8 +94,11 @@ class AdminDashboardScreen extends ConsumerWidget {
               const SizedBox(height: 40),
             ],
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => _buildErrorState(error.toString(), ref),
+          loading: () => const _AdminDashboardLoadingState(),
+          error: (error, _) => _buildErrorState(
+            _friendlyAdminDashboardError(error.toString()),
+            ref,
+          ),
         ),
       ),
     );
@@ -494,6 +498,150 @@ class AdminDashboardScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+String _friendlyAdminDashboardError(String raw) {
+  final normalized = raw.toLowerCase();
+  if (normalized.contains('infinite recursion detected in policy')) {
+    return 'Akses data admin belum sinkron. Jalankan pembaruan database terbaru lalu muat ulang halaman ini.';
+  }
+  if (normalized.contains('permission denied') ||
+      normalized.contains('row-level security')) {
+    return 'Data admin belum bisa diakses saat ini. Coba lagi setelah pengaturan akses selesai diperbarui.';
+  }
+  return 'Data admin belum bisa dimuat. Coba lagi beberapa saat.';
+}
+
+class _AdminDashboardLoadingState extends StatelessWidget {
+  const _AdminDashboardLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      children: const [
+        SizedBox(height: 16),
+        AppSkeleton(
+          height: 150,
+          borderRadius: BorderRadius.all(Radius.circular(30)),
+        ),
+        SizedBox(height: 24),
+        _AdminStatsSkeletonGrid(),
+        SizedBox(height: 24),
+        AppSkeleton(
+          height: 280,
+          borderRadius: BorderRadius.all(Radius.circular(30)),
+        ),
+        SizedBox(height: 24),
+        _AdminActivitySkeleton(),
+      ],
+    );
+  }
+}
+
+class _AdminStatsSkeletonGrid extends StatelessWidget {
+  const _AdminStatsSkeletonGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 4,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.2,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AppSkeleton(
+                width: 36,
+                height: 36,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppSkeleton(height: 20, width: 70),
+                  SizedBox(height: 8),
+                  AppSkeleton(height: 12, width: 90),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AdminActivitySkeleton extends StatelessWidget {
+  const _AdminActivitySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Column(
+        children: const [
+          _AdminActivitySkeletonRow(),
+          Divider(height: 24),
+          _AdminActivitySkeletonRow(),
+          Divider(height: 24),
+          _AdminActivitySkeletonRow(),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdminActivitySkeletonRow extends StatelessWidget {
+  const _AdminActivitySkeletonRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSkeleton(width: 40, height: 40, shape: BoxShape.circle),
+        SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSkeleton(height: 14),
+              SizedBox(height: 8),
+              AppSkeleton(height: 12, width: 220),
+            ],
+          ),
+        ),
+        SizedBox(width: 12),
+        AppSkeleton(height: 12, width: 42),
       ],
     );
   }

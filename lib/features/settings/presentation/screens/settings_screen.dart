@@ -114,6 +114,14 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: 'Tanya jawab dan dukungan',
                 onTap: () => context.push('/help-center'),
               ),
+              _buildSettingsTile(
+                icon: Icons.auto_awesome_rounded,
+                iconBgColor: const Color(0xFFEFF6FF),
+                iconColor: const Color(0xFF2563EB),
+                title: 'Tips Harian',
+                subtitle: 'Insight singkat biar keputusan keuangan lebih rapi',
+                onTap: () => context.push('/tips'),
+              ),
             ],
           ),
           if (user?.role == 'admin') ...[

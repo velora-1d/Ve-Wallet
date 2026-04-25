@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/widgets/app_bottom_nav.dart';
 import 'package:ve_wallet/features/admin/presentation/screens/admin_dashboard_screen.dart';
 import 'package:ve_wallet/features/admin/presentation/screens/admin_history_screen.dart';
 import 'package:ve_wallet/features/admin/presentation/screens/admin_profile_screen.dart';
@@ -13,6 +14,29 @@ class AdminMainScreen extends StatefulWidget {
 }
 
 class _AdminMainScreenState extends State<AdminMainScreen> {
+  static const _navItems = [
+    AppBottomNavItem(
+      icon: Icons.dashboard_outlined,
+      activeIcon: Icons.dashboard_rounded,
+      label: 'Home',
+    ),
+    AppBottomNavItem(
+      icon: Icons.admin_panel_settings_outlined,
+      activeIcon: Icons.admin_panel_settings_rounded,
+      label: 'Security',
+    ),
+    AppBottomNavItem(
+      icon: Icons.history_outlined,
+      activeIcon: Icons.history_rounded,
+      label: 'History',
+    ),
+    AppBottomNavItem(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'Profile',
+    ),
+  ];
+
   int _selectedIndex = 0;
   final List<int> _tabHistory = [];
 
@@ -49,52 +73,11 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
       },
       child: Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _screens),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            top: false,
-            child: NavigationBar(
-              height: 72,
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.white,
-              elevation: 0,
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _onItemTapped,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              indicatorColor: AppColors.primary.withValues(alpha: 0.12),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.dashboard_outlined),
-                  selectedIcon: Icon(Icons.dashboard_rounded),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.admin_panel_settings_outlined),
-                  selectedIcon: Icon(Icons.admin_panel_settings_rounded),
-                  label: 'Security',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.history_outlined),
-                  selectedIcon: Icon(Icons.history_rounded),
-                  label: 'History',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person_outline_rounded),
-                  selectedIcon: Icon(Icons.person_rounded),
-                  label: 'Profile',
-                ),
-              ],
-            ),
-          ),
+        bottomNavigationBar: AppBottomNavBar(
+          selectedIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: _navItems,
+          accentColor: AppColors.primary,
         ),
       ),
     );

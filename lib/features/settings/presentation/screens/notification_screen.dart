@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
+import 'package:ve_wallet/core/widgets/app_skeleton.dart';
 import 'package:ve_wallet/features/settings/domain/models/app_notification_model.dart';
 import 'package:ve_wallet/features/settings/presentation/providers/notification_provider.dart';
 
@@ -32,6 +33,20 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
   }
 
   Future<void> _markAllAsRead() async {
+    final notifications = await ref.read(notificationsProvider.future);
+    if (!mounted) return;
+
+    if (notifications.isEmpty) {
+      AppUI.showInfo(context, 'Belum ada notifikasi yang bisa ditandai.');
+      return;
+    }
+
+    final unreadItems = notifications.where((item) => !item.isRead).toList();
+    if (unreadItems.isEmpty) {
+      AppUI.showInfo(context, 'Semua notifikasi sudah dibaca.');
+      return;
+    }
+
     await ref.read(notificationControllerProvider.notifier).markAllAsRead();
     final state = ref.read(notificationControllerProvider);
     if (!mounted) return;
@@ -42,6 +57,14 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
     }
 
     AppUI.showSuccess(context, 'Semua notifikasi ditandai sudah dibaca');
+  }
+
+  Future<void> _refreshNotifications() async {
+    ref.invalidate(notificationsProvider);
+    final notifications = await ref.read(notificationsProvider.future);
+    if (!mounted || notifications.isNotEmpty) return;
+
+    AppUI.showInfo(context, 'Belum ada notifikasi baru untuk ditampilkan.');
   }
 
   Future<void> _openDetail(AppNotificationModel item) async {
@@ -101,25 +124,23 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
             ],
           ),
         ),
-        body: notificationsAsync.when(
-          data: (items) {
-            final unreadItems = items.where((item) => !item.isRead).toList();
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                _NotificationList(items: items, onTap: _openDetail),
-                _NotificationList(items: unreadItems, onTap: _openDetail),
-              ],
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Gagal memuat notifikasi: $error',
-                textAlign: TextAlign.center,
-              ),
+        body: RefreshIndicator(
+          onRefresh: _refreshNotifications,
+          child: notificationsAsync.when(
+            data: (items) {
+              final unreadItems = items.where((item) => !item.isRead).toList();
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _NotificationList(items: items, onTap: _openDetail),
+                  _NotificationList(items: unreadItems, onTap: _openDetail),
+                ],
+              );
+            },
+            loading: () => const _NotificationLoadingState(),
+            error: (error, _) => _NotificationErrorState(
+              message: error.toString(),
+              onRetry: _refreshNotifications,
             ),
           ),
         ),
@@ -140,43 +161,61 @@ class _NotificationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF1F5F9),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.notifications_off_rounded,
-                size: 40,
-                color: Color(0xFF94A3B8),
-              ),
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Belum ada notifikasi',
-              style: GoogleFonts.plusJakartaSans(
-                color: const Color(0xFF1E293B),
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF1F5F9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications_off_rounded,
+                    size: 36,
+                    color: Color(0xFF94A3B8),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Belum ada notifikasi',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: const Color(0xFF1E293B),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Pembaruan transaksi, target, dan aktivitas akun akan muncul di halaman ini. Tarik ke bawah untuk cek lagi.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: const Color(0xFF64748B),
+                    fontSize: 13,
+                    height: 1.7,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Notifikasi dari sistem dan aktivitas akun akan muncul di sini',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                color: const Color(0xFF64748B),
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -285,6 +324,140 @@ class _NotificationList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _NotificationLoadingState extends StatelessWidget {
+  const _NotificationLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: const [
+        _NotificationSkeletonCard(),
+        SizedBox(height: 16),
+        _NotificationSkeletonCard(),
+        SizedBox(height: 16),
+        _NotificationSkeletonCard(),
+        SizedBox(height: 16),
+        _NotificationSkeletonCard(),
+      ],
+    );
+  }
+}
+
+class _NotificationSkeletonCard extends StatelessWidget {
+  const _NotificationSkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppSkeleton(
+            width: 48,
+            height: 48,
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: AppSkeleton(height: 14)),
+                    SizedBox(width: 12),
+                    AppSkeleton(height: 12, width: 44),
+                  ],
+                ),
+                SizedBox(height: 10),
+                AppSkeleton(height: 12),
+                SizedBox(height: 8),
+                AppSkeleton(height: 12, width: 220),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotificationErrorState extends StatelessWidget {
+  final String message;
+  final Future<void> Function() onRetry;
+
+  const _NotificationErrorState({
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 100),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 42,
+                color: AppColors.error,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Notifikasi belum bisa dimuat',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  height: 1.6,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: onRetry,
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

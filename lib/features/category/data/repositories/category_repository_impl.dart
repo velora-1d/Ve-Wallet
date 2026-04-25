@@ -13,31 +13,24 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<List<CategoryModel>> getCategories({TransactionType? type}) async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) throw Exception('User not logged in');
-
-    var query = _supabase.from(_tableName).select().eq('user_id', user.id);
-    
-    if (type != null) {
-      query = query.eq('type', type.name);
-    }
-
-    final response = await query.order('name');
-    return response
+    final response = await _supabase.from(_tableName).select().order('name');
+    final categories = (response as List)
         .where((json) => json['name'] != _internalTransferCategoryName)
         .map((json) => CategoryModel.fromJson(json))
         .toList();
+
+    if (type == null) {
+      return categories;
+    }
+
+    return categories.where((category) => category.type == type).toList();
   }
 
   @override
   Stream<List<CategoryModel>> watchCategories({TransactionType? type}) {
-    final user = _supabase.auth.currentUser;
-    if (user == null) throw Exception('User not logged in');
-
     var stream = _supabase
         .from(_tableName)
-        .stream(primaryKey: ['id'])
-        .eq('user_id', user.id);
+        .stream(primaryKey: ['id']);
 
     return stream.map((data) {
       var models = data
@@ -65,12 +58,25 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void> addCategory(CategoryModel category) async {
-    await _supabase.from(_tableName).insert(category.toJson());
+    final householdId = await _getCurrentHouseholdId();
+    if (householdId == null) {
+      throw Exception('Buat atau gabung shared account dulu sebelum menambah kategori');
+    }
+
+    await _supabase.from(_tableName).insert(
+          category.copyWith(
+            householdId: householdId,
+            isDefault: false,
+          ).toJson(),
+        );
   }
 
   @override
   Future<void> updateCategory(CategoryModel category) async {
     if (category.id.isEmpty) throw Exception('Category ID is required for update');
+    if (category.isDefault) {
+      throw Exception('Kategori bawaan tidak bisa diubah');
+    }
     
     await _supabase
         .from(_tableName)
@@ -81,5 +87,20 @@ class CategoryRepositoryImpl implements CategoryRepository {
   @override
   Future<void> deleteCategory(String id) async {
     await _supabase.from(_tableName).delete().eq('id', id);
+  }
+
+  Future<String?> _getCurrentHouseholdId() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('User not logged in');
+    }
+
+    final member = await _supabase
+        .from('household_members')
+        .select('household_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return member?['household_id'] as String?;
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
-import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/providers/category_provider.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
@@ -50,25 +50,34 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final user = ref.read(currentUserProvider);
-    if (user == null) return;
-
     final category = CategoryModel(
       id: widget.initialCategory?.id ?? '',
-      userId: user.id,
+      householdId: widget.initialCategory?.householdId,
       name: _nameController.text,
       icon: _selectedIcon,
       color: _selectedColor.toARGB32(),
       type: _type,
+      isDefault: widget.initialCategory?.isDefault ?? false,
     );
 
-    if (widget.isEdit) {
-      await ref.read(categoryControllerProvider.notifier).updateCategory(category);
-    } else {
-      await ref.read(categoryControllerProvider.notifier).addCategory(category);
+    try {
+      if (widget.isEdit) {
+        await ref.read(categoryControllerProvider.notifier).updateCategory(category);
+      } else {
+        await ref.read(categoryControllerProvider.notifier).addCategory(category);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      AppUI.showError(context, e.toString().replaceFirst('Exception: ', ''));
+      return;
     }
 
-    if (mounted) Navigator.pop(context);
+    if (!mounted) return;
+    AppUI.showSuccess(
+      context,
+      widget.isEdit ? 'Kategori berhasil diperbarui' : 'Kategori berhasil ditambahkan',
+    );
+    Navigator.pop(context);
   }
 
   @override

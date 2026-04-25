@@ -109,7 +109,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     final transferCategoryId = await _getOrCreateTransferCategoryId(
-      transaction.userId,
+      transaction.walletId,
     );
 
     return transaction.copyWith(
@@ -138,11 +138,19 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
   }
 
-  Future<String> _getOrCreateTransferCategoryId(String userId) async {
+  Future<String> _getOrCreateTransferCategoryId(String walletId) async {
+    final wallet = await _supabase
+        .from('wallets')
+        .select('household_id')
+        .eq('id', walletId)
+        .single();
+
+    final householdId = wallet['household_id'] as String;
+
     final existing = await _supabase
         .from('categories')
         .select('id')
-        .eq('user_id', userId)
+        .eq('household_id', householdId)
         .eq('name', _internalTransferCategoryName)
         .maybeSingle();
 
@@ -153,7 +161,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     final created = await _supabase
         .from('categories')
         .insert({
-          'user_id': userId,
+          'household_id': householdId,
           'name': _internalTransferCategoryName,
           'icon': _transferCategoryIcon,
           'color': _transferCategoryColor,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/widgets/app_bottom_nav.dart';
 import 'package:ve_wallet/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:ve_wallet/features/report/presentation/screens/report_screen.dart';
 import 'package:ve_wallet/features/transaction/presentation/screens/transaction_screen.dart';
@@ -17,6 +18,29 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
+  static const _navItems = [
+    AppBottomNavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    AppBottomNavItem(
+      icon: Icons.receipt_long_outlined,
+      activeIcon: Icons.receipt_long_rounded,
+      label: 'Aktivitas',
+    ),
+    AppBottomNavItem(
+      icon: Icons.insert_chart_outlined_rounded,
+      activeIcon: Icons.insert_chart_rounded,
+      label: 'Laporan',
+    ),
+    AppBottomNavItem(
+      icon: Icons.account_balance_wallet_outlined,
+      activeIcon: Icons.account_balance_wallet_rounded,
+      label: 'Dompet',
+    ),
+  ];
+
   late int _selectedIndex;
   final List<int> _tabHistory = [];
 
@@ -68,65 +92,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         extendBody: true,
         body: IndexedStack(index: _selectedIndex, children: _screens),
         floatingActionButton: SizedBox(
-          height: 62,
-          width: 62,
+          height: 66,
+          width: 66,
           child: FloatingActionButton(
             onPressed: _showAddTransaction,
-            backgroundColor: AppColors.primary,
-            elevation: 8,
+            backgroundColor: const Color(0xFF0F172A),
+            elevation: 10,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
             ),
             child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            top: false,
-            child: NavigationBar(
-              height: 72,
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.white,
-              elevation: 0,
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _onItemTapped,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              indicatorColor: AppColors.primary.withValues(alpha: 0.12),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long_rounded),
-                  label: 'Aktivitas',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.insert_chart_outlined_rounded),
-                  selectedIcon: Icon(Icons.insert_chart_rounded),
-                  label: 'Laporan',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.account_balance_wallet_outlined),
-                  selectedIcon: Icon(Icons.account_balance_wallet_rounded),
-                  label: 'Dompet',
-                ),
-              ],
-            ),
-          ),
+        bottomNavigationBar: AppBottomNavBar(
+          selectedIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: _navItems,
+          withCenterGap: true,
+          accentColor: AppColors.primary,
         ),
       ),
     );

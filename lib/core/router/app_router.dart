@@ -22,6 +22,8 @@ import 'package:ve_wallet/features/settings/presentation/screens/security_settin
 import 'package:ve_wallet/features/settings/presentation/screens/app_preferences_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/help_center_screen.dart';
 import 'package:ve_wallet/features/shared_account/presentation/screens/shared_account_screen.dart';
+import 'package:ve_wallet/features/tips/domain/models/tip_article_model.dart';
+import 'package:ve_wallet/features/tips/presentation/screens/tips_screen.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
 import 'package:ve_wallet/features/category/presentation/screens/category_settings_screen.dart';
 import 'package:ve_wallet/features/category/presentation/screens/add_edit_category_screen.dart';
@@ -174,6 +176,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/help-center',
         builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: '/tips',
+        builder: (context, state) => const TipsScreen(),
+      ),
+      GoRoute(
+        path: '/tip-detail',
+        builder: (context, state) {
+          final tip = state.extra as TipArticleModel;
+          return TipDetailScreen(tip: tip);
+        },
       ),
       GoRoute(
         path: '/shared-account',

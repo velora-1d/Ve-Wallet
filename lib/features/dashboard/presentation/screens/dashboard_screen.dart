@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/currency_formatter.dart';
+import 'package:ve_wallet/core/widgets/app_skeleton.dart';
 import 'package:ve_wallet/features/dashboard/domain/models/dashboard_data_model.dart';
 import 'package:ve_wallet/features/dashboard/presentation/providers/dashboard_provider.dart';
 
@@ -61,13 +62,120 @@ class DashboardScreen extends ConsumerWidget {
         },
         child: dashboardAsync.when(
           data: (data) => _DashboardContent(data: data),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const _DashboardLoadingState(),
           error: (error, _) => _DashboardError(
-            message: error.toString(),
+            message: _friendlyDashboardError(error.toString()),
             onRetry: () => ref.invalidate(dashboardDataProvider),
           ),
         ),
       ),
+    );
+  }
+}
+
+String _friendlyDashboardError(String raw) {
+  final normalized = raw.toLowerCase();
+  if (normalized.contains('infinite recursion detected in policy')) {
+    return 'Akses data akun belum sinkron. Jalankan pembaruan database terbaru lalu coba lagi.';
+  }
+  if (normalized.contains('permission denied') ||
+      normalized.contains('row-level security')) {
+    return 'Data belum bisa diakses saat ini. Coba muat ulang setelah pengaturan akses selesai diperbarui.';
+  }
+  return 'Data dashboard belum bisa dimuat. Coba lagi beberapa saat.';
+}
+
+class _DashboardLoadingState extends StatelessWidget {
+  const _DashboardLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
+      children: const [
+        AppSkeleton(
+          height: 190,
+          borderRadius: BorderRadius.all(Radius.circular(28)),
+        ),
+        SizedBox(height: 18),
+        AppSkeleton(
+          height: 160,
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+        ),
+        SizedBox(height: 18),
+        AppSkeleton(height: 18, width: 180),
+        SizedBox(height: 12),
+        AppSkeleton(
+          height: 240,
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+        ),
+        SizedBox(height: 18),
+        AppSkeleton(height: 18, width: 150),
+        SizedBox(height: 12),
+        _DashboardListSkeletonCard(),
+      ],
+    );
+  }
+}
+
+class _DashboardListSkeletonCard extends StatelessWidget {
+  const _DashboardListSkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: const [
+          _DashboardListSkeletonRow(),
+          Divider(height: 24),
+          _DashboardListSkeletonRow(),
+          Divider(height: 24),
+          _DashboardListSkeletonRow(),
+        ],
+      ),
+    );
+  }
+}
+
+class _DashboardListSkeletonRow extends StatelessWidget {
+  const _DashboardListSkeletonRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        AppSkeleton(
+          width: 44,
+          height: 44,
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSkeleton(height: 14),
+              SizedBox(height: 8),
+              AppSkeleton(height: 12, width: 140),
+            ],
+          ),
+        ),
+        SizedBox(width: 12),
+        AppSkeleton(height: 14, width: 74),
+      ],
     );
   }
 }
