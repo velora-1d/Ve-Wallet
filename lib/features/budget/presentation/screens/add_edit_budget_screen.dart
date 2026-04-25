@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_ui.dart';
+import '../../../../core/utils/nominal_input_formatter.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../category/presentation/providers/category_provider.dart';
 import '../../../transaction/domain/models/transaction_model.dart';
@@ -30,7 +31,9 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
     super.initState();
     _selectedDate = ref.read(selectedDateProvider);
     if (widget.initialBudget != null) {
-      _amountController.text = widget.initialBudget!.amount.toInt().toString();
+      _amountController.text = NominalInputFormatter.formatNumber(
+        widget.initialBudget!.amount.toInt(),
+      );
       _selectedCategoryId = widget.initialBudget!.categoryId;
       _carryOver = widget.initialBudget!.carryOver;
       _selectedDate = DateTime(widget.initialBudget!.periodYear, widget.initialBudget!.periodMonth);
@@ -56,7 +59,7 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
       id: widget.initialBudget?.id ?? '',
       userId: user.id,
       categoryId: _selectedCategoryId!,
-      amount: double.parse(_amountController.text),
+      amount: NominalInputFormatter.parseToDouble(_amountController.text),
       periodMonth: _selectedDate.month,
       periodYear: _selectedDate.year,
       carryOver: _carryOver,
@@ -151,6 +154,7 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [NominalInputFormatter()],
                 decoration: InputDecoration(
                   prefixText: 'Rp ',
                   hintText: '0',
@@ -158,7 +162,9 @@ class _AddEditBudgetScreenState extends ConsumerState<AddEditBudgetScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Jumlah harus diisi';
-                  if (double.tryParse(value) == null) return 'Jumlah tidak valid';
+                  if (NominalInputFormatter.parseToDouble(value) <= 0) {
+                    return 'Jumlah tidak valid';
+                  }
                   return null;
                 },
               ),

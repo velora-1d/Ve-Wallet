@@ -14,6 +14,11 @@ abstract class AuthRepository {
 
   Future<void> resetPassword({required String email});
 
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
+
   Future<UserModel?> updateProfile({
     required String fullName,
     String? avatarUrl,

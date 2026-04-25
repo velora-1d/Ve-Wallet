@@ -19,7 +19,8 @@ import 'package:ve_wallet/features/settings/presentation/screens/notification_sc
 import 'package:ve_wallet/features/settings/domain/models/app_notification_model.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/profile_info_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/security_settings_screen.dart';
-import 'package:ve_wallet/features/settings/presentation/screens/app_preferences_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/language_settings_screen.dart';
+import 'package:ve_wallet/features/settings/presentation/screens/theme_settings_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/help_center_screen.dart';
 import 'package:ve_wallet/features/shared_account/presentation/screens/shared_account_screen.dart';
 import 'package:ve_wallet/features/tips/domain/models/tip_article_model.dart';
@@ -159,19 +160,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/language-settings',
-        builder: (context, state) => const AppPreferencesScreen(
-          title: 'Bahasa',
-          currentValue: 'Indonesia',
-          options: ['Indonesia', 'English'],
-        ),
+        builder: (context, state) => const LanguageSettingsScreen(),
       ),
       GoRoute(
         path: '/theme-settings',
-        builder: (context, state) => const AppPreferencesScreen(
-          title: 'Tema',
-          currentValue: 'Terang',
-          options: ['Terang', 'Gelap', 'Sistem'],
-        ),
+        builder: (context, state) => const ThemeSettingsScreen(),
       ),
       GoRoute(
         path: '/help-center',

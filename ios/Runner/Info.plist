@@ -30,6 +30,8 @@
 	<string>Ve-Wallet membutuhkan akses kamera untuk mengambil foto struk transaksi.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ve-Wallet membutuhkan akses galeri untuk memilih foto struk transaksi.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Ve-Wallet menggunakan Face ID untuk membuka aplikasi dengan aman.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

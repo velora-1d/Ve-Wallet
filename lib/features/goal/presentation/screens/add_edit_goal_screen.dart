@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_ui.dart';
+import '../../../../core/utils/nominal_input_formatter.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/models/goal_model.dart';
 import '../providers/goal_provider.dart';
@@ -47,7 +48,9 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
     super.initState();
     if (widget.initialGoal != null) {
       _nameController.text = widget.initialGoal!.name;
-      _targetController.text = widget.initialGoal!.targetAmount.toInt().toString();
+      _targetController.text = NominalInputFormatter.formatNumber(
+        widget.initialGoal!.targetAmount.toInt(),
+      );
       _selectedIcon = widget.initialGoal!.icon;
       _selectedColor = widget.initialGoal!.color;
       _selectedDeadline = widget.initialGoal!.deadline;
@@ -73,7 +76,7 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
       name: _nameController.text,
       icon: _selectedIcon,
       color: _selectedColor,
-      targetAmount: double.parse(_targetController.text),
+      targetAmount: NominalInputFormatter.parseToDouble(_targetController.text),
       currentAmount: widget.initialGoal?.currentAmount ?? 0.0,
       deadline: _selectedDeadline,
       isCompleted: widget.initialGoal?.isCompleted ?? false,
@@ -157,6 +160,7 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
               TextFormField(
                 controller: _targetController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [NominalInputFormatter()],
                 decoration: InputDecoration(
                   prefixText: 'Rp ',
                   hintText: '0',
@@ -164,7 +168,9 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Target harus diisi';
-                  if (double.tryParse(value) == null) return 'Target tidak valid';
+                  if (NominalInputFormatter.parseToDouble(value) <= 0) {
+                    return 'Target tidak valid';
+                  }
                   return null;
                 },
               ),

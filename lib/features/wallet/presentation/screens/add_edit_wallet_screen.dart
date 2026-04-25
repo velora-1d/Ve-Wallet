@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
+import 'package:ve_wallet/core/utils/nominal_input_formatter.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:ve_wallet/features/shared_account/presentation/providers/shared_account_provider.dart';
 import 'package:ve_wallet/features/wallet/domain/models/wallet_model.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,10 +38,13 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _walletTypes = [
-    {'name': 'Tunai', 'icon': Icons.money},
-    {'name': 'Bank', 'icon': Icons.account_balance},
-    {'name': 'E-Wallet', 'icon': Icons.account_balance_wallet},
-    {'name': 'Investasi', 'icon': Icons.trending_up},
+    {'name': 'Tunai', 'dbValue': 'cash', 'icon': Icons.money},
+    {'name': 'Bank', 'dbValue': 'bank', 'icon': Icons.account_balance},
+    {
+      'name': 'E-Wallet',
+      'dbValue': 'ewallet',
+      'icon': Icons.account_balance_wallet,
+    },
   ];
 
   final List<Color> _availableColors = [
@@ -68,11 +73,16 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
   void _loadWalletData() {
     final wallet = widget.initialWallet!;
     _nameController.text = wallet.name;
-    _balanceController.text = wallet.balance.toStringAsFixed(0);
+    _balanceController.text = NominalInputFormatter.formatNumber(
+      wallet.balance.toInt(),
+    );
     _selectedColor = Color(wallet.color);
     _selectedIconKey = WalletIconUtils.resolveIconKey(wallet.icon);
-    // Note: Type detection is based on initial name or some mapping,
-    // for now we'll just keep the default or maybe add 'type' to model later
+    final matchedType = _walletTypes.firstWhere(
+      (type) => type['dbValue'] == wallet.type,
+      orElse: () => _walletTypes[1],
+    );
+    _selectedType = matchedType['name'] as String;
   }
 
   @override
@@ -88,19 +98,31 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
       try {
         final user = ref.read(currentUserProvider);
         if (user == null) throw Exception('User not logged in');
+        final currentHousehold = await ref.read(
+          sharedAccountRepositoryProvider,
+        ).getCurrentHousehold();
+        if (currentHousehold == null) {
+          throw Exception('Buat atau gabung shared account dulu sebelum menambah dompet');
+        }
 
         final walletRepo = ref.read(walletRepositoryProvider);
 
-        final balance =
-            double.tryParse(
-              _balanceController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
-            ) ??
-            0.0;
+        final balance = NominalInputFormatter.parseToDouble(
+          _balanceController.text,
+        );
+        final selectedType = _walletTypes.firstWhere(
+          (type) => type['name'] == _selectedType,
+          orElse: () => _walletTypes[1],
+        );
 
         final wallet = WalletModel(
           id: widget.isEdit ? (widget.initialWallet?.id ?? '') : '',
           userId: user.id,
+          householdId: widget.isEdit
+              ? (widget.initialWallet?.householdId ?? currentHousehold.id)
+              : currentHousehold.id,
           name: _nameController.text,
+          type: selectedType['dbValue'] as String,
           balance: balance,
           color: _selectedColor.toARGB32(),
           icon: _selectedIconKey,
@@ -258,6 +280,7 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                 child: TextFormField(
                   controller: _balanceController,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [NominalInputFormatter()],
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,

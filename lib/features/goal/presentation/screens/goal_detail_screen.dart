@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/app_ui.dart';
+import '../../../../core/utils/nominal_input_formatter.dart';
 import '../../../wallet/presentation/providers/wallet_provider.dart';
 import '../../domain/models/goal_model.dart';
 import '../providers/goal_provider.dart';
@@ -489,6 +490,7 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
           TextField(
             controller: _amountController,
             keyboardType: TextInputType.number,
+            inputFormatters: [NominalInputFormatter()],
             decoration: InputDecoration(
               prefixText: 'Rp ',
               border: OutlineInputBorder(
@@ -522,8 +524,10 @@ class _AddAllocationSheetState extends ConsumerState<_AddAllocationSheet> {
                   return;
                 }
 
-                final amount = double.tryParse(_amountController.text);
-                if (amount == null || amount <= 0) {
+                final amount = NominalInputFormatter.parseToDouble(
+                  _amountController.text,
+                );
+                if (amount <= 0) {
                   AppUI.showWarning(context, 'Nominal alokasi harus lebih dari 0');
                   return;
                 }

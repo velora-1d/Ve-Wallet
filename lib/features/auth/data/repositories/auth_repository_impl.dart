@@ -41,6 +41,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final currentUser = _supabase.auth.currentUser;
+    final email = currentUser?.email;
+    if (currentUser == null || email == null || email.isEmpty) {
+      throw Exception('Sesi pengguna tidak ditemukan');
+    }
+
+    await _supabase.auth.signInWithPassword(
+      email: email,
+      password: currentPassword,
+    );
+
+    await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
+  @override
   Future<UserModel?> updateProfile({
     required String fullName,
     String? avatarUrl,

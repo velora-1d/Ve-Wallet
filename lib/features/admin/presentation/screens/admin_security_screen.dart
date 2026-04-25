@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/localization/app_text.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_provider.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_state.dart';
 import 'package:ve_wallet/features/admin/presentation/providers/admin_dashboard_provider.dart';
 
 class AdminSecurityScreen extends ConsumerWidget {
@@ -10,12 +14,15 @@ class AdminSecurityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardAsync = ref.watch(adminDashboardDataProvider);
+    final prefs = ref.watch(appPreferencesProvider).asData?.value ??
+        AppPreferencesState.defaults;
+    final t = AppText(prefs.languageCode);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Security Panel',
+          t('security'),
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -26,45 +33,62 @@ class AdminSecurityScreen extends ConsumerWidget {
         data: (data) => ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           children: [
-            _buildSummaryCard(data.activeToday, data.totalUsers),
+            _buildSummaryCard(
+              data.activeToday,
+              data.totalUsers,
+              t,
+            ),
             const SizedBox(height: 32),
-            _buildSectionTitle('Prioritas Hari Ini'),
+            _buildAlertTile(
+              icon: Icons.manage_accounts_rounded,
+              iconColor: AppColors.primary,
+              title: t('security_preferences'),
+              subtitle: t('manage_security_preferences'),
+              onTap: () => context.push('/security-settings'),
+            ),
+            _buildSectionTitle(t('today_priority')),
             const SizedBox(height: 16),
             _buildAlertTile(
               icon: Icons.group_rounded,
               iconColor: AppColors.primary,
-              title: '${data.totalUsers} user terdaftar',
-              subtitle: 'Total akun yang saat ini tercatat di sistem.',
+              title: t.format('registered_users', {'count': data.totalUsers}),
+              subtitle: t('registered_users_subtitle'),
             ),
             _buildAlertTile(
               icon: Icons.bolt_rounded,
               iconColor: const Color(0xFF10B981),
-              title: '${data.activeToday} user aktif hari ini',
-              subtitle: 'Diukur dari aktivitas masuk terbaru pengguna hari ini.',
+              title: t.format('active_users_today', {'count': data.activeToday}),
+              subtitle: t('active_users_today_subtitle'),
             ),
             _buildAlertTile(
               icon: Icons.swap_horiz_rounded,
               iconColor: AppColors.secondary,
-              title: '${data.totalTransactions} transaksi tercatat',
-              subtitle: 'Jumlah transaksi yang sudah tercatat di aplikasi.',
+              title: t.format(
+                'transactions_recorded',
+                {'count': data.totalTransactions},
+              ),
+              subtitle: t('transactions_recorded_subtitle'),
             ),
             const SizedBox(height: 24),
-            _buildSectionTitle('Checklist Operasional'),
+            _buildSectionTitle(t('operational_checklist')),
             const SizedBox(height: 16),
             _buildChecklistItem(
-              label: 'Akses admin',
-              detail:
-                  'Panel ini hanya bisa dibuka oleh akun yang memiliki akses admin.',
+              label: t('admin_access'),
+              detail: t('admin_access_detail'),
             ),
             _buildChecklistItem(
-              label: 'Household aktif',
-              detail:
-                  '${data.totalHouseholds} household saat ini aktif di aplikasi.',
+              label: t('active_households'),
+              detail: t.format(
+                'active_households_detail',
+                {'count': data.totalHouseholds},
+              ),
             ),
             _buildChecklistItem(
-              label: 'Aktivitas terbaru',
-              detail:
-                  '${data.activities.length} log terbaru tersedia di menu History untuk audit cepat.',
+              label: t('recent_activity'),
+              detail: t.format(
+                'recent_activity_detail',
+                {'count': data.activities.length},
+              ),
             ),
             const SizedBox(height: 40),
           ],
@@ -76,10 +100,13 @@ class AdminSecurityScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSummaryCard(int activeToday, int totalUsers) {
+  Widget _buildSummaryCard(int activeToday, int totalUsers, AppText t) {
     final healthText = totalUsers == 0
-        ? 'Belum ada data user untuk dianalisis.'
-        : 'Monitoring aktif. $activeToday dari $totalUsers user terdeteksi aktif hari ini.';
+        ? t('no_users_to_analyze')
+        : t.format(
+            'active_users_summary',
+            {'active': activeToday, 'total': totalUsers},
+          );
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -105,7 +132,7 @@ class AdminSecurityScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Security Status',
+                t('security_status'),
                 style: GoogleFonts.plusJakartaSans(
                   color: Colors.white,
                   fontSize: 18,
@@ -136,7 +163,7 @@ class AdminSecurityScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'Terakhir diperbarui: otomatis',
+              t('security_updated_automatically'),
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 11,
@@ -157,7 +184,7 @@ class AdminSecurityScreen extends ConsumerWidget {
         style: GoogleFonts.plusJakartaSans(
           fontSize: 16,
           fontWeight: FontWeight.w800,
-          color: AppColors.onSurface,
+          color: Colors.black87,
         ),
       ),
     );
@@ -168,6 +195,7 @@ class AdminSecurityScreen extends ConsumerWidget {
     required Color iconColor,
     required String title,
     required String subtitle,
+    VoidCallback? onTap,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -176,44 +204,48 @@ class AdminSecurityScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: iconColor, size: 24),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.onSurface,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: AppColors.onSurfaceVariant,
-                      height: 1.5,
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: const Color(0xFF64748B),
+                        height: 1.5,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -258,14 +290,14 @@ class AdminSecurityScreen extends ConsumerWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: AppColors.onSurface,
+                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   detail,
                   style: GoogleFonts.inter(
-                    color: AppColors.onSurfaceVariant,
+                    color: const Color(0xFF64748B),
                     height: 1.5,
                     fontSize: 13,
                   ),

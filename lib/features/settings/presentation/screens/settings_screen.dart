@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/localization/app_text.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_provider.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_state.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -11,14 +14,26 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final prefs = ref.watch(appPreferencesProvider).asData?.value ??
+        AppPreferencesState.defaults;
+    final t = AppText(prefs.languageCode);
+
+    final languageSubtitle = prefs.languageCode == 'en'
+        ? t('language_subtitle_en')
+        : t('language_subtitle_id');
+    final themeSubtitle = switch (prefs.themeKey) {
+      'light' => t('theme_subtitle_light'),
+      'dark' => t('theme_subtitle_dark'),
+      _ => t('theme_subtitle_system'),
+    };
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceContainerLowest,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Pengaturan',
+          t('settings'),
           style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF1E293B),
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
             fontSize: 18,
           ),
@@ -41,38 +56,42 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 32),
           _buildSettingsGroup(
             context,
-            title: 'Akun & Keamanan',
+            title: t('account_security_group'),
             items: [
               _buildSettingsTile(
+                context,
                 icon: Icons.person_outline_rounded,
                 iconBgColor: const Color(0xFFEFF6FF),
                 iconColor: const Color(0xFF3B82F6),
-                title: 'Informasi Pribadi',
-                subtitle: 'Nama, email, dan biodata',
+                title: t('personal_info'),
+                subtitle: t('personal_info_subtitle'),
                 onTap: () => context.push('/profile-info'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.shield_outlined,
                 iconBgColor: const Color(0xFFF0FDF4),
                 iconColor: const Color(0xFF22C55E),
-                title: 'Keamanan',
-                subtitle: 'Sandi, PIN, dan biometrik',
+                title: t('security'),
+                subtitle: t('security_subtitle'),
                 onTap: () => context.push('/security-settings'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.notifications_none_rounded,
                 iconBgColor: const Color(0xFFFFF7ED),
                 iconColor: const Color(0xFFF97316),
-                title: 'Notifikasi',
-                subtitle: 'Atur pemberitahuan Anda',
+                title: t('notifications'),
+                subtitle: t('notifications_subtitle'),
                 onTap: () => context.push('/notifications'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.people_outline_rounded,
                 iconBgColor: const Color(0xFFF5F3FF),
                 iconColor: const Color(0xFF8B5CF6),
-                title: 'Shared Account',
-                subtitle: 'Kelola akun bersama',
+                title: t('shared_account'),
+                subtitle: t('shared_account_subtitle'),
                 onTap: () => context.push('/shared-account'),
               ),
             ],
@@ -80,46 +99,51 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 28),
           _buildSettingsGroup(
             context,
-            title: 'Preferensi Aplikasi',
+            title: t('app_preferences_group'),
             items: [
               _buildSettingsTile(
+                context,
                 icon: Icons.category_outlined,
                 iconBgColor: const Color(0xFFFEF2F2),
                 iconColor: const Color(0xFFEF4444),
-                title: 'Kategori Transaksi',
-                subtitle: 'Atur kategori pemasukan & pengeluaran',
+                title: t('transaction_categories'),
+                subtitle: t('categories_subtitle'),
                 onTap: () => context.push('/category-settings'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.language_rounded,
                 iconBgColor: const Color(0xFFECFEFF),
                 iconColor: const Color(0xFF06B6D4),
-                title: 'Bahasa',
-                subtitle: 'Indonesia',
+                title: t('language'),
+                subtitle: languageSubtitle,
                 onTap: () => context.push('/language-settings'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.palette_outlined,
                 iconBgColor: const Color(0xFFFDF2F8),
                 iconColor: const Color(0xFFEC4899),
-                title: 'Tema Visual',
-                subtitle: 'Terang / Gelap',
+                title: t('theme'),
+                subtitle: themeSubtitle,
                 onTap: () => context.push('/theme-settings'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.help_outline_rounded,
                 iconBgColor: const Color(0xFFF8FAFC),
                 iconColor: const Color(0xFF64748B),
-                title: 'Pusat Bantuan',
-                subtitle: 'Tanya jawab dan dukungan',
+                title: t('help_center'),
+                subtitle: t('help_center_subtitle'),
                 onTap: () => context.push('/help-center'),
               ),
               _buildSettingsTile(
+                context,
                 icon: Icons.auto_awesome_rounded,
                 iconBgColor: const Color(0xFFEFF6FF),
                 iconColor: const Color(0xFF2563EB),
-                title: 'Tips Harian',
-                subtitle: 'Insight singkat biar keputusan keuangan lebih rapi',
+                title: t('daily_tips'),
+                subtitle: t('tips_subtitle'),
                 onTap: () => context.push('/tips'),
               ),
             ],
@@ -128,21 +152,21 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 28),
             _buildSettingsGroup(
               context,
-              title: 'Pengembang',
+              title: t('developer_group'),
               items: [
                 SwitchListTile(
                   title: Text(
-                    'Mode Admin',
+                    t('admin_mode'),
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
                   ),
                   subtitle: Text(
-                    'Aktifkan akses fitur admin',
+                    t('enable_admin_features'),
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
-                      color: const Color(0xFF64748B),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   value: ref.watch(adminModeProvider),
@@ -192,7 +216,7 @@ class SettingsScreen extends ConsumerWidget {
                   const Icon(Icons.logout_rounded, size: 20),
                   const SizedBox(width: 10),
                   Text(
-                    'Keluar dari Akun',
+                    t('logout'),
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
@@ -211,7 +235,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1E293B),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -220,17 +244,17 @@ class SettingsScreen extends ConsumerWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF94A3B8),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: const Color(0xFFE2E8F0),
+                      color: Theme.of(context).dividerColor.withValues(alpha: 0.6),
                     ),
                   ),
                   child: Text(
@@ -239,7 +263,7 @@ class SettingsScreen extends ConsumerWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF475569),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -270,10 +294,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
             child: CircleAvatar(
               radius: 54,
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: const Color(0xFFF8FAFC),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Icon(
                   Icons.person_rounded,
                   size: 60,
@@ -288,7 +312,7 @@ class SettingsScreen extends ConsumerWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: const Color(0xFF1E293B),
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: -0.5,
             ),
           ),
@@ -298,7 +322,7 @@ class SettingsScreen extends ConsumerWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF64748B),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 20),
@@ -344,7 +368,7 @@ class SettingsScreen extends ConsumerWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF64748B),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: 1.0,
             ),
           ),
@@ -352,7 +376,7 @@ class SettingsScreen extends ConsumerWidget {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
@@ -373,7 +397,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSettingsTile({
+  Widget _buildSettingsTile(
+    BuildContext context, {
     required IconData icon,
     required Color iconBgColor,
     required Color iconColor,
@@ -397,7 +422,7 @@ class SettingsScreen extends ConsumerWidget {
         style: GoogleFonts.plusJakartaSans(
           fontSize: 15,
           fontWeight: FontWeight.w700,
-          color: const Color(0xFF1E293B),
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
       subtitle: Text(
@@ -405,12 +430,12 @@ class SettingsScreen extends ConsumerWidget {
         style: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF64748B),
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
-      trailing: const Icon(
+      trailing: Icon(
         Icons.chevron_right_rounded,
-        color: Color(0xFFCBD5E1),
+        color: Theme.of(context).colorScheme.outline,
         size: 20,
       ),
       onTap: onTap,

@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/localization/app_text.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_provider.dart';
+import 'package:ve_wallet/core/preferences/app_preferences_state.dart';
 import 'package:ve_wallet/features/auth/domain/models/user_model.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 
@@ -12,12 +15,15 @@ class AdminProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final prefs = ref.watch(appPreferencesProvider).asData?.value ??
+        AppPreferencesState.defaults;
+    final t = AppText(prefs.languageCode);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
-          'Admin Profile',
+          t('admin_profile'),
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
           ),
@@ -31,36 +37,57 @@ class AdminProfileScreen extends ConsumerWidget {
         children: [
           _buildProfileHeader(user),
           const SizedBox(height: 32),
-          _buildSectionTitle('Manajemen Sistem'),
+          _buildSectionTitle(t('admin_system_management')),
           const SizedBox(height: 16),
           _buildActionCard(
             icon: Icons.person_rounded,
-            title: 'Edit Profil',
-            subtitle:
-                'Ubah nama dan avatar akun yang sedang dipakai.',
+            title: t('edit_profile'),
+            subtitle: t('edit_profile_subtitle'),
             onTap: () => context.push('/profile-info'),
           ),
           _buildActionCard(
+            icon: Icons.shield_rounded,
+            title: t('security_preferences'),
+            subtitle: t('manage_security_preferences'),
+            onTap: () => context.push('/security-settings'),
+          ),
+          _buildActionCard(
+            icon: Icons.language_rounded,
+            title: t('language'),
+            subtitle: prefs.languageCode == 'en'
+                ? t('language_subtitle_en')
+                : t('language_subtitle_id'),
+            onTap: () => context.push('/language-settings'),
+          ),
+          _buildActionCard(
+            icon: Icons.palette_outlined,
+            title: t('theme'),
+            subtitle: switch (prefs.themeKey) {
+              'light' => t('theme_subtitle_light'),
+              'dark' => t('theme_subtitle_dark'),
+              _ => t('theme_subtitle_system'),
+            },
+            onTap: () => context.push('/theme-settings'),
+          ),
+          _buildActionCard(
             icon: Icons.notifications_active_rounded,
-            title: 'Notifikasi',
-            subtitle:
-                'Lihat notifikasi sistem dan aktivitas akun admin.',
+            title: t('notifications'),
+            subtitle: t('admin_notifications_subtitle'),
             onTap: () => context.push('/notifications'),
           ),
           _buildActionCard(
             icon: Icons.help_center_rounded,
-            title: 'Pusat Bantuan',
-            subtitle:
-                'Buka panduan penggunaan dan catatan penting aplikasi.',
+            title: t('help_center'),
+            subtitle: t('admin_help_subtitle'),
             onTap: () => context.push('/help-center'),
           ),
           const SizedBox(height: 24),
-          _buildSectionTitle('Navigasi Mode'),
+          _buildSectionTitle(t('admin_mode_navigation')),
           const SizedBox(height: 16),
           _buildActionCard(
             icon: Icons.swap_horizontal_circle_rounded,
-            title: 'Switch ke Mode User',
-            subtitle: 'Beralih ke antarmuka pengguna biasa untuk simulasi pengalaman user.',
+            title: t('switch_to_user_mode'),
+            subtitle: t('switch_to_user_mode_subtitle'),
             iconColor: AppColors.secondary,
             onTap: () {
               ref.read(adminModeProvider.notifier).state = false;

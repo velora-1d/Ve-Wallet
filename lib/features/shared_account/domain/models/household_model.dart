@@ -1,12 +1,14 @@
 class HouseholdModel {
   final String id;
   final String name;
+  final String? userId;
   final String? inviteCode;
   final DateTime? inviteExpiry;
 
   HouseholdModel({
     required this.id,
     required this.name,
+    this.userId,
     this.inviteCode,
     this.inviteExpiry,
   });
@@ -15,6 +17,7 @@ class HouseholdModel {
     return HouseholdModel(
       id: json['id'] as String,
       name: json['name'] as String,
+      userId: json['user_id'] as String?,
       inviteCode: json['invite_code'] as String?,
       inviteExpiry: json['invite_expiry'] != null
           ? DateTime.parse(json['invite_expiry'] as String)

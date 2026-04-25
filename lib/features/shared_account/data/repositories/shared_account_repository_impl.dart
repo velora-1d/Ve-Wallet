@@ -62,6 +62,7 @@ class SharedAccountRepositoryImpl implements SharedAccountRepository {
     final household = await _client
         .from('households')
         .insert({
+          'user_id': user.id,
           'name': name,
           'invite_code': inviteCode,
           'invite_expiry': null,
@@ -96,31 +97,10 @@ class SharedAccountRepositoryImpl implements SharedAccountRepository {
 
   @override
   Future<void> joinHousehold(String inviteCode) async {
-    final user = _requireUser();
-    final current = await getCurrentHousehold();
-    if (current != null) {
-      throw Exception('Keluar dari shared account saat ini terlebih dahulu');
-    }
-
-    final household = await _client
-        .from('households')
-        .select()
-        .eq('invite_code', inviteCode.toUpperCase())
-        .maybeSingle();
-
-    if (household == null) {
-      throw Exception('Kode invite tidak ditemukan');
-    }
-
-    await _client.from('household_members').insert({
-      'household_id': household['id'],
-      'user_id': user.id,
-    });
-
-    await _client.from('households').update({
-      'invite_code': null,
-      'invite_expiry': null,
-    }).eq('id', household['id']);
+    await _client.rpc(
+      'join_household_by_invite_code_v1',
+      params: {'p_invite_code': inviteCode},
+    );
   }
 
   @override
