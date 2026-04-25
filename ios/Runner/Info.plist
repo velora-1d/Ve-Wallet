@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Ve-Wallet membutuhkan akses kamera untuk mengambil foto struk transaksi.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ve-Wallet membutuhkan akses galeri untuk memilih foto struk transaksi.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

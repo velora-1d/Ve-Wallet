@@ -16,6 +16,7 @@ import 'package:ve_wallet/features/transaction/presentation/screens/transaction_
 import 'package:ve_wallet/features/transaction/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/settings_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/notification_screen.dart';
+import 'package:ve_wallet/features/settings/domain/models/app_notification_model.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/profile_info_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/security_settings_screen.dart';
 import 'package:ve_wallet/features/settings/presentation/screens/app_preferences_screen.dart';
@@ -138,6 +139,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: '/notification-detail',
+        builder: (context, state) {
+          final notification = state.extra as AppNotificationModel;
+          return NotificationDetailScreen(notification: notification);
+        },
       ),
       GoRoute(
         path: '/profile-info',

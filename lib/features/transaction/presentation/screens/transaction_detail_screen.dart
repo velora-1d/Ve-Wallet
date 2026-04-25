@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
+import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ve_wallet/features/transaction/domain/models/transaction_model.dart';
 import 'package:ve_wallet/features/transaction/presentation/providers/transaction_provider.dart';
 import 'package:ve_wallet/features/wallet/presentation/providers/wallet_provider.dart';
@@ -25,6 +26,7 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
     final dateFormat = DateFormat('d MMM yyyy, HH:mm', 'id_ID');
     final wallets = ref.watch(walletsStreamProvider).value ?? const [];
+    final currentUser = ref.watch(currentUserProvider);
 
     final walletName = _walletName(wallets, transaction.walletId);
     final toWalletName = _walletName(wallets, transaction.toWalletId);
@@ -129,7 +131,7 @@ class TransactionDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
                   ],
 
-                  _buildMetaInfo(),
+                  _buildMetaInfo(currentUser?.fullName),
 
                   const SizedBox(height: 32),
                 ],
@@ -316,7 +318,12 @@ class TransactionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMetaInfo() {
+  Widget _buildMetaInfo(String? fullName) {
+    final displayName = (fullName?.trim().isNotEmpty ?? false)
+        ? fullName!.trim()
+        : 'Anda';
+    final initial = displayName.substring(0, 1).toUpperCase();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
@@ -332,15 +339,21 @@ class TransactionDetailScreen extends ConsumerWidget {
           ),
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 12,
-                backgroundImage: NetworkImage(
-                  'https://i.pravatar.cc/150?u=user123',
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                child: Text(
+                  initial,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
-                'Anda',
+                displayName,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

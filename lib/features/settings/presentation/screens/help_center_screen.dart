@@ -22,7 +22,7 @@ class HelpCenterScreen extends StatelessWidget {
       ),
       (
         'Kenapa akun admin tidak bisa login',
-        'Akun admin harus ada di Supabase Auth > Users. Jika hanya ada di tabel profiles, login akan tetap gagal.'
+        'Pastikan akun admin memang sudah dibuat lengkap dan email serta password yang dipakai sudah benar.'
       ),
     ];
 
@@ -240,4 +240,3 @@ class HelpCenterScreen extends StatelessWidget {
     );
   }
 }
-

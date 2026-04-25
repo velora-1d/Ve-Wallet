@@ -1,72 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/admin/presentation/providers/admin_dashboard_provider.dart';
 
-class AdminSecurityScreen extends StatelessWidget {
+class AdminSecurityScreen extends ConsumerWidget {
   const AdminSecurityScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardAsync = ref.watch(adminDashboardDataProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           'Security Panel',
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        children: [
-          _buildSummaryCard(),
-          const SizedBox(height: 32),
-          _buildSectionTitle('Prioritas Hari Ini'),
-          const SizedBox(height: 16),
-          _buildAlertTile(
-            icon: Icons.warning_amber_rounded,
-            iconColor: const Color(0xFFF59E0B),
-            title: '3 Login Gagal Beruntun',
-            subtitle: 'Pantau akun yang mencoba masuk lebih dari 5 kali dalam 1 jam terakhir.',
-          ),
-          _buildAlertTile(
-            icon: Icons.lock_clock_rounded,
-            iconColor: AppColors.primary,
-            title: '12 Sesi Aktif > 7 Hari',
-            subtitle: 'Review perangkat lama dan paksa logout jika tidak dikenali.',
-          ),
-          _buildAlertTile(
-            icon: Icons.verified_user_rounded,
-            iconColor: const Color(0xFF10B981),
-            title: 'RLS Policy Aktif',
-            subtitle: 'Integritas Row Level Security di database terpantau aman.',
-          ),
-          const SizedBox(height: 24),
-          _buildSectionTitle('Checklist Operasional'),
-          const SizedBox(height: 16),
-          _buildChecklistItem(
-            label: 'Audit Role Admin',
-            detail: 'Pastikan hanya akun inti yang punya akses ke panel kontrol ini.',
-          ),
-          _buildChecklistItem(
-            label: 'Rotasi Service Key',
-            detail: 'Jadwalkan rotasi kredensial internal sistem per 90 hari.',
-          ),
-          _buildChecklistItem(
-            label: 'Verifikasi Email User',
-            detail: 'Cek user baru yang tertahan karena masalah pengiriman email konfirmasi.',
-          ),
-          const SizedBox(height: 40),
-        ],
+      body: dashboardAsync.when(
+        data: (data) => ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          children: [
+            _buildSummaryCard(data.activeToday, data.totalUsers),
+            const SizedBox(height: 32),
+            _buildSectionTitle('Prioritas Hari Ini'),
+            const SizedBox(height: 16),
+            _buildAlertTile(
+              icon: Icons.group_rounded,
+              iconColor: AppColors.primary,
+              title: '${data.totalUsers} user terdaftar',
+              subtitle: 'Total akun yang saat ini tercatat di sistem.',
+            ),
+            _buildAlertTile(
+              icon: Icons.bolt_rounded,
+              iconColor: const Color(0xFF10B981),
+              title: '${data.activeToday} user aktif hari ini',
+              subtitle: 'Diukur dari aktivitas masuk terbaru pengguna hari ini.',
+            ),
+            _buildAlertTile(
+              icon: Icons.swap_horiz_rounded,
+              iconColor: AppColors.secondary,
+              title: '${data.totalTransactions} transaksi tercatat',
+              subtitle: 'Jumlah transaksi yang sudah tercatat di aplikasi.',
+            ),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Checklist Operasional'),
+            const SizedBox(height: 16),
+            _buildChecklistItem(
+              label: 'Akses admin',
+              detail:
+                  'Panel ini hanya bisa dibuka oleh akun yang memiliki akses admin.',
+            ),
+            _buildChecklistItem(
+              label: 'Household aktif',
+              detail:
+                  '${data.totalHouseholds} household saat ini aktif di aplikasi.',
+            ),
+            _buildChecklistItem(
+              label: 'Aktivitas terbaru',
+              detail:
+                  '${data.activities.length} log terbaru tersedia di menu History untuk audit cepat.',
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) =>
+            Center(child: Text('Gagal memuat ringkasan security: $error')),
       ),
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard(int activeToday, int totalUsers) {
+    final healthText = totalUsers == 0
+        ? 'Belum ada data user untuk dianalisis.'
+        : 'Monitoring aktif. $activeToday dari $totalUsers user terdeteksi aktif hari ini.';
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -98,12 +112,16 @@ class AdminSecurityScreen extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const Icon(Icons.shield_rounded, color: Color(0xFF10B981), size: 24),
+              const Icon(
+                Icons.shield_rounded,
+                color: Color(0xFF10B981),
+                size: 24,
+              ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
-            'Sistem saat ini dalam kondisi optimal. Tidak ada insiden kritis yang memerlukan tindakan segera.',
+            healthText,
             style: GoogleFonts.inter(
               color: const Color(0xFF94A3B8),
               height: 1.6,
@@ -118,7 +136,7 @@ class AdminSecurityScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'Terakhir diperbarui: Baru saja',
+              'Terakhir diperbarui: otomatis',
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 11,
@@ -156,9 +174,7 @@ class AdminSecurityScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -226,7 +242,11 @@ class AdminSecurityScreen extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 18),
+            child: Icon(
+              Icons.check_circle_rounded,
+              color: Color(0xFF10B981),
+              size: 18,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -258,4 +278,3 @@ class AdminSecurityScreen extends StatelessWidget {
     );
   }
 }
-

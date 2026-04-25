@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/auth/domain/models/user_model.dart';
@@ -33,25 +34,25 @@ class AdminProfileScreen extends ConsumerWidget {
           _buildSectionTitle('Manajemen Sistem'),
           const SizedBox(height: 16),
           _buildActionCard(
-            icon: Icons.manage_accounts_rounded,
-            title: 'Kontrol Akses Admin',
+            icon: Icons.person_rounded,
+            title: 'Edit Profil',
             subtitle:
-                'Kelola role, izin khusus, dan verifikasi akun istimewa langsung melalui panel kontrol.',
-            onTap: () {},
+                'Ubah nama dan avatar akun yang sedang dipakai.',
+            onTap: () => context.push('/profile-info'),
           ),
           _buildActionCard(
-            icon: Icons.security_update_good_rounded,
-            title: 'Sesi Aktif',
+            icon: Icons.notifications_active_rounded,
+            title: 'Notifikasi',
             subtitle:
-                'Pantau semua sesi yang sedang berjalan dan lakukan terminasi paksa jika terdeteksi anomali.',
-            onTap: () {},
+                'Lihat notifikasi sistem dan aktivitas akun admin.',
+            onTap: () => context.push('/notifications'),
           ),
           _buildActionCard(
-            icon: Icons.description_rounded,
-            title: 'Laporan Audit',
+            icon: Icons.help_center_rounded,
+            title: 'Pusat Bantuan',
             subtitle:
-                'Unduh dan tinjau log operasional lengkap untuk kepatuhan keamanan data.',
-            onTap: () {},
+                'Buka panduan penggunaan dan catatan penting aplikasi.',
+            onTap: () => context.push('/help-center'),
           ),
           const SizedBox(height: 24),
           _buildSectionTitle('Navigasi Mode'),

@@ -48,7 +48,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(130),
         child: ClipRRect(
@@ -64,15 +64,19 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                     elevation: 0,
                     leading: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.person_outline,
-                          color: AppColors.primary,
-                          size: 18,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: () => context.push('/settings'),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.person_outline_rounded,
+                            color: AppColors.primary,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -128,7 +132,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
               if (filteredTransactions.isEmpty) {
                 return CustomScrollView(
                   slivers: [
-                    const SliverToBoxAdapter(child: SizedBox(height: 130)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
                     SliverToBoxAdapter(
                       child: _buildSummaryBar(currencyFormat, 0, 0),
                     ),
@@ -172,7 +176,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
 
               return CustomScrollView(
                 slivers: [
-                  const SliverToBoxAdapter(child: SizedBox(height: 130)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
                   SliverToBoxAdapter(
                     child: _buildSummaryBar(
                       currencyFormat,

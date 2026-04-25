@@ -1,19 +1,26 @@
+import 'dart:ui';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/admin/domain/models/admin_dashboard_data_model.dart';
+import 'package:ve_wallet/features/admin/presentation/providers/admin_dashboard_provider.dart';
 import 'package:ve_wallet/features/auth/presentation/providers/auth_provider.dart';
-import 'dart:ui';
 
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardAsync = ref.watch(adminDashboardDataProvider);
+    final currentUser = ref.watch(currentUserProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: ClipRRect(
@@ -24,6 +31,21 @@ class AdminDashboardScreen extends ConsumerWidget {
               elevation: 0,
               scrolledUnderElevation: 0,
               centerTitle: true,
+              leading: IconButton(
+                onPressed: () => context.push('/profile-info'),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_outline_rounded,
+                    color: AppColors.primary,
+                    size: 18,
+                  ),
+                ),
+              ),
               title: Text(
                 'Admin Console',
                 style: GoogleFonts.plusJakartaSans(
@@ -34,6 +56,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                 ),
               ),
               actions: [
+                IconButton(
+                  onPressed: () => ref.invalidate(adminDashboardDataProvider),
+                  icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: IconButton(
@@ -46,28 +72,35 @@ class AdminDashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 100),
-            _buildHeroCard(),
-            const SizedBox(height: 24),
-            _buildStatsGrid(),
-            const SizedBox(height: 24),
-            _buildGrowthChart(),
-            const SizedBox(height: 24),
-            _buildActivityLog(),
-            const SizedBox(height: 40),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(adminDashboardDataProvider);
+          await ref.read(adminDashboardDataProvider.future);
+        },
+        child: dashboardAsync.when(
+          data: (data) => ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            children: [
+              const SizedBox(height: 16),
+              _buildHeroCard(currentUser?.fullName ?? 'Admin'),
+              const SizedBox(height: 24),
+              _buildStatsGrid(data),
+              const SizedBox(height: 24),
+              _buildGrowthChart(data.growth),
+              const SizedBox(height: 24),
+              _buildActivityLog(data.activities),
+              const SizedBox(height: 40),
+            ],
+          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => _buildErrorState(error.toString(), ref),
         ),
       ),
     );
   }
 
-  Widget _buildHeroCard() {
+  Widget _buildHeroCard(String adminName) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -90,7 +123,7 @@ class AdminDashboardScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Halo, Admin',
+            'Halo, $adminName',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -100,7 +133,7 @@ class AdminDashboardScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Kelola ekosistem Ve-Wallet dari satu tempat. Pantau pertumbuhan dan aktivitas sistem secara real-time.',
+            'Ringkasan admin di bawah ini menampilkan data terbaru aplikasi secara langsung.',
             style: GoogleFonts.inter(
               color: Colors.white.withValues(alpha: 0.8),
               fontSize: 14,
@@ -112,29 +145,29 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsGrid() {
+  Widget _buildStatsGrid(AdminDashboardDataModel data) {
     final cards = [
       (
         icon: Icons.group_rounded,
-        value: '312',
+        value: data.totalUsers.toString(),
         label: 'Total User',
         color: AppColors.primary,
       ),
       (
         icon: Icons.bolt_rounded,
-        value: '48',
+        value: data.activeToday.toString(),
         label: 'Aktif Hari Ini',
         color: const Color(0xFF10B981),
       ),
       (
         icon: Icons.swap_horiz_rounded,
-        value: '256',
+        value: data.totalTransactions.toString(),
         label: 'Transaksi',
         color: AppColors.secondary,
       ),
       (
         icon: Icons.home_work_rounded,
-        value: '89',
+        value: data.totalHouseholds.toString(),
         label: 'Household',
         color: AppColors.tertiary,
       ),
@@ -207,14 +240,21 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGrowthChart() {
+  Widget _buildGrowthChart(List<AdminGrowthPoint> points) {
+    final maxY = points.isEmpty
+        ? 10.0
+        : points
+                .map((item) => item.value)
+                .reduce((value, element) => value > element ? value : element) +
+            1;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Text(
-            'Pertumbuhan User',
+            'Pertumbuhan User 7 Hari',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -241,9 +281,9 @@ class AdminDashboardScreen extends ConsumerWidget {
           child: LineChart(
             LineChartData(
               minX: 0,
-              maxX: 6,
+              maxX: points.isEmpty ? 6 : (points.length - 1).toDouble(),
               minY: 0,
-              maxY: 9,
+              maxY: maxY,
               gridData: const FlGridData(show: false),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
@@ -255,12 +295,14 @@ class AdminDashboardScreen extends ConsumerWidget {
                     showTitles: true,
                     reservedSize: 30,
                     getTitlesWidget: (value, meta) {
-                      const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-                      if (value.toInt() >= labels.length) return const SizedBox();
+                      final index = value.toInt();
+                      if (index < 0 || index >= points.length) {
+                        return const SizedBox();
+                      }
                       return Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: Text(
-                          labels[value.toInt()],
+                          points[index].label,
                           style: GoogleFonts.inter(
                             fontSize: 10,
                             color: AppColors.outline,
@@ -274,15 +316,10 @@ class AdminDashboardScreen extends ConsumerWidget {
               ),
               lineBarsData: [
                 LineChartBarData(
-                  spots: const [
-                    FlSpot(0, 1.5),
-                    FlSpot(1, 2.4),
-                    FlSpot(2, 2.2),
-                    FlSpot(3, 4.8),
-                    FlSpot(4, 5.1),
-                    FlSpot(5, 6.8),
-                    FlSpot(6, 7.6),
-                  ],
+                  spots: List.generate(
+                    points.length,
+                    (index) => FlSpot(index.toDouble(), points[index].value),
+                  ),
                   isCurved: true,
                   curveSmoothness: 0.35,
                   color: AppColors.primary,
@@ -292,7 +329,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                     show: true,
                     getDotPainter: (spot, percent, barData, index) =>
                         FlDotCirclePainter(
-                      radius: index == 6 ? 6 : 4,
+                      radius: index == points.length - 1 ? 6 : 4,
                       color: Colors.white,
                       strokeColor: AppColors.primary,
                       strokeWidth: 3,
@@ -318,13 +355,7 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityLog() {
-    final logs = [
-      ('User Baru Terdaftar', 'Budi Santoso bergabung di Ve-Wallet', '10:42'),
-      ('Invite Regenerated', 'Kode invite household diperbarui', '09:15'),
-      ('Budget Alert Terkirim', 'Peringatan terkirim ke 14 user', '08:30'),
-    ];
-
+  Widget _buildActivityLog(List<AdminActivityItem> logs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -378,7 +409,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                           ),
                         ),
                         title: Text(
-                          entry.value.$1,
+                          entry.value.title,
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -386,14 +417,14 @@ class AdminDashboardScreen extends ConsumerWidget {
                           ),
                         ),
                         subtitle: Text(
-                          entry.value.$2,
+                          entry.value.description,
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: AppColors.onSurfaceVariant,
                           ),
                         ),
                         trailing: Text(
-                          entry.value.$3,
+                          entry.value.time,
                           style: GoogleFonts.inter(
                             color: AppColors.outline,
                             fontSize: 11,
@@ -411,6 +442,56 @@ class AdminDashboardScreen extends ConsumerWidget {
                   ),
                 )
                 .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(String message, WidgetRef ref) {
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 140),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 42,
+                color: AppColors.error,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Admin dashboard gagal dimuat',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  height: 1.6,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(adminDashboardDataProvider),
+                child: const Text('Coba lagi'),
+              ),
+            ],
           ),
         ),
       ],

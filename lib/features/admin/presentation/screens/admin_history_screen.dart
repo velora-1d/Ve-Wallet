@@ -1,80 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/features/admin/presentation/providers/admin_dashboard_provider.dart';
 
-class AdminHistoryScreen extends StatelessWidget {
+class AdminHistoryScreen extends ConsumerWidget {
   const AdminHistoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final logs = [
-      (
-        title: 'User baru mendaftar',
-        actor: 'user@vewallet.app',
-        time: DateTime.now().subtract(const Duration(minutes: 18)),
-        icon: Icons.person_add_alt_1_rounded,
-        color: AppColors.primary,
-      ),
-      (
-        title: 'Invite code household dibuat ulang',
-        actor: 'mahin@velora.id',
-        time: DateTime.now().subtract(const Duration(hours: 2)),
-        icon: Icons.groups_2_rounded,
-        color: AppColors.secondary,
-      ),
-      (
-        title: 'Admin logout',
-        actor: 'nawawimahinutsman@gmail.com',
-        time: DateTime.now().subtract(const Duration(hours: 5)),
-        icon: Icons.logout_rounded,
-        color: AppColors.error,
-      ),
-      (
-        title: 'Budget diperbarui',
-        actor: 'pak.hakim@example.com',
-        time: DateTime.now().subtract(const Duration(days: 1)),
-        icon: Icons.account_balance_wallet_rounded,
-        color: AppColors.success,
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardAsync = ref.watch(adminDashboardDataProvider);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
           'System History',
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        children: [
-          _buildInfoBanner(),
-          const SizedBox(height: 24),
-          _buildSectionTitle('Log Aktivitas Terbaru'),
-          const SizedBox(height: 16),
-          ...logs.map((log) => _buildLogItem(log)),
-          const SizedBox(height: 40),
-        ],
+      body: dashboardAsync.when(
+        data: (data) => ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          children: [
+            _buildInfoBanner(data.activities.length),
+            const SizedBox(height: 24),
+            _buildSectionTitle('Log Aktivitas Terbaru'),
+            const SizedBox(height: 16),
+            if (data.activities.isEmpty)
+              _buildEmptyState()
+            else
+              ...data.activities.map(_buildLogItem),
+            const SizedBox(height: 40),
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Gagal memuat log: $error')),
       ),
     );
   }
 
-  Widget _buildInfoBanner() {
+  Widget _buildInfoBanner(int totalItems) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -100,7 +75,7 @@ class AdminHistoryScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              'Log operasional terakhir untuk membantu audit cepat tanpa keluar dari panel admin.',
+              '$totalItems aktivitas admin terbaru tersedia di sini untuk audit cepat.',
               style: GoogleFonts.inter(
                 color: AppColors.onSurfaceVariant,
                 fontSize: 13,
@@ -134,9 +109,7 @@ class AdminHistoryScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -146,12 +119,12 @@ class AdminHistoryScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: log.color.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                log.icon,
-                color: log.color,
+              child: const Icon(
+                Icons.bolt_rounded,
+                color: AppColors.primary,
                 size: 22,
               ),
             ),
@@ -170,11 +143,11 @@ class AdminHistoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    log.actor,
+                    log.description,
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -187,7 +160,7 @@ class AdminHistoryScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '${DateFormat('dd MMM yyyy, HH:mm').format(log.time)} WIB',
+                        log.time,
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           color: AppColors.onSurfaceVariant,
@@ -204,5 +177,21 @@ class AdminHistoryScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  Widget _buildEmptyState() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        'Belum ada activity log yang bisa ditampilkan.',
+        style: GoogleFonts.plusJakartaSans(
+          color: AppColors.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}

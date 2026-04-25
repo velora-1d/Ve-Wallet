@@ -183,7 +183,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: _buildAppBar(),
       body: reportAsync.when(
         data: (data) => RefreshIndicator(
@@ -194,7 +194,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Spacing for Extended AppBar
-                const SizedBox(height: 100),
+                const SizedBox(height: 16),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,6 +251,21 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
             backgroundColor: AppColors.background.withValues(alpha: 0.7),
             elevation: 0,
             scrolledUnderElevation: 0,
+            leading: IconButton(
+              onPressed: () => context.push('/settings'),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
+              ),
+            ),
             centerTitle: true,
             title: Text(
               'Laporan Keuangan',

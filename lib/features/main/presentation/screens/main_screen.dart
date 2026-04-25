@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
 import 'package:ve_wallet/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:ve_wallet/features/wallet/presentation/screens/wallet_screen.dart';
-import 'package:ve_wallet/features/transaction/presentation/screens/transaction_screen.dart';
 import 'package:ve_wallet/features/report/presentation/screens/report_screen.dart';
+import 'package:ve_wallet/features/transaction/presentation/screens/transaction_screen.dart';
+import 'package:ve_wallet/features/wallet/presentation/screens/wallet_screen.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   final int initialIndex;
@@ -19,24 +18,38 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   late int _selectedIndex;
+  final List<int> _tabHistory = [];
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const TransactionScreen(),
-    const ReportScreen(),
-    const WalletScreen(),
+  final List<Widget> _screens = const [
+    DashboardScreen(),
+    TransactionScreen(),
+    ReportScreen(),
+    WalletScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    if (_selectedIndex != 0) {
+      _tabHistory.add(0);
+    }
   }
 
   void _onItemTapped(int index) {
+    if (index == _selectedIndex) return;
     setState(() {
+      _tabHistory.add(_selectedIndex);
       _selectedIndex = index;
     });
+  }
+
+  void _handleBackNavigation() {
+    if (_tabHistory.isNotEmpty) {
+      setState(() {
+        _selectedIndex = _tabHistory.removeLast();
+      });
+    }
   }
 
   void _showAddTransaction() {
@@ -45,94 +58,75 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: IndexedStack(index: _selectedIndex, children: _screens),
-      floatingActionButton: Container(
-        height: 64,
-        width: 64,
-        margin: const EdgeInsets.only(top: 10),
-        child: FloatingActionButton(
-          onPressed: _showAddTransaction,
-          backgroundColor: AppColors.primary,
-          elevation: 8,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Container(
-        height: 88,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
+    return PopScope(
+      canPop: _tabHistory.isEmpty,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBackNavigation();
+      },
+      child: Scaffold(
+        extendBody: true,
+        body: IndexedStack(index: _selectedIndex, children: _screens),
+        floatingActionButton: SizedBox(
+          height: 62,
+          width: 62,
+          child: FloatingActionButton(
+            onPressed: _showAddTransaction,
+            backgroundColor: AppColors.primary,
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
-        ),
-        child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, 'assets/icons/3d/money.png', 'Home'),
-              _buildNavItem(1, 'assets/icons/3d/history.png', 'Aktivitas'),
-              const SizedBox(width: 48), // Space for FAB
-              _buildNavItem(2, 'assets/icons/3d/rocket.png', 'Laporan'),
-              _buildNavItem(3, 'assets/icons/3d/card.png', 'Dompet'),
-            ],
+            child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, String imagePath, String label) {
-    final isSelected = _selectedIndex == index;
-    return InkWell(
-      onTap: () => _onItemTapped(index),
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: isSelected ? 1.0 : 0.4,
-              child: Image.asset(
-                imagePath,
-                width: 26,
-                height: 26,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.onSurfaceVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            if (isSelected)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                height: 4,
-                width: 4,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            child: NavigationBar(
+              height: 72,
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              elevation: 0,
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: _onItemTapped,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: 'Home',
                 ),
-              ),
-          ],
+                NavigationDestination(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  selectedIcon: Icon(Icons.receipt_long_rounded),
+                  label: 'Aktivitas',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.insert_chart_outlined_rounded),
+                  selectedIcon: Icon(Icons.insert_chart_rounded),
+                  label: 'Laporan',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.account_balance_wallet_outlined),
+                  selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+                  label: 'Dompet',
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

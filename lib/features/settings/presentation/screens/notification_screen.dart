@@ -1,70 +1,28 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/utils/app_ui.dart';
+import 'package:ve_wallet/features/settings/domain/models/app_notification_model.dart';
+import 'package:ve_wallet/features/settings/presentation/providers/notification_provider.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen>
+class _NotificationScreenState extends ConsumerState<NotificationScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  late List<_NotificationItem> _notifications;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _notifications = [
-      _NotificationItem(
-        icon: Icons.sync_alt,
-        iconColor: AppColors.primary,
-        bgColor: AppColors.primaryFixed,
-        title: 'Transfer berhasil',
-        subtitle:
-            'Pemindahan dana Rp 500.000 berhasil diproses dan saldo wallet diperbarui.',
-        time: 'Baru saja',
-        isUnread: true,
-        accentColor: AppColors.primary,
-      ),
-      _NotificationItem(
-        icon: Icons.warning_amber_rounded,
-        iconColor: AppColors.secondary,
-        bgColor: AppColors.secondaryFixed,
-        title: 'Budget hampir habis',
-        subtitle:
-            'Kategori Makanan sudah mencapai 80% dari limit bulan ini.',
-        time: '2 jam lalu',
-        isUnread: true,
-        accentColor: AppColors.secondary,
-      ),
-      _NotificationItem(
-        icon: Icons.emoji_events_outlined,
-        iconColor: AppColors.tertiary,
-        bgColor: AppColors.tertiaryFixed,
-        title: 'Goal tercapai',
-        subtitle:
-            'Target Liburan Bali berhasil mencapai 100% dari nominal yang ditetapkan.',
-        time: 'Kemarin',
-        isUnread: false,
-        accentColor: AppColors.tertiary,
-      ),
-      _NotificationItem(
-        icon: Icons.info_outline,
-        iconColor: AppColors.outline,
-        bgColor: AppColors.surfaceContainerLow,
-        title: 'Informasi sistem',
-        subtitle:
-            'Backup data rutin berhasil dijalankan tanpa error pada server utama.',
-        time: '2 hari lalu',
-        isUnread: false,
-        accentColor: AppColors.primary,
-      ),
-    ];
   }
 
   @override
@@ -73,92 +31,114 @@ class _NotificationScreenState extends State<NotificationScreen>
     super.dispose();
   }
 
-  void _markAllAsRead() {
-    setState(() {
-      _notifications = _notifications
-          .map((item) => item.copyWith(isUnread: false))
-          .toList();
-    });
+  Future<void> _markAllAsRead() async {
+    await ref.read(notificationControllerProvider.notifier).markAllAsRead();
+    final state = ref.read(notificationControllerProvider);
+    if (!mounted) return;
+
+    if (state.hasError) {
+      AppUI.showError(context, 'Gagal menandai semua notifikasi');
+      return;
+    }
+
+    AppUI.showSuccess(context, 'Semua notifikasi ditandai sudah dibaca');
+  }
+
+  Future<void> _openDetail(AppNotificationModel item) async {
+    if (!item.isRead) {
+      await ref.read(notificationControllerProvider.notifier).markAsRead(item.id);
+    }
+    if (!mounted) return;
+    context.push('/notification-detail', extra: item);
   }
 
   @override
   Widget build(BuildContext context) {
+    final notificationsAsync = ref.watch(notificationsProvider);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: AppColors.background,
-        extendBodyBehindAppBar: true,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight + 48),
-          child: ClipRRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: AppBar(
-                backgroundColor: Colors.white.withValues(alpha: 0.8),
-                elevation: 0,
-                centerTitle: true,
-                title: Text(
-                  'Notifikasi',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: const Color(0xFF1E293B),
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                  ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          title: Text(
+            'Notifikasi',
+            style: GoogleFonts.plusJakartaSans(
+              color: const Color(0xFF1E293B),
+              fontWeight: FontWeight.w800,
+              fontSize: 18,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: _markAllAsRead,
+              child: Text(
+                'Baca Semua',
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: TextButton(
-                      onPressed: _markAllAsRead,
-                      child: Text(
-                        'Baca Semua',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                bottom: TabBar(
-                  controller: _tabController,
-                  labelColor: AppColors.primary,
-                  unselectedLabelColor: const Color(0xFF94A3B8),
-                  indicatorColor: AppColors.primary,
-                  indicatorWeight: 3,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  labelStyle: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                  ),
-                  unselectedLabelStyle: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                  tabs: const [
-                    Tab(text: 'Semua'),
-                    Tab(text: 'Penting'),
-                  ],
-                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          bottom: TabBar(
+            controller: _tabController,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: const Color(0xFF94A3B8),
+            indicatorColor: AppColors.primary,
+            labelStyle: GoogleFonts.plusJakartaSans(
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+            ),
+            tabs: const [
+              Tab(text: 'Semua'),
+              Tab(text: 'Belum Dibaca'),
+            ],
+          ),
+        ),
+        body: notificationsAsync.when(
+          data: (items) {
+            final unreadItems = items.where((item) => !item.isRead).toList();
+            return TabBarView(
+              controller: _tabController,
+              children: [
+                _NotificationList(items: items, onTap: _openDetail),
+                _NotificationList(items: unreadItems, onTap: _openDetail),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Gagal memuat notifikasi: $error',
+                textAlign: TextAlign.center,
               ),
             ),
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildNotificationList(_notifications),
-            _buildNotificationList(
-              _notifications.where((item) => item.isUnread).toList(),
-            ),
-          ],
-        ),
       ),
     );
   }
+}
 
-  Widget _buildNotificationList(List<_NotificationItem> items) {
+class _NotificationList extends StatelessWidget {
+  final List<AppNotificationModel> items;
+  final ValueChanged<AppNotificationModel> onTap;
+
+  const _NotificationList({
+    required this.items,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (items.isEmpty) {
       return Center(
         child: Column(
@@ -166,8 +146,8 @@ class _NotificationScreenState extends State<NotificationScreen>
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -187,7 +167,8 @@ class _NotificationScreenState extends State<NotificationScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Semua update akun akan muncul di sini',
+              'Notifikasi dari sistem dan aktivitas akun akan muncul di sini',
+              textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 color: const Color(0xFF64748B),
                 fontSize: 13,
@@ -200,23 +181,15 @@ class _NotificationScreenState extends State<NotificationScreen>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: kToolbarHeight + 64, left: 16, right: 16, bottom: 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
+        final theme = _notificationTheme(item.type);
+
         return InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            setState(() {
-              _notifications = _notifications
-                  .map(
-                    (entry) => entry.title == item.title
-                        ? entry.copyWith(isUnread: false)
-                        : entry,
-                  )
-                  .toList();
-            });
-          },
+          onTap: () => onTap(item),
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(20),
@@ -231,10 +204,10 @@ class _NotificationScreenState extends State<NotificationScreen>
                 ),
               ],
               border: Border.all(
-                color: item.isUnread
-                    ? item.accentColor.withValues(alpha: 0.2)
-                    : const Color(0xFFF1F5F9),
-                width: item.isUnread ? 1.5 : 1,
+                color: item.isRead
+                    ? const Color(0xFFF1F5F9)
+                    : theme.color.withValues(alpha: 0.2),
+                width: item.isRead ? 1 : 1.5,
               ),
             ),
             child: Row(
@@ -244,10 +217,10 @@ class _NotificationScreenState extends State<NotificationScreen>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: item.bgColor.withValues(alpha: 0.1),
+                    color: theme.color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(item.icon, color: item.iconColor, size: 22),
+                  child: Icon(theme.icon, color: theme.color, size: 22),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -255,19 +228,23 @@ class _NotificationScreenState extends State<NotificationScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               item.title,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 14,
-                                fontWeight: item.isUnread ? FontWeight.w800 : FontWeight.w700,
+                                fontWeight: item.isRead
+                                    ? FontWeight.w700
+                                    : FontWeight.w800,
                                 color: const Color(0xFF1E293B),
                               ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Text(
-                            item.time,
+                            _relativeTime(item.sentAt ?? item.createdAt),
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
                               color: const Color(0xFF94A3B8),
@@ -278,7 +255,9 @@ class _NotificationScreenState extends State<NotificationScreen>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        item.subtitle,
+                        item.body,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           color: const Color(0xFF64748B),
@@ -289,22 +268,15 @@ class _NotificationScreenState extends State<NotificationScreen>
                     ],
                   ),
                 ),
-                if (item.isUnread) ...[
+                if (!item.isRead) ...[
                   const SizedBox(width: 12),
                   Container(
                     width: 8,
                     height: 8,
                     margin: const EdgeInsets.only(top: 6),
                     decoration: BoxDecoration(
-                      color: item.accentColor,
+                      color: theme.color,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: item.accentColor.withValues(alpha: 0.4),
-                          blurRadius: 6,
-                          spreadRadius: 2,
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -317,37 +289,139 @@ class _NotificationScreenState extends State<NotificationScreen>
   }
 }
 
-class _NotificationItem {
-  final IconData icon;
-  final Color iconColor;
-  final Color bgColor;
-  final String title;
-  final String subtitle;
-  final String time;
-  final bool isUnread;
-  final Color accentColor;
+class NotificationDetailScreen extends ConsumerWidget {
+  final AppNotificationModel notification;
 
-  const _NotificationItem({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.title,
-    required this.subtitle,
-    required this.time,
-    required this.isUnread,
-    required this.accentColor,
+  const NotificationDetailScreen({
+    super.key,
+    required this.notification,
   });
 
-  _NotificationItem copyWith({bool? isUnread}) {
-    return _NotificationItem(
-      icon: icon,
-      iconColor: iconColor,
-      bgColor: bgColor,
-      title: title,
-      subtitle: subtitle,
-      time: time,
-      isUnread: isUnread ?? this.isUnread,
-      accentColor: accentColor,
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = _notificationTheme(notification.type);
+    final timestamp = notification.sentAt ?? notification.createdAt;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Detail Notifikasi',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF1E293B),
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: theme.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(theme.icon, color: theme.color, size: 28),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  notification.title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(timestamp),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  notification.body,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    height: 1.7,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
+}
+
+_NotificationTheme _notificationTheme(String type) {
+  switch (type) {
+    case 'transaction':
+      return const _NotificationTheme(
+        icon: Icons.swap_horiz_rounded,
+        color: AppColors.primary,
+      );
+    case 'budget':
+      return const _NotificationTheme(
+        icon: Icons.account_balance_wallet_rounded,
+        color: AppColors.secondary,
+      );
+    case 'goal':
+      return const _NotificationTheme(
+        icon: Icons.emoji_events_rounded,
+        color: AppColors.tertiary,
+      );
+    default:
+      return const _NotificationTheme(
+        icon: Icons.info_outline_rounded,
+        color: Color(0xFF64748B),
+      );
+  }
+}
+
+String _relativeTime(DateTime date) {
+  final now = DateTime.now();
+  final diff = now.difference(date);
+  if (diff.inMinutes < 1) return 'Baru saja';
+  if (diff.inMinutes < 60) return '${diff.inMinutes} mnt';
+  if (diff.inHours < 24) return '${diff.inHours} jam';
+  if (diff.inDays == 1) return 'Kemarin';
+  return '${diff.inDays} hari';
+}
+
+class _NotificationTheme {
+  final IconData icon;
+  final Color color;
+
+  const _NotificationTheme({
+    required this.icon,
+    required this.color,
+  });
 }
