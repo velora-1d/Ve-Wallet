@@ -22,5 +22,5 @@ select public.demote_user_from_admin('email-admin@domain.com');
 
 ## Catatan
 
-- Email `nawawimahinutsman@gmail.com` tetap dipertahankan sebagai admin default agar kompatibel dengan setup lama.
+- Migration ini sengaja tidak mengandung email admin hardcoded agar aman dipush ke repo.
 - Kalau akun hanya ada di tabel `profiles` tapi belum ada di `Auth > Users`, akun itu tetap tidak bisa login.
