@@ -45,7 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
 
       if (user != null && mounted) {
-        context.go('/dashboard');
+        context.go(user.role == 'admin' ? '/admin' : '/dashboard');
       }
     } on AuthException catch (e) {
       if (!mounted) return;
