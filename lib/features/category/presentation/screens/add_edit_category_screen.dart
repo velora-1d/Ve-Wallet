@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/design/app_components.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/features/category/domain/models/category_model.dart';
@@ -20,7 +21,8 @@ class AddEditCategoryScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddEditCategoryScreen> createState() => _AddEditCategoryScreenState();
+  ConsumerState<AddEditCategoryScreen> createState() =>
+      _AddEditCategoryScreenState();
 }
 
 class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
@@ -33,11 +35,16 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialCategory?.name ?? '');
-    _type = widget.initialCategory?.type ?? widget.initialType ?? TransactionType.expense;
+    _nameController = TextEditingController(
+      text: widget.initialCategory?.name ?? '',
+    );
+    _type =
+        widget.initialCategory?.type ??
+        widget.initialType ??
+        TransactionType.expense;
     _selectedIcon = widget.initialCategory?.icon ?? 'restaurant';
-    _selectedColor = widget.initialCategory != null 
-        ? Color(widget.initialCategory!.color) 
+    _selectedColor = widget.initialCategory != null
+        ? Color(widget.initialCategory!.color)
         : CategoryUtils.categoryColors[0];
   }
 
@@ -62,9 +69,13 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
 
     try {
       if (widget.isEdit) {
-        await ref.read(categoryControllerProvider.notifier).updateCategory(category);
+        await ref
+            .read(categoryControllerProvider.notifier)
+            .updateCategory(category);
       } else {
-        await ref.read(categoryControllerProvider.notifier).addCategory(category);
+        await ref
+            .read(categoryControllerProvider.notifier)
+            .addCategory(category);
       }
     } catch (e) {
       if (!mounted) return;
@@ -75,7 +86,9 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
     if (!mounted) return;
     AppUI.showSuccess(
       context,
-      widget.isEdit ? 'Kategori berhasil diperbarui' : 'Kategori berhasil ditambahkan',
+      widget.isEdit
+          ? 'Kategori berhasil diperbarui'
+          : 'Kategori berhasil ditambahkan',
     );
     Navigator.pop(context);
   }
@@ -90,7 +103,10 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text('Simpan', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Simpan',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -118,20 +134,17 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
               ),
               const SizedBox(height: 32),
 
-              const Text('Nama Kategori', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Nama Kategori',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              TextFormField(
+              AppTextField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Contoh: Makan Siang',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                validator: (value) => value == null || value.isEmpty ? 'Nama tidak boleh kosong' : null,
+                hintText: 'Contoh: Makan Siang',
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Nama tidak boleh kosong'
+                    : null,
               ),
               const SizedBox(height: 24),
 
@@ -143,7 +156,8 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
                     child: _TypeButton(
                       label: 'Pengeluaran',
                       isSelected: _type == TransactionType.expense,
-                      onTap: () => setState(() => _type = TransactionType.expense),
+                      onTap: () =>
+                          setState(() => _type = TransactionType.expense),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -151,7 +165,8 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
                     child: _TypeButton(
                       label: 'Pemasukan',
                       isSelected: _type == TransactionType.income,
-                      onTap: () => setState(() => _type = TransactionType.income),
+                      onTap: () =>
+                          setState(() => _type = TransactionType.income),
                     ),
                   ),
                 ],
@@ -170,7 +185,9 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
                 ),
                 itemCount: CategoryUtils.categoryIcons.length,
                 itemBuilder: (context, index) {
-                  final iconName = CategoryUtils.categoryIcons.keys.elementAt(index);
+                  final iconName = CategoryUtils.categoryIcons.keys.elementAt(
+                    index,
+                  );
                   final isSelected = _selectedIcon == iconName;
                   return InkWell(
                     onTap: () => setState(() => _selectedIcon = iconName),
@@ -179,11 +196,15 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.primary : Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: isSelected ? null : Border.all(color: AppColors.outlineVariant),
+                        border: isSelected
+                            ? null
+                            : Border.all(color: AppColors.outlineVariant),
                       ),
                       child: Icon(
                         CategoryUtils.categoryIcons[iconName],
-                        color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+                        color: isSelected
+                            ? Colors.white
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   );
@@ -191,7 +212,10 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
               ),
               const SizedBox(height: 24),
 
-              const Text('Warna', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Warna',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
               GridView.builder(
                 shrinkWrap: true,
@@ -212,16 +236,26 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
                       decoration: BoxDecoration(
                         color: color,
                         shape: BoxShape.circle,
-                        border: isSelected ? Border.all(color: Colors.white, width: 3) : null,
-                        boxShadow: isSelected ? [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.4),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          )
-                        ] : null,
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 3)
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ]
+                            : null,
                       ),
-                      child: isSelected ? const Icon(Icons.check, color: Colors.white, size: 16) : null,
+                      child: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 16,
+                            )
+                          : null,
                     ),
                   );
                 },
@@ -256,7 +290,9 @@ class _TypeButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? null : Border.all(color: AppColors.outlineVariant),
+          border: isSelected
+              ? null
+              : Border.all(color: AppColors.outlineVariant),
         ),
         alignment: Alignment.center,
         child: Text(

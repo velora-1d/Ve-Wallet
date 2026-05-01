@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/design/app_components.dart';
 import 'package:ve_wallet/core/utils/currency_formatter.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/features/budget/presentation/providers/budget_provider.dart';
@@ -31,10 +32,8 @@ class WalletScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
       extendBodyBehindAppBar: false,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
+      appBar: StandardAppBar(
+        title: 'Dompet Saya',
         leading: GestureDetector(
           onTap: () => context.push('/settings'),
           child: Padding(
@@ -53,16 +52,7 @@ class WalletScreen extends ConsumerWidget {
             ),
           ),
         ),
-        centerTitle: true,
-        title: Text(
-          'Dompet Saya',
-          style: GoogleFonts.plusJakartaSans(
-            color: AppColors.onSurface,
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
-            letterSpacing: -0.5,
-          ),
-        ),
+        onLeadingTap: () => context.push('/settings'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -150,8 +140,11 @@ class WalletScreen extends ConsumerWidget {
 
             walletsAsync.when(
               data: (wallets) => _buildWalletCards(context, wallets),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              loading: () => const AppLoadingState(message: 'Memuat dompet...'),
+              error: (err, stack) => AppErrorState(
+                message: 'Gagal memuat dompet: $err',
+                onRetry: () => ref.invalidate(walletsStreamProvider),
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -160,8 +153,16 @@ class WalletScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             budgetsAsync.when(
               data: (budgets) => _buildBudgetSummary(context, budgets),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              loading: () =>
+                  const AppLoadingState(message: 'Memuat anggaran...'),
+              error: (err, stack) => AppErrorState(
+                message: 'Gagal memuat anggaran: $err',
+                onRetry: () => ref.invalidate(
+                  budgetsStreamProvider(
+                    DateTime(DateTime.now().year, DateTime.now().month),
+                  ),
+                ),
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -170,8 +171,12 @@ class WalletScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             goalsAsync.when(
               data: (goals) => _buildGoalsSummary(context, goals),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              loading: () =>
+                  const AppLoadingState(message: 'Memuat target tabungan...'),
+              error: (err, stack) => AppErrorState(
+                message: 'Gagal memuat target tabungan: $err',
+                onRetry: () => ref.invalidate(goalsStreamProvider),
+              ),
             ),
 
             const SizedBox(height: 100), // Bottom padding for navbar
@@ -202,6 +207,21 @@ class WalletScreen extends ConsumerWidget {
   }
 
   Widget _buildWalletCards(BuildContext context, List<dynamic> wallets) {
+    if (wallets.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: EmptyStateCard(
+          title: 'Belum ada dompet',
+          description:
+              'Tambahkan dompet pertama Anda untuk mulai mencatat keuangan.',
+          buttonLabel: 'Tambah Dompet',
+          onAction: () => context.push('/add-wallet'),
+          icon: Icons.account_balance_wallet_outlined,
+          iconColor: AppColors.primary,
+        ),
+      );
+    }
+
     return SizedBox(
       height: 180,
       child: ListView.separated(

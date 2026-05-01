@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/design/app_components.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/category_utils.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
@@ -59,9 +60,8 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
+                  StandardAppBar(
+                    title: 'Riwayat Transaksi',
                     leading: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: InkWell(
@@ -80,16 +80,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                         ),
                       ),
                     ),
-                    centerTitle: true,
-                    title: Text(
-                      'Riwayat Transaksi',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.onSurface,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
+                    onLeadingTap: () => context.push('/settings'),
                     actions: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -97,11 +88,15 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                           icon: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                              color: AppColors.surfaceContainerHigh.withValues(
+                                alpha: 0.5,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              _searchQuery.isEmpty ? Icons.search_rounded : Icons.close_rounded,
+                              _searchQuery.isEmpty
+                                  ? Icons.search_rounded
+                                  : Icons.close_rounded,
                               color: AppColors.onSurfaceVariant,
                               size: 20,
                             ),
@@ -136,14 +131,21 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                     SliverToBoxAdapter(
                       child: _buildSummaryBar(currencyFormat, 0, 0),
                     ),
-                    const SliverFillRemaining(
-                      child: Center(
-                        child: Text(
-                          'Belum ada transaksi yang cocok.',
-                          style: TextStyle(
-                            color: AppColors.outline,
-                            fontSize: 16,
-                          ),
+                    SliverFillRemaining(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: EmptyStateCard(
+                          title: 'Belum ada transaksi',
+                          description:
+                              _searchQuery.isNotEmpty ||
+                                  _selectedCategoryIds.isNotEmpty ||
+                                  _selectedWalletIds.isNotEmpty
+                              ? 'Tidak ada transaksi yang cocok dengan filter yang dipilih.'
+                              : 'Mulai catat transaksi pertama Anda untuk melihat riwayat keuangan.',
+                          buttonLabel: 'Tambah Transaksi',
+                          onAction: () => context.push('/add-transaction'),
+                          icon: Icons.receipt_long_outlined,
+                          iconColor: AppColors.primary,
                         ),
                       ),
                     ),
@@ -269,16 +271,24 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                 ],
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) =>
-                Center(child: Text('Gagal memuat transaksi: $err')),
+            loading: () =>
+                const AppLoadingState(message: 'Memuat transaksi...'),
+            error: (err, stack) => AppErrorState(
+              message: 'Gagal memuat transaksi: $err',
+              onRetry: () => ref.invalidate(transactionsStreamProvider(null)),
+            ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) =>
-              Center(child: Text('Gagal memuat kategori: $err')),
+          loading: () => const AppLoadingState(message: 'Memuat kategori...'),
+          error: (err, stack) => AppErrorState(
+            message: 'Gagal memuat kategori: $err',
+            onRetry: () => ref.invalidate(categoriesStreamProvider(null)),
+          ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Gagal memuat dompet: $err')),
+        loading: () => const AppLoadingState(message: 'Memuat dompet...'),
+        error: (err, stack) => AppErrorState(
+          message: 'Gagal memuat dompet: $err',
+          onRetry: () => ref.invalidate(walletsStreamProvider),
+        ),
       ),
     );
   }
@@ -384,52 +394,101 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     List<CategoryModel> categories,
     List<WalletModel> wallets,
   ) {
+    final hasActiveFilters =
+        _selectedPeriod != TransactionPeriodFilter.month ||
+        _selectedType != TransactionTypeFilter.all ||
+        _selectedCategoryIds.isNotEmpty ||
+        _selectedWalletIds.isNotEmpty ||
+        _searchQuery.isNotEmpty;
+
     return Container(
       height: 50,
       width: double.infinity,
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.transparent)),
       ),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
         children: [
-          _buildFilterChip(
-            _periodLabel(_selectedPeriod),
-            isActive: _selectedPeriod != TransactionPeriodFilter.month,
-            onTap: () => _showPeriodSheet(context),
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              children: [
+                _buildFilterChip(
+                  _periodLabel(_selectedPeriod),
+                  isActive: _selectedPeriod != TransactionPeriodFilter.month,
+                  onTap: () => _showPeriodSheet(context),
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  _typeLabel(_selectedType),
+                  isActive: _selectedType != TransactionTypeFilter.all,
+                  onTap: () => _showTypeSheet(context),
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  'Kategori',
+                  isActive: _selectedCategoryIds.isNotEmpty,
+                  onTap: () => _showCategorySheet(context, categories),
+                  badgeCount: _selectedCategoryIds.isNotEmpty
+                      ? _selectedCategoryIds.length
+                      : null,
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  'Dompet',
+                  isActive: _selectedWalletIds.isNotEmpty,
+                  onTap: () => _showWalletSheet(context, wallets),
+                  badgeCount: _selectedWalletIds.isNotEmpty
+                      ? _selectedWalletIds.length
+                      : null,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(width: 8),
-          _buildFilterChip(
-            _typeLabel(_selectedType),
-            isActive: _selectedType != TransactionTypeFilter.all,
-            onTap: () => _showTypeSheet(context),
-          ),
-          const SizedBox(width: 8),
-          _buildFilterChip(
-            _selectedCategoryIds.isEmpty
-                ? 'Kategori'
-                : '${_selectedCategoryIds.length} kategori',
-            isActive: _selectedCategoryIds.isNotEmpty,
-            onTap: () => _showCategorySheet(context, categories),
-          ),
-          const SizedBox(width: 8),
-          _buildFilterChip(
-            _selectedWalletIds.isEmpty
-                ? 'Dompet'
-                : '${_selectedWalletIds.length} dompet',
-            isActive: _selectedWalletIds.isNotEmpty,
-            onTap: () => _showWalletSheet(context, wallets),
-          ),
+          if (hasActiveFilters)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: TextButton(
+                onPressed: _resetAllFilters,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Reset',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  void _resetAllFilters() {
+    setState(() {
+      _selectedPeriod = TransactionPeriodFilter.month;
+      _selectedType = TransactionTypeFilter.all;
+      _selectedCategoryIds.clear();
+      _selectedWalletIds.clear();
+      _searchQuery = '';
+    });
   }
 
   Widget _buildFilterChip(
     String label, {
     required bool isActive,
     required VoidCallback onTap,
+    int? badgeCount,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -440,7 +499,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
           color: isActive ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isActive ? AppColors.primary : AppColors.outlineVariant.withValues(alpha: 0.5),
+            color: isActive
+                ? AppColors.primary
+                : AppColors.outlineVariant.withValues(alpha: 0.5),
             width: 1,
           ),
           boxShadow: isActive
@@ -449,7 +510,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                     color: AppColors.primary.withValues(alpha: 0.25),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : [],
         ),
@@ -464,11 +525,33 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                 fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
               ),
             ),
+            if (badgeCount != null && badgeCount > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badgeCount.toString(),
+                  style: GoogleFonts.plusJakartaSans(
+                    color: isActive ? Colors.white : AppColors.primary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(width: 6),
             Icon(
               Icons.expand_more_rounded,
               size: 16,
-              color: isActive ? Colors.white : AppColors.onSurfaceVariant.withValues(alpha: 0.6),
+              color: isActive
+                  ? Colors.white
+                  : AppColors.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -772,7 +855,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                             'Pemasukan',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: AppColors.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -837,7 +922,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                             'Pengeluaran',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: AppColors.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -876,7 +963,12 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, right: 4, top: 24, bottom: 12),
+          padding: const EdgeInsets.only(
+            left: 4,
+            right: 4,
+            top: 24,
+            bottom: 12,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -928,7 +1020,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                         height: 1,
                         thickness: 0.5,
                         indent: 56,
-                        color: AppColors.surfaceContainerHigh.withValues(alpha: 0.8),
+                        color: AppColors.surfaceContainerHigh.withValues(
+                          alpha: 0.8,
+                        ),
                       ),
                     ),
                 ],

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/design/app_components.dart';
 import 'package:ve_wallet/core/utils/currency_formatter.dart';
 import 'package:ve_wallet/core/widgets/app_skeleton.dart';
 import 'package:ve_wallet/features/dashboard/domain/models/dashboard_data_model.dart';
@@ -20,12 +21,11 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.push('/settings'),
-          icon: Container(
+      appBar: StandardAppBar(
+        title: 'Dashboard',
+        leading: GestureDetector(
+          onTap: () => context.push('/settings'),
+          child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
@@ -38,15 +38,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
-        centerTitle: true,
-        title: Text(
-          'Dashboard',
-          style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF0F172A),
-            fontWeight: FontWeight.w800,
-            fontSize: 18,
-          ),
-        ),
+        onLeadingTap: () => context.push('/settings'),
         actions: [
           IconButton(
             onPressed: () => ref.invalidate(dashboardDataProvider),
@@ -255,10 +247,7 @@ class _HeroCard extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  const _HeroCard({
-    required this.title,
-    required this.subtitle,
-  });
+  const _HeroCard({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -484,9 +473,15 @@ class _ExpenseChartCard extends StatelessWidget {
           borderData: FlBorderData(show: false),
           gridData: const FlGridData(show: false),
           titlesData: FlTitlesData(
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -495,7 +490,15 @@ class _ExpenseChartCard extends StatelessWidget {
                   if (index < 0 || index >= chartPoints.length) {
                     return const SizedBox.shrink();
                   }
-                  final labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+                  final labels = [
+                    'Sen',
+                    'Sel',
+                    'Rab',
+                    'Kam',
+                    'Jum',
+                    'Sab',
+                    'Min',
+                  ];
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
@@ -550,7 +553,8 @@ class _GoalsCard extends StatelessWidget {
     if (goals.isEmpty) {
       return const _SimpleEmptyCard(
         title: 'Belum ada target tabungan',
-        description: 'Tambahkan goals supaya progres tabungan bisa tampil di dashboard.',
+        description:
+            'Tambahkan goals supaya progres tabungan bisa tampil di dashboard.',
       );
     }
 
@@ -580,7 +584,9 @@ class _GoalsCard extends StatelessWidget {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: _parseHexColor(goal.colorHex).withValues(alpha: 0.12),
+                          color: _parseHexColor(
+                            goal.colorHex,
+                          ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
@@ -712,7 +718,8 @@ class _RecentTransactionsCard extends StatelessWidget {
     if (transactions.isEmpty) {
       return const _SimpleEmptyCard(
         title: 'Belum ada transaksi',
-        description: 'Saat transaksi pertama masuk, daftar terbaru akan tampil di sini.',
+        description:
+            'Saat transaksi pertama masuk, daftar terbaru akan tampil di sini.',
       );
     }
 
@@ -734,13 +741,13 @@ class _RecentTransactionsCard extends StatelessWidget {
           final accent = tx.isIncome
               ? const Color(0xFF16A34A)
               : tx.isTransfer
-                  ? AppColors.primary
-                  : const Color(0xFFDC2626);
+              ? AppColors.primary
+              : const Color(0xFFDC2626);
           final icon = tx.isIncome
               ? Icons.south_west_rounded
               : tx.isTransfer
-                  ? Icons.swap_horiz_rounded
-                  : Icons.north_east_rounded;
+              ? Icons.swap_horiz_rounded
+              : Icons.north_east_rounded;
 
           return Column(
             children: [
@@ -837,10 +844,7 @@ class _SimpleEmptyCard extends StatelessWidget {
   final String title;
   final String description;
 
-  const _SimpleEmptyCard({
-    required this.title,
-    required this.description,
-  });
+  const _SimpleEmptyCard({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -854,11 +858,7 @@ class _SimpleEmptyCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.inbox_outlined,
-            size: 28,
-            color: Color(0xFF94A3B8),
-          ),
+          const Icon(Icons.inbox_outlined, size: 28, color: Color(0xFF94A3B8)),
           const SizedBox(height: 10),
           Text(
             title,
@@ -965,9 +965,7 @@ class _EmptyStateCard extends StatelessWidget {
               ),
               child: Text(
                 buttonLabel,
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w800,
-                ),
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
               ),
             ),
           ),
@@ -981,10 +979,7 @@ class _DashboardError extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _DashboardError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _DashboardError({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -1040,9 +1035,11 @@ class _DashboardError extends StatelessWidget {
 
 String _formatDate(DateTime date) {
   final now = DateTime.now();
-  final diff = DateTime(now.year, now.month, now.day).difference(
-    DateTime(date.year, date.month, date.day),
-  );
+  final diff = DateTime(
+    now.year,
+    now.month,
+    now.day,
+  ).difference(DateTime(date.year, date.month, date.day));
 
   if (diff.inDays == 0) return 'Hari ini';
   if (diff.inDays == 1) return 'Kemarin';

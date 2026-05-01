@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ve_wallet/core/constants/app_colors.dart';
+import 'package:ve_wallet/core/design/app_components.dart';
 import 'package:ve_wallet/core/utils/wallet_icon_utils.dart';
 import 'package:ve_wallet/core/utils/app_ui.dart';
 import 'package:ve_wallet/core/utils/nominal_input_formatter.dart';
@@ -98,11 +99,14 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
       try {
         final user = ref.read(currentUserProvider);
         if (user == null) throw Exception('User not logged in');
-        final currentHousehold = await ref.read(
-          sharedAccountRepositoryProvider,
-        ).getCurrentHousehold();
+
+        final currentHousehold = await ref
+            .read(sharedAccountRepositoryProvider)
+            .getCurrentHousehold();
         if (currentHousehold == null) {
-          throw Exception('Buat atau gabung shared account dulu sebelum menambah dompet');
+          throw Exception(
+            'Buat atau gabung shared account dulu sebelum menambah dompet',
+          );
         }
 
         final walletRepo = ref.read(walletRepositoryProvider);
@@ -131,6 +135,8 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
               : DateTime.now(),
         );
 
+        // Debug logging removed - wallet save initiated
+
         if (widget.isEdit) {
           await walletRepo.updateWallet(wallet);
         } else {
@@ -138,6 +144,7 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         }
 
         if (mounted) {
+          AppUI.showSuccess(context, 'Dompet berhasil disimpan');
           context.pop();
         }
       } catch (e) {
@@ -160,7 +167,11 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E293B), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Color(0xFF1E293B),
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         centerTitle: true,
@@ -228,37 +239,12 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
               // Name Input
               _buildSectionTitle('Nama Dompet'),
               const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: _nameController,
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
-                  decoration: InputDecoration(
-                    hintText: 'Contoh: Tabungan Utama',
-                    hintStyle: GoogleFonts.plusJakartaSans(
-                      color: const Color(0xFF94A3B8),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
-                    ),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Nama tidak boleh kosong' : null,
-                  onChanged: (val) => setState(() {}),
-                ),
+              AppTextField(
+                controller: _nameController,
+                hintText: 'Contoh: Tabungan Utama',
+                validator: (value) =>
+                    value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                onChanged: (val) => setState(() {}),
               ),
               const SizedBox(height: 24),
 
@@ -327,7 +313,10 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                       onTap: () => setState(() => _selectedType = type['name']),
                       child: Container(
                         margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF0F172A)
@@ -335,9 +324,11 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
-                              color: isSelected 
-                                ? const Color(0xFF0F172A).withValues(alpha: 0.2)
-                                : Colors.black.withValues(alpha: 0.02),
+                              color: isSelected
+                                  ? const Color(
+                                      0xFF0F172A,
+                                    ).withValues(alpha: 0.2)
+                                  : Colors.black.withValues(alpha: 0.02),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -348,7 +339,9 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                             Icon(
                               type['icon'],
                               size: 18,
-                              color: isSelected ? Colors.white : const Color(0xFF64748B),
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF64748B),
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -356,7 +349,9 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -465,10 +460,7 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            _selectedColor,
-            _selectedColor.withValues(alpha: 0.8),
-          ],
+          colors: [_selectedColor, _selectedColor.withValues(alpha: 0.8)],
         ),
         boxShadow: [
           BoxShadow(
@@ -517,7 +509,10 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
@@ -536,7 +531,9 @@ class _AddEditWalletScreenState extends ConsumerState<AddEditWalletScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    _nameController.text.isEmpty ? 'NAMA DOMPET' : _nameController.text.toUpperCase(),
+                    _nameController.text.isEmpty
+                        ? 'NAMA DOMPET'
+                        : _nameController.text.toUpperCase(),
                     style: GoogleFonts.plusJakartaSans(
                       color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 11,
