@@ -365,28 +365,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
+        color: AppColors.inputText, // WAJIB HITAM - Fixed per request user
       ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: GoogleFonts.plusJakartaSans(
-          color: const Color(0xFF94A3B8),
+          color: AppColors.inputHint,
           fontWeight: FontWeight.w500,
         ),
         prefixIcon: Icon(prefixIcon, color: AppColors.primary),
         filled: true,
-        fillColor: const Color(0xFFF8FAFF),
+        fillColor: AppColors.inputBackground, // Background putih bersih
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFD9E3FF)),
+          borderSide: const BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(
-            color: AppColors.primary,
+            color: AppColors.inputBorderFocused,
             width: 1.4,
           ),
         ),
@@ -401,11 +402,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
+        color: AppColors.inputText, // WAJIB HITAM - Fixed per request user
       ),
       decoration: InputDecoration(
         hintText: 'Masukkan password',
         hintStyle: GoogleFonts.plusJakartaSans(
-          color: const Color(0xFF94A3B8),
+          color: AppColors.inputHint,
           fontWeight: FontWeight.w500,
         ),
         prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary),
@@ -414,26 +416,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             _isPasswordVisible
                 ? Icons.visibility_off_rounded
                 : Icons.visibility_rounded,
-            color: const Color(0xFF64748B),
+            color: AppColors.textSecondary,
           ),
           onPressed: () {
             setState(() => _isPasswordVisible = !_isPasswordVisible);
           },
         ),
         filled: true,
-        fillColor: const Color(0xFFF8FAFF),
+        fillColor: AppColors.inputBackground, // Background putih bersih
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFD9E3FF)),
+          borderSide: const BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(
-            color: AppColors.primary,
+            color: AppColors.inputBorderFocused,
             width: 1.4,
           ),
         ),
