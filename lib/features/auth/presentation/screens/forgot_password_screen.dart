@@ -161,12 +161,34 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                               TextField(
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  color: AppColors.inputText, // WAJIB HITAM - Fixed per request user
+                                  fontWeight: FontWeight.w600,
+                                ),
                                 decoration: InputDecoration(
                                   hintText: 'nama@email.com',
+                                  hintStyle: TextStyle(color: AppColors.inputHint),
                                   labelText: 'Email',
-                                  prefixIcon: const Icon(Icons.mail_outline),
+                                  labelStyle: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  prefixIcon: const Icon(Icons.mail_outline, color: AppColors.primary),
+                                  filled: true,
+                                  fillColor: AppColors.inputBackground, // Background putih bersih
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(color: AppColors.inputBorder),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.inputBorderFocused,
+                                      width: 1.4,
+                                    ),
                                   ),
                                 ),
                               ),
