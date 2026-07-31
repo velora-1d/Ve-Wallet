@@ -78,7 +78,7 @@ class GetStartedScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _FeatureCard(
-                  icon: PersonAddIcon(),
+                  icon: Icons.person_add_rounded,
                   title: 'Gabung dengan Kode',
                   description: 'Masuk ke household yang sudah ada menggunakan kode undangan.',
                 ),
@@ -221,6 +221,3 @@ class _FeatureCard extends StatelessWidget {
   }
 }
 
-class PersonAddIcon extends IconData {
-  const PersonAddIcon() : super(0xe7fd, fontFamily: 'MaterialIcons');
-}
