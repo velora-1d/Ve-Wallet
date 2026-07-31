@@ -135,7 +135,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (user != null && mounted) {
         AppUI.showSnack(
           context,
-          'Registrasi berhasil. Setelah login, kamu bisa buat shared account atau gabung pakai kode invite.',
+          'Registrasi berhasil. Silakan masuk dengan akun Anda.',
           type: SnackType.success,
         );
         context.go('/login');
@@ -166,31 +166,189 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final strength = _passwordStrengthState;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FF),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 32),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 440),
+                    constraints: const BoxConstraints(maxWidth: 420),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildHero(),
+                        // Header / Branding
+                        Center(
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 68,
+                                height: 68,
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF0A3C95), Color(0xFF2563EB)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(22),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(alpha: 0.25),
+                                      blurRadius: 18,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Image.asset(
+                                  'assets/logos/logo.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Daftar Akun Ve-Wallet',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0F172A),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Satu akun untuk atur keuangan pribadi & keluarga.',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 24),
-                        _buildRegisterCard(context, strength),
-                        const SizedBox(height: 24),
+
+                        // Form Card
+                        Container(
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(26),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildInputLabel('Nama lengkap'),
+                              const SizedBox(height: 6),
+                              _buildTextField(
+                                controller: _nameController,
+                                hintText: 'Masukkan nama lengkap',
+                                prefixIcon: Icons.person_outline_rounded,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildInputLabel('Email'),
+                              const SizedBox(height: 6),
+                              _buildTextField(
+                                controller: _emailController,
+                                hintText: 'nama@email.com',
+                                prefixIcon: Icons.mail_outline_rounded,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildInputLabel('Password'),
+                              const SizedBox(height: 6),
+                              _buildPasswordField(
+                                controller: _passwordController,
+                                hintText: 'Minimal 8 karakter',
+                                isVisible: _isPasswordVisible,
+                                onToggleVisibility: () {
+                                  setState(() => _isPasswordVisible = !_isPasswordVisible);
+                                },
+                                onChanged: (_) => setState(() {}),
+                              ),
+                              if (_passwordController.text.isNotEmpty) ...[
+                                const SizedBox(height: 10),
+                                _buildPasswordStrength(strength),
+                              ],
+                              const SizedBox(height: 16),
+                              _buildInputLabel('Konfirmasi password'),
+                              const SizedBox(height: 6),
+                              _buildPasswordField(
+                                controller: _confirmPasswordController,
+                                hintText: 'Ulangi password',
+                                isVisible: _isConfirmPasswordVisible,
+                                onToggleVisibility: () {
+                                  setState(
+                                    () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 18),
+                              _buildTermsSection(),
+                              const SizedBox(height: 20),
+
+                              // Submit Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton(
+                                  onPressed: _canSubmit ? _register : null,
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    disabledBackgroundColor: const Color(0xFFCBD5E1),
+                                    disabledForegroundColor: Colors.white70,
+                                    shadowColor: AppColors.primary.withValues(alpha: 0.35),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.2,
+                                          ),
+                                        )
+                                      : Text(
+                                          'Daftar Sekarang',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Login Link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'Sudah punya akun? ',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 13,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFF64748B),
                               ),
@@ -200,7 +358,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               child: Text(
                                 'Masuk',
                                 style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.primary,
                                 ),
@@ -216,232 +374,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildHero() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0A3C95),
-            Color(0xFF2563EB),
-            Color(0xFF78A2FF),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.24),
-            blurRadius: 30,
-            offset: const Offset(0, 18),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -18,
-            right: -18,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -36,
-            left: -30,
-            child: Container(
-              width: 130,
-              height: 130,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 84,
-                height: 84,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                child: Image.asset(
-                  'assets/logos/logo.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Buat akun\nVe-Wallet',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  height: 1.15,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Satu akun untuk atur keuangan pribadi, keluarga, dan shared account.',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
-                  height: 1.55,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white.withValues(alpha: 0.86),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: const [
-                  _RegisterInfoChip(label: 'Setup cepat'),
-                  _RegisterInfoChip(label: 'Password dinilai otomatis'),
-                  _RegisterInfoChip(label: 'Shared account siap'),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRegisterCard(
-    BuildContext context,
-    _PasswordStrengthState strength,
-  ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: const Color(0xFFD9E3FF)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Daftar akun baru',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF0F172A),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Isi data berikut untuk mulai pakai Ve-Wallet.',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFF64748B),
-            ),
-          ),
-          const SizedBox(height: 22),
-          _buildInputLabel('Nama lengkap'),
-          const SizedBox(height: 8),
-          _buildTextField(
-            controller: _nameController,
-            hintText: 'Masukkan nama lengkap',
-            prefixIcon: Icons.person_outline_rounded,
-          ),
-          const SizedBox(height: 18),
-          _buildInputLabel('Email'),
-          const SizedBox(height: 8),
-          _buildTextField(
-            controller: _emailController,
-            hintText: 'nama@email.com',
-            prefixIcon: Icons.mail_outline_rounded,
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 18),
-          _buildInputLabel('Password'),
-          const SizedBox(height: 8),
-          _buildPasswordField(
-            controller: _passwordController,
-            hintText: 'Minimal 8 karakter',
-            isVisible: _isPasswordVisible,
-            onToggleVisibility: () {
-              setState(() => _isPasswordVisible = !_isPasswordVisible);
-            },
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          _buildPasswordStrength(strength),
-          const SizedBox(height: 18),
-          _buildInputLabel('Konfirmasi password'),
-          const SizedBox(height: 8),
-          _buildPasswordField(
-            controller: _confirmPasswordController,
-            hintText: 'Ulangi password',
-            isVisible: _isConfirmPasswordVisible,
-            onToggleVisibility: () {
-              setState(
-                () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          _buildTermsSection(),
-          const SizedBox(height: 22),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _canSubmit ? _register : null,
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: const Color(0xFF0F172A),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFFCBD5E1),
-                disabledForegroundColor: Colors.white70,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.2,
-                      ),
-                    )
-                  : Text(
-                      'Daftar',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -470,6 +402,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
+        color: const Color(0xFF0F172A),
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -477,22 +410,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           color: const Color(0xFF94A3B8),
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: Icon(prefixIcon, color: AppColors.primary),
+        prefixIcon: Icon(prefixIcon, color: AppColors.primary, size: 20),
         filled: true,
-        fillColor: const Color(0xFFF8FAFF),
+        fillColor: const Color(0xFFF8FAFC),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFD9E3FF)),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(15),
           borderSide: const BorderSide(
             color: AppColors.primary,
-            width: 1.4,
+            width: 1.5,
           ),
         ),
       ),
@@ -513,6 +447,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
+        color: const Color(0xFF0F172A),
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -520,31 +455,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           color: const Color(0xFF94A3B8),
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary),
+        prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
         suffixIcon: IconButton(
           icon: Icon(
             isVisible
                 ? Icons.visibility_off_rounded
                 : Icons.visibility_rounded,
             color: const Color(0xFF64748B),
+            size: 20,
           ),
           onPressed: onToggleVisibility,
         ),
         filled: true,
-        fillColor: const Color(0xFFF8FAFF),
+        fillColor: const Color(0xFFF8FAFC),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFD9E3FF)),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(15),
           borderSide: const BorderSide(
             color: AppColors.primary,
-            width: 1.4,
+            width: 1.5,
           ),
         ),
       ),
@@ -553,10 +490,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Widget _buildPasswordStrength(_PasswordStrengthState strength) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: strength.color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,11 +507,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     return Expanded(
                       child: Container(
                         margin: EdgeInsets.only(right: index == 3 ? 0 : 6),
-                        height: 6,
+                        height: 5,
                         decoration: BoxDecoration(
                           color: isActive
                               ? strength.color
-                              : const Color(0xFFD9E3FF),
+                              : const Color(0xFFCBD5E1),
                           borderRadius: BorderRadius.circular(99),
                         ),
                       ),
@@ -582,7 +519,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   }),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Text(
                 strength.label,
                 style: GoogleFonts.plusJakartaSans(
@@ -593,11 +530,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             strength.helper,
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
+              fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF475569),
             ),
@@ -611,16 +548,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return GestureDetector(
       onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _agreedToTerms
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : const Color(0xFFF8FAFF),
-          borderRadius: BorderRadius.circular(18),
+              ? AppColors.primary.withValues(alpha: 0.06)
+              : const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: _agreedToTerms
                 ? AppColors.primary.withValues(alpha: 0.28)
-                : const Color(0xFFD9E3FF),
+                : const Color(0xFFE2E8F0),
           ),
         ),
         child: Row(
@@ -629,8 +566,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: SizedBox(
-                width: 24,
-                height: 24,
+                width: 22,
+                height: 22,
                 child: Checkbox(
                   value: _agreedToTerms,
                   onChanged: (value) {
@@ -643,7 +580,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: Text.rich(
                 TextSpan(
@@ -680,12 +617,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           );
                         },
                     ),
-                    const TextSpan(text: ' Ve-Wallet. Wajib dicentang untuk lanjut.'),
+                    const TextSpan(text: ' Ve-Wallet.'),
                   ],
                 ),
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12.5,
-                  height: 1.6,
+                  fontSize: 12,
+                  height: 1.5,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF475569),
                 ),
@@ -709,32 +646,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return 'Format email tidak valid.';
     }
     return 'Gagal daftar: ${error.message}';
-  }
-}
-
-class _RegisterInfoChip extends StatelessWidget {
-  final String label;
-
-  const _RegisterInfoChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
-    );
   }
 }
 
